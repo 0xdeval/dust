@@ -8,3 +8,11 @@ export interface Token {
   logoURI: string | null;
   price: number;
 }
+
+export interface TokenToReceive {
+  address: `0x${string}`;
+  symbol: string;
+  logoURI?: string;
+  name: string;
+  decimals: number;
+}

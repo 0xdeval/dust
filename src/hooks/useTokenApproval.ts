@@ -13,9 +13,9 @@ type UseTokenApprovalProps = {
 };
 
 export const useTokenApproval = ({ owner, spender }: UseTokenApprovalProps) => {
-  const MAX_UINT256 = BigInt(
-    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
-  );
+  //   const MAX_UINT256 = BigInt(
+  //     "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+  //   );
 
   const [tokenToApprove, setTokenToApprove] = useState<`0x${string}` | null>(
     null
@@ -95,38 +95,57 @@ export const useTokenApproval = ({ owner, spender }: UseTokenApprovalProps) => {
     contractTokenApprovalError,
   });
 
-  useEffect(() => {
-    if (tokenToApprove) {
-      console.log("[useTokenApproval] Initiating token approval");
-      setIsApproving(true);
-      approveToken({
-        address: tokenToApprove,
-        abi: erc20Abi,
-        functionName: "approve",
-        args: [spender, MAX_UINT256],
-      });
-    }
-  }, [tokenToApprove]);
+  //   useEffect(() => {
+  //     if (tokenToApprove) {
+  //       console.log("[useTokenApproval] Initiating token approval");
+  //       setIsApproving(true);
+  //       approveToken({
+  //         address: tokenToApprove,
+  //         abi: erc20Abi,
+  //         functionName: "approve",
+  //         args: [spender, MAX_UINT256],
+  //       });
+  //     }
+  //   }, [tokenToApprove]);
 
   useEffect(() => {
-    if (isAllowanceSuccess && allowance >= tokenToApproveBalance) {
+    console.log(
+      "Current allowance VS token balance",
+      allowance,
+      tokenToApproveBalance
+    );
+    if (
+      isAllowanceSuccess &&
+      allowance >= tokenToApproveBalance &&
+      allowance !== BigInt(0)
+    ) {
       console.log(
         "[useTokenApproval] Allowance is greater than token balance. Won't ask to approve again"
       );
       resetOnConfirmation();
     } else if (isAllowanceSuccess && !isAllowanceError && tokenToApprove) {
-      console.log("[useTokenApproval] Initiating token approval");
+      console.log(
+        "[useTokenApproval] Initiating token approval, Want to approve: ",
+        tokenToApproveBalance,
+        "; Allowance is ",
+        allowance
+      );
       setIsApproving(true);
       approveToken({
         address: tokenToApprove,
         abi: erc20Abi,
         functionName: "approve",
-        args: [spender, MAX_UINT256],
+        args: [spender, tokenToApproveBalance],
       });
     }
   }, [tokenToApprove, isAllowanceSuccess, allowance]); //isSimulationSuccess, simulationResult
 
-  const { isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+  const {
+    isSuccess: isConfirmed,
+    error: approvalConfirmationError,
+    fetchStatus: approvalConfirmationStatus,
+    failureReason,
+  } = useWaitForTransactionReceipt({
     hash: approveHash,
     query: {
       enabled: !!approveHash,
@@ -136,7 +155,9 @@ export const useTokenApproval = ({ owner, spender }: UseTokenApprovalProps) => {
   console.log("[useTokenApproval] Transaction Status:", {
     approveHash,
     isConfirmed,
-    enabled: !!approveHash,
+    approvalConfirmationError,
+    approvalConfirmationStatus,
+    failureReason,
   });
 
   // When transaction confirmed
@@ -144,6 +165,8 @@ export const useTokenApproval = ({ owner, spender }: UseTokenApprovalProps) => {
     console.log("[useTokenApproval] Checking confirmation:", {
       isConfirmed,
       currentApprovalState: isTokenApproved,
+      approvalConfirmationError,
+      approvalConfirmationStatus,
     });
 
     if (isConfirmed) {
@@ -153,6 +176,7 @@ export const useTokenApproval = ({ owner, spender }: UseTokenApprovalProps) => {
 
   return {
     setTokenToApprove,
+    setTokenToApproveBalance,
     allowanceError,
     resetApprovalRequest,
     contractTokenApprovalError,

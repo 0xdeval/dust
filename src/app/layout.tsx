@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import Web3ContextProvider from "@/context/WagmiProvider";
 import { headers } from "next/headers";
 import { Provider } from "@/components/ui/provider";
+import { Header } from "@/components/layouts/Header/Header";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,7 +29,11 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body>
         <Web3ContextProvider cookies={cookies}>
-          <Provider>{children}</Provider>
+          <Provider>
+            <Header />
+            {children}
+            <Toaster />
+          </Provider>
         </Web3ContextProvider>
       </body>
     </html>

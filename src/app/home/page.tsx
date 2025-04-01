@@ -21,7 +21,6 @@ export default function Home() {
 
   return (
     <VStack>
-      <ColorModeButton />
       <Box textAlign="center">
         <Heading as="h1" size="xl" mb={2}>
           Token Seller
@@ -38,7 +37,7 @@ export default function Home() {
             p={8}
             rounded="lg"
             shadow="md"
-            minH="300px"
+            minH="500px"
             direction="column"
             align="center"
             justify="center"
