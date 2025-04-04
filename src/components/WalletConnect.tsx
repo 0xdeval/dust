@@ -1,8 +1,8 @@
 "use client";
 
-import { modal } from "@/context/WagmiProvider";
+import { modal } from "@/context/WagmiContext";
 import { Button, Flex, HStack, Icon, Text, VStack } from "@chakra-ui/react";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { Toaster, toaster } from "@/components/ui/Toaster";
 
 import { useEffect } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
@@ -76,20 +76,6 @@ export const WalletConnect = () => {
       </Flex>
     );
   }
-
-  //   <VStack>
-  //     <Text fontSize="sm" color="gray.600">
-  //       Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
-  //     </Text>
-  //     <Button
-  //       colorScheme="red"
-  //       variant="outline"
-  //       onClick={handleDisconnect}
-  //       size="lg"
-  //     >
-  //       Disconnect Wallet
-  //     </Button>
-  //   </VStack>;
 
   return (
     <Button

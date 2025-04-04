@@ -11,7 +11,7 @@ import {
   AlertTitle,
   AlertDescription,
 } from "@chakra-ui/react";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { Toaster, toaster } from "@/components/ui/Toaster";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { TokenTable } from "@/components/layouts/TokensTable/Table";

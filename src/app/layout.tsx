@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Web3ContextProvider from "@/context/WagmiProvider";
+import Web3ContextProvider from "@/context/WagmiContext";
 import { headers } from "next/headers";
-import { Provider } from "@/components/ui/provider";
+import { Provider } from "@/components/ui/Provider";
 import { Header } from "@/components/layouts/Header/Header";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/Toaster";
+import { RootContainer } from "@/components/layouts/Container/RootContainer";
+import { AppStateProvider } from "@/context/AppStateContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -29,11 +31,15 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body>
         <Web3ContextProvider cookies={cookies}>
-          <Provider>
-            <Header />
-            {children}
-            <Toaster />
-          </Provider>
+          <AppStateProvider>
+            <Provider>
+              <RootContainer>
+                <Header />
+                {children}
+                <Toaster />
+              </RootContainer>
+            </Provider>
+          </AppStateProvider>
         </Web3ContextProvider>
       </body>
     </html>
