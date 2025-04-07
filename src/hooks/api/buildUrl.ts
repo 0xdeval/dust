@@ -7,16 +7,13 @@ import type {
   ResourceName,
   ResourcePathParams,
 } from "@/lib/types/api/resources";
-import { ResourceMethod } from "@/lib/types/api/resources";
+import type { ResourceMethod } from "@/lib/types/api/resources";
 
 export default function buildUrl<R extends ResourceName>(
   resourceName: R,
   resourceEndpoint: ResourceMethod<R>,
   pathParams?: ResourcePathParams<R>,
-  queryParams?: Record<
-    string,
-    string | Array<string> | number | boolean | null | undefined
-  >
+  queryParams?: Record<string, string | Array<string> | number | boolean | null | undefined>
 ): string {
   const resource: Resource = RESOURCES[resourceName];
   const endpoint = resource[resourceEndpoint] as EndpointConfig;
@@ -26,9 +23,7 @@ export default function buildUrl<R extends ResourceName>(
 
   queryParams &&
     Object.entries(queryParams).forEach(([key, value]) => {
-      value !== undefined &&
-        value !== "" &&
-        url.searchParams.append(key, String(value));
+      value !== undefined && value !== "" && url.searchParams.append(key, String(value));
     });
 
   return url.toString();

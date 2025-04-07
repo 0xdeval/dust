@@ -11,8 +11,8 @@ import {
   createListCollection,
 } from "@chakra-ui/react";
 import { TOKENS_TO_RECEIVE } from "@/lib/constants";
-import { TokenToReceive } from "@/lib/types/tokens";
-import { OutputToken } from "@/lib/types/api/odos";
+import type { TokenToReceive } from "@/lib/types/tokens";
+import type { OutputToken } from "@/lib/types/api/odos";
 
 interface TokenSelectorProps {
   onSelect: (token: TokenToReceive) => void;
@@ -35,12 +35,7 @@ export function TokenSelector({ onSelect, selectedToken }: TokenSelectorProps) {
   const CustomTokenItem = (token: TokenToReceive) => (
     <Flex align="center" gap={3} width="full" py={2}>
       {token.logoURI ? (
-        <Image
-          src={token.logoURI}
-          alt={token.symbol}
-          boxSize="24px"
-          borderRadius="full"
-        />
+        <Image src={token.logoURI} alt={token.symbol} boxSize="24px" borderRadius="full" />
       ) : (
         <Box boxSize="24px" bg="gray.100" borderRadius="full" />
       )}

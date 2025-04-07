@@ -5,7 +5,7 @@ import type { Token } from "@/lib/types/tokens";
 
 export function useTokens() {
   const { address } = useAccount();
-  const [tokens, setTokens] = useState<Token[]>([]);
+  const [tokens, setTokens] = useState<Array<Token>>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const loadTokens = async () => {

@@ -2,21 +2,17 @@ import { toaster } from "@/components/ui/Toaster";
 import { erc20Abi } from "@/lib/abis/erc-20";
 import { stringToBigInt } from "@/lib/utils";
 
-import { SelectedToken } from "@/lib/types/tokens";
-import {
-  readContract,
-  waitForTransactionReceipt,
-  writeContract,
-} from "@wagmi/core";
+import type { SelectedToken } from "@/lib/types/tokens";
+import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { config } from "@/configs/wagmi";
 
 export const approveTokensList = async (
-  setApprovedTokens: (tokens: SelectedToken[]) => void,
-  tokensToApprove: SelectedToken[],
+  setApprovedTokens: (tokens: Array<SelectedToken>) => void,
+  tokensToApprove: Array<SelectedToken>,
   owner: `0x${string}`,
   spender: `0x${string}`
 ) => {
-  const approvedTokens: SelectedToken[] = [];
+  const approvedTokens: Array<SelectedToken> = [];
 
   for (const token of tokensToApprove) {
     try {
@@ -83,9 +79,7 @@ export const approveTokensList = async (
       console.error(`[approveTokensIfNeeded] Error with ${token.symbol}:`, err);
       toaster.create({
         title: "Error",
-        description: `Approval error for ${token.symbol}: ${
-          err.message ?? "unknown"
-        }`,
+        description: `Approval error for ${token.symbol}: ${err.message ?? "unknown"}`,
         type: "error",
       });
     }

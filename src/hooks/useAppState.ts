@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { AppState, Phase } from "@/lib/types/states";
+import type { AppState, Phase } from "@/lib/types/states";
 import { useAccount } from "wagmi";
 import { getCopies } from "@/lib/utils";
-import { SelectedToken } from "@/lib/types/tokens";
+import type { SelectedToken } from "@/lib/types/tokens";
 export const useAppState = () => {
   const { isConnected } = useAccount();
 
   const [phase, setPhase] = useState<Phase | null>("CONNECT_WALLET");
   const [isReadyToSell, setIsReadyToSell] = useState(false);
-  const [selectedTokens, setSelectedTokens] = useState<SelectedToken[]>([]);
+  const [selectedTokens, setSelectedTokens] = useState<Array<SelectedToken>>([]);
 
-  const [approvedTokens, setApprovedTokens] = useState<SelectedToken[]>([]);
+  const [approvedTokens, setApprovedTokens] = useState<Array<SelectedToken>>([]);
 
   const defaultCopy = getCopies("CONNECT_WALLET");
 

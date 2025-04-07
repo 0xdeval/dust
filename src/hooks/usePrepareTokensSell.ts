@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useApiQuery from "./api/useApiQuery";
-import {
+import type {
   InputToken,
   OdosQuoteRequest,
   OutputToken,
@@ -13,24 +13,15 @@ import { useAccount } from "wagmi";
 export const usePrepareTokensSell = () => {
   const { address } = useAccount();
 
-  const [tokensToSell, setTokensToSell] = useState<InputToken[]>([]);
-  const [tokenToReceive, setTokenToReceive] = useState<OutputToken[]>([]);
+  const [tokensToSell, setTokensToSell] = useState<Array<InputToken>>([]);
+  const [tokenToReceive, setTokenToReceive] = useState<Array<OutputToken>>([]);
 
-  const [quoteRequest, setQuoteRequest] = useState<OdosQuoteRequest | null>(
-    null
-  );
+  const [quoteRequest, setQuoteRequest] = useState<OdosQuoteRequest | null>(null);
   const [quoteData, setQuoteData] = useState<OdosQuoteResponse | null>(null);
-  const [executeData, setExecuteData] = useState<OdosExecuteResponse | null>(
-    null
-  );
+  const [executeData, setExecuteData] = useState<OdosExecuteResponse | null>(null);
 
   const [status, setStatus] = useState<
-    | "idle"
-    | "loadingQuote"
-    | "loadingExecute"
-    | "successQuote"
-    | "successExecute"
-    | "error"
+    "idle" | "loadingQuote" | "loadingExecute" | "successQuote" | "successExecute" | "error"
   >("idle");
 
   useEffect(() => {
@@ -53,7 +44,7 @@ export const usePrepareTokensSell = () => {
       body: JSON.stringify(quoteRequest),
     },
     queryOptions: {
-      enabled: !!quoteRequest,
+      enabled: Boolean(quoteRequest),
     },
   });
 
@@ -75,7 +66,7 @@ export const usePrepareTokensSell = () => {
       body: JSON.stringify(quoteData),
     },
     queryOptions: {
-      enabled: !!quoteData,
+      enabled: Boolean(quoteData),
     },
   });
 

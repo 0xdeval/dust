@@ -10,8 +10,8 @@ export interface OutputToken {
 
 export interface OdosQuoteRequest {
   chainId: number;
-  inputTokens: InputToken[];
-  outputTokens: OutputToken[];
+  inputTokens: Array<InputToken>;
+  outputTokens: Array<OutputToken>;
   userAddr: `0x${string}`; // Checksummed user address
   slippageLimitPercent: number;
   referralCode?: number; // Optional referral code
@@ -35,16 +35,16 @@ export interface BuildExecuteParams {
 export interface OdosQuoteResponse {
   deprecated: string;
   traceId: string;
-  inTokens: string[];
-  outTokens: string[];
-  inAmounts: string[];
-  outAmounts: string[];
+  inTokens: Array<string>;
+  outTokens: Array<string>;
+  inAmounts: Array<string>;
+  outAmounts: Array<string>;
   gasEstimate: number;
   dataGasEstimate: number;
   gweiPerGas: number;
   gasEstimateValue: number;
-  inValues: number[];
-  outValues: number[];
+  inValues: Array<number>;
+  outValues: Array<number>;
   netOutValue: number;
   priceImpact: number;
   percentDiff: number;
@@ -78,7 +78,7 @@ export interface SimulationError {
 
 export interface Simulation {
   isSuccess: boolean;
-  amountsOut: number[];
+  amountsOut: Array<number>;
   gasEstimate: number;
   simulationError?: SimulationError;
 }
@@ -89,10 +89,10 @@ export interface OdosExecuteResponse {
   blockNumber: number;
   gasEstimate: number;
   gasEstimateValue: number;
-  inputTokens: ExecuteToken[];
-  outputTokens: ExecuteToken[];
+  inputTokens: Array<ExecuteToken>;
+  outputTokens: Array<ExecuteToken>;
   netOutValue: number;
-  outValues: string[];
+  outValues: Array<string>;
   transaction: Transaction;
   simulation: Simulation;
 }

@@ -1,8 +1,8 @@
 import { parseUnits } from "viem";
-import { Phase } from "./types/states";
-import { CopiesState } from "./types/states";
-import { ApprovingToken } from "./types/tokens";
-import { SelectedToken } from "./types/tokens";
+import type { Phase } from "./types/states";
+import type { CopiesState } from "./types/states";
+import type { ApprovingToken } from "./types/tokens";
+import type { SelectedToken } from "./types/tokens";
 
 export const stringToBigInt = (amount: string, decimals: number = 18) => {
   const bigIntAmount = parseUnits(amount, decimals);
@@ -50,9 +50,9 @@ export const getCopies = (phase: Phase): CopiesState => {
 };
 
 export const mapTokensWithApprovalStatus = (
-  selectedTokens: SelectedToken[],
-  approvedTokens: SelectedToken[]
-): ApprovingToken[] => {
+  selectedTokens: Array<SelectedToken>,
+  approvedTokens: Array<SelectedToken>
+): Array<ApprovingToken> => {
   return selectedTokens.map((token) => {
     const isApproved = approvedTokens.some(
       (approvedToken) => approvedToken.address === token.address

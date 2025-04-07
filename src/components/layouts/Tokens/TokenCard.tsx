@@ -25,9 +25,7 @@ export const TokenCard = React.forwardRef<HTMLInputElement, TokenCardProps>(
     } = props;
 
     const hasContent = label || description || icon;
-    const ContentWrapper = indicator
-      ? ChakraCheckboxCard.Content
-      : React.Fragment;
+    const ContentWrapper = indicator ? ChakraCheckboxCard.Content : React.Fragment;
 
     return (
       <ChakraCheckboxCard.Root {...rest}>
@@ -36,15 +34,11 @@ export const TokenCard = React.forwardRef<HTMLInputElement, TokenCardProps>(
           {indicatorPlacement === "start" && indicator}
           {hasContent && (
             <ContentWrapper>
-              <Flex flexDirection={"row"} alignItems={"center"} gap={2}>
+              <Flex flexDirection="row" alignItems="center" gap={2}>
                 {icon}
-                {label && (
-                  <ChakraCheckboxCard.Label>{label}</ChakraCheckboxCard.Label>
-                )}
+                {label && <ChakraCheckboxCard.Label>{label}</ChakraCheckboxCard.Label>}
                 {description && (
-                  <ChakraCheckboxCard.Description>
-                    {description}
-                  </ChakraCheckboxCard.Description>
+                  <ChakraCheckboxCard.Description>{description}</ChakraCheckboxCard.Description>
                 )}
               </Flex>
               {indicatorPlacement === "inside" && indicator}

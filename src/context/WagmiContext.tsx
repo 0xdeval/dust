@@ -1,6 +1,7 @@
 "use client";
 
-import React, { ReactNode } from "react";
+import type { ReactNode } from "react";
+import React from "react";
 import { projectId, wagmiAdapter } from "../configs/wagmi";
 import { sepolia } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
@@ -39,16 +40,10 @@ export default function Web3ContextProvider({
   children: ReactNode;
   cookies: string | null;
 }) {
-  const initialState = cookieToInitialState(
-    wagmiAdapter.wagmiConfig as Config,
-    cookies
-  );
+  const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies);
 
   return (
-    <WagmiProvider
-      config={wagmiAdapter.wagmiConfig as Config}
-      initialState={initialState}
-    >
+    <WagmiProvider config={wagmiAdapter.wagmiConfig as Config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   );

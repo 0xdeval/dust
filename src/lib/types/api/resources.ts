@@ -1,4 +1,4 @@
-import { RESOURCES } from "@/hooks/api/resources";
+import type { RESOURCES } from "@/hooks/api/resources";
 
 export interface EndpointConfig {
   path: string;
@@ -10,15 +10,9 @@ export interface Resource {
 }
 
 export type ResourceName = keyof typeof RESOURCES;
-export type ResourceMethod<R extends ResourceName> = Exclude<
-  keyof Resource,
-  "base"
->;
+export type ResourceMethod<R extends ResourceName> = Exclude<keyof Resource, "base">;
 
-export type ResourcePayload<
-  R extends ResourceName,
-  M extends ResourceMethod<R>
-> = unknown;
+export type ResourcePayload<R extends ResourceName, M extends ResourceMethod<R>> = unknown;
 export type ResourceError<E = unknown> = {
   status: number;
   message: string;

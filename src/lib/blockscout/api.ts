@@ -3,7 +3,7 @@ import type { Token } from "@/lib/types/tokens";
 const BLOCKSCOUT_API_URL = "https://eth-sepolia.blockscout.com/api/v2";
 
 interface BlockscoutResponse {
-  items: BlockscoutTokenItem[];
+  items: Array<BlockscoutTokenItem>;
 }
 
 interface BlockscoutTokenItem {
@@ -25,11 +25,9 @@ interface BlockscoutTokenItem {
   value: string;
 }
 
-export async function fetchTokens(address: string): Promise<Token[]> {
+export async function fetchTokens(address: string): Promise<Array<Token>> {
   try {
-    const response = await fetch(
-      `${BLOCKSCOUT_API_URL}/addresses/${address}/tokens`
-    );
+    const response = await fetch(`${BLOCKSCOUT_API_URL}/addresses/${address}/tokens`);
 
     if (!response.ok) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);

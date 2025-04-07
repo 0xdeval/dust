@@ -1,4 +1,4 @@
-import { Resource } from "@/lib/types/api/resources";
+import type { Resource } from "@/lib/types/api/resources";
 
 export const RESOURCES: Record<string, Resource> = {
   odos: {

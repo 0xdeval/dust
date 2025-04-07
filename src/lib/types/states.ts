@@ -1,4 +1,5 @@
-import { SelectedToken, Token } from "./tokens";
+import type { SelectedToken } from "./tokens";
+import { Token } from "./tokens";
 
 export type Phase =
   | "CONNECT_WALLET"
@@ -12,8 +13,8 @@ export interface AppState {
   contentHeadline: string;
   contentSubtitle: string;
   contentButtonLabel: string;
-  approvedTokens?: SelectedToken[];
-  selectedTokens?: SelectedToken[];
+  approvedTokens?: Array<SelectedToken>;
+  selectedTokens?: Array<SelectedToken>;
   isReadyToSell?: boolean;
 }
 

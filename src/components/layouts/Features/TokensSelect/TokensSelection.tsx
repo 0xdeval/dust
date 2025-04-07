@@ -6,7 +6,7 @@ import { useTokens } from "@/hooks/useTokens";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
-import { SelectedToken } from "@/lib/types/tokens";
+import type { SelectedToken } from "@/lib/types/tokens";
 import { AGGREGATOR_CONTRACT_ADDRESS } from "@/lib/constants";
 import { approveTokensList } from "@/lib/actions/tokenApprovals";
 
@@ -15,8 +15,7 @@ export const TokensSelection = () => {
 
   const [isActionButtonDisabled, setIsActionButtonDisabled] = useState(true);
 
-  const { state, updateState, setApprovedTokens, setSelectedTokens } =
-    useAppStateContext();
+  const { state, updateState, setApprovedTokens, setSelectedTokens } = useAppStateContext();
   const { tokens, isLoading } = useTokens();
 
   const initialSelectedTokens = useMemo(() => {
@@ -28,12 +27,11 @@ export const TokensSelection = () => {
           isSelected: false,
         },
       ];
-    }, [] as SelectedToken[]);
+    }, [] as Array<SelectedToken>);
   }, [tokens, isConnected]);
 
-  const [sessionSelectedTokens, setSessionSelectedTokens] = useState<
-    SelectedToken[]
-  >(initialSelectedTokens);
+  const [sessionSelectedTokens, setSessionSelectedTokens] =
+    useState<Array<SelectedToken>>(initialSelectedTokens);
 
   useEffect(() => {
     setSessionSelectedTokens(initialSelectedTokens);
@@ -42,9 +40,7 @@ export const TokensSelection = () => {
   const handleCardSelect = (token: SelectedToken) => {
     console.log("token selected", token);
     setSessionSelectedTokens((prev) =>
-      prev.map((t) =>
-        t.address === token.address ? { ...t, isSelected: !t.isSelected } : t
-      )
+      prev.map((t) => (t.address === token.address ? { ...t, isSelected: !t.isSelected } : t))
     );
   };
 

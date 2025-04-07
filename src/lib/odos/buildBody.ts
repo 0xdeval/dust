@@ -1,4 +1,4 @@
-import {
+import type {
   OdosQuoteRequest,
   InputToken,
   OutputToken,
@@ -7,8 +7,8 @@ import {
 } from "@/lib/types/api/odos";
 
 interface BuildQuoteParams {
-  inputTokens: InputToken[];
-  outputTokens: OutputToken[];
+  inputTokens: Array<InputToken>;
+  outputTokens: Array<OutputToken>;
   userAddress: `0x${string}`;
   chainId?: number;
   slippageLimitPercent?: number;

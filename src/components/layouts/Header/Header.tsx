@@ -36,13 +36,10 @@ export function Header() {
   }, [isConnected]);
 
   return (
-    <Flex as="header" width="100%" justifyContent={"space-between"} mb={"50px"}>
-      <Flex flexDirection={"column"} gap={4} alignItems={"flex-start"}>
-        <Logo
-          logoSrcDefaultPath="/logo-black.png"
-          logoSrcDarkPath="/logo-white.png"
-        />
-        <Flex justifyContent={"flex-start"} alignItems={"center"} gap={"10px"}>
+    <Flex as="header" width="100%" justifyContent="space-between" mb="50px">
+      <Flex flexDirection="column" gap={4} alignItems="flex-start">
+        <Logo logoSrcDefaultPath="/logo-black.png" logoSrcDarkPath="/logo-white.png" />
+        <Flex justifyContent="flex-start" alignItems="center" gap="10px">
           to <TokenSelector />
         </Flex>
       </Flex>
@@ -50,13 +47,13 @@ export function Header() {
         variant={isConnected ? "outline" : "solid"}
         bg={isConnected ? "transparent" : "actionButtonSolid"}
         borderColor={isConnected ? "accentBorder" : "transparent"}
-        size={"sm"}
+        size="sm"
         onClick={handleButtonAction}
       >
         {!isConnected ? (
           "Connect Wallet"
         ) : (
-          <Flex justifyContent={"center"} gap={"10px"}>
+          <Flex justifyContent="center" gap="10px">
             <Text>
               {address?.slice(0, 4)}...{address?.slice(-4)}
             </Text>

@@ -6,15 +6,11 @@ type CheckboxProps = {
   colorScheme: string;
 };
 
-export const CustomCheckbox = ({
-  isChecked,
-  onChange,
-  colorScheme,
-}: CheckboxProps) => {
+export const CustomCheckbox = ({ isChecked, onChange, colorScheme }: CheckboxProps) => {
   return (
     <Checkbox.Root
       defaultChecked={isChecked}
-      variant={"subtle"}
+      variant="subtle"
       colorScheme={colorScheme}
       onChange={onChange}
     >

@@ -17,23 +17,14 @@ export const ContentHeadline = ({
   isButtonDisabled = true,
 }: Props) => {
   return (
-    <Flex
-      width={"100%"}
-      justifyContent={"space-between"}
-      alignItems={"flex-start"}
-    >
-      <Flex flexDirection={"column"} gap={4}>
+    <Flex width="100%" justifyContent="space-between" alignItems="flex-start">
+      <Flex flexDirection="column" gap={4}>
         <Heading as="h1" size="4xl">
           {title}
         </Heading>
         <Text color="textSecondary">{subtitle}</Text>
       </Flex>
-      <Button
-        size={"lg"}
-        bg={"actionButtonSolid"}
-        onClick={buttonAction}
-        disabled={isButtonDisabled}
-      >
+      <Button size="lg" bg="actionButtonSolid" onClick={buttonAction} disabled={isButtonDisabled}>
         {buttonLabel}
       </Button>
     </Flex>
