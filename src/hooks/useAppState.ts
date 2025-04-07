@@ -1,15 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { AppState, Phase } from "@/lib/types/states";
 import { useAccount } from "wagmi";
-import { modal } from "@/context/WagmiContext";
 import { getCopies } from "@/lib/utils";
-
+import { SelectedToken } from "@/lib/types/tokens";
 export const useAppState = () => {
   const { isConnected } = useAccount();
-  const [phase, setPhase] = useState<Phase>("CONNECT_WALLET");
-  const [state, setState] = useState<AppState | null>(null);
 
-  const updateState = (newPhase: Phase, newStateButtonAction: () => void) => {
+  const [phase, setPhase] = useState<Phase | null>("CONNECT_WALLET");
+  const [isReadyToSell, setIsReadyToSell] = useState(false);
+  const [selectedTokens, setSelectedTokens] = useState<SelectedToken[]>([]);
+
+  const [approvedTokens, setApprovedTokens] = useState<SelectedToken[]>([]);
+
+  const defaultCopy = getCopies("CONNECT_WALLET");
+
+  const [state, setState] = useState<AppState | null>({
+    phase: phase,
+    contentHeadline: defaultCopy.contentHeadline,
+    contentSubtitle: defaultCopy.contentSubtitle,
+    contentButtonLabel: defaultCopy.contentButtonLabel,
+    selectedTokens: [],
+    approvedTokens: [],
+    isReadyToSell: false,
+  });
+
+  const updateState = (newPhase: Phase) => {
     const newCopy = getCopies(newPhase);
 
     setState({
@@ -17,22 +32,21 @@ export const useAppState = () => {
       contentHeadline: newCopy.contentHeadline,
       contentSubtitle: newCopy.contentSubtitle,
       contentButtonLabel: newCopy.contentButtonLabel,
-      contentButtonAction: newStateButtonAction,
     });
 
     setPhase(newPhase);
   };
-
-  useEffect(() => {
-    if (!isConnected) {
-      updateState("CONNECT_WALLET", () => modal.open());
-    }
-  }, [isConnected]);
 
   return {
     phase,
     state,
     updateState,
     isConnected,
+    approvedTokens,
+    setApprovedTokens,
+    selectedTokens,
+    setSelectedTokens,
+    isReadyToSell,
+    setIsReadyToSell,
   };
 };

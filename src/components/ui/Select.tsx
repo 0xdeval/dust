@@ -2,7 +2,7 @@
 
 import { Portal, Select, createListCollection } from "@chakra-ui/react";
 
-export const CustomSelect = () => {
+export const TokenSelector = () => {
   return (
     <Select.Root
       collection={frameworks}

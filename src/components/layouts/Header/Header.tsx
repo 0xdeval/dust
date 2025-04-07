@@ -3,7 +3,7 @@
 import { Flex, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
-import { CustomSelect } from "@/components/ui/Select";
+import { TokenSelector } from "@/components/ui/Select";
 import { useAppState } from "@/hooks/useAppState";
 import { useAccount, useDisconnect } from "wagmi";
 import { modal } from "@/context/WagmiContext";
@@ -27,11 +27,11 @@ export function Header() {
 
   useEffect(() => {
     if (isConnected) {
-      updateState("SELECT_TOKENS", () => {});
+      updateState("SELECT_TOKENS");
     }
 
     if (!isConnected) {
-      updateState("CONNECT_WALLET", () => {});
+      updateState("CONNECT_WALLET");
     }
   }, [isConnected]);
 
@@ -43,7 +43,7 @@ export function Header() {
           logoSrcDarkPath="/logo-white.png"
         />
         <Flex justifyContent={"flex-start"} alignItems={"center"} gap={"10px"}>
-          to <CustomSelect />
+          to <TokenSelector />
         </Flex>
       </Flex>
       <Button
@@ -56,7 +56,7 @@ export function Header() {
         {!isConnected ? (
           "Connect Wallet"
         ) : (
-          <Flex>
+          <Flex justifyContent={"center"} gap={"10px"}>
             <Text>
               {address?.slice(0, 4)}...{address?.slice(-4)}
             </Text>

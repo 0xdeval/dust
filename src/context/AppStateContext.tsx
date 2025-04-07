@@ -3,11 +3,18 @@
 import { createContext, useContext, ReactNode } from "react";
 import { AppState, Phase } from "@/lib/types/states";
 import { useAppState } from "@/hooks/useAppState";
+import { SelectedToken, Token } from "@/lib/types/tokens";
 
 interface AppStateContextType {
-  phase: Phase;
+  phase: Phase | null;
   state: AppState | null;
-  updateState: (phase: Phase, newStateButtonAction: () => void) => void;
+  approvedTokens: SelectedToken[];
+  setApprovedTokens: (tokens: SelectedToken[]) => void;
+  isReadyToSell: boolean;
+  setIsReadyToSell: (isReadyToSell: boolean) => void;
+  selectedTokens: SelectedToken[];
+  setSelectedTokens: (tokens: SelectedToken[]) => void;
+  updateState: (phase: Phase) => void;
 }
 
 const AppStateContext = createContext<AppStateContextType | undefined>(
@@ -15,10 +22,32 @@ const AppStateContext = createContext<AppStateContextType | undefined>(
 );
 
 export function AppStateProvider({ children }: { children: ReactNode }) {
-  const appState = useAppState();
+  const {
+    phase,
+    state,
+    approvedTokens,
+    setApprovedTokens,
+    isReadyToSell,
+    setIsReadyToSell,
+    selectedTokens,
+    setSelectedTokens,
+    updateState,
+  } = useAppState();
+
+  const value: AppStateContextType = {
+    phase,
+    state,
+    approvedTokens,
+    setApprovedTokens,
+    isReadyToSell,
+    setIsReadyToSell,
+    selectedTokens,
+    setSelectedTokens,
+    updateState,
+  };
 
   return (
-    <AppStateContext.Provider value={appState}>
+    <AppStateContext.Provider value={value}>
       {children}
     </AppStateContext.Provider>
   );

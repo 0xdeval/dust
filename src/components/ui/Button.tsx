@@ -12,7 +12,7 @@ interface ButtonLoadingProps {
   loadingText?: React.ReactNode;
 }
 
-export interface ButtonProps extends ChakraButtonProps, ButtonLoadingProps {}
+interface ButtonProps extends ChakraButtonProps, ButtonLoadingProps {}
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   function Button(props, ref) {

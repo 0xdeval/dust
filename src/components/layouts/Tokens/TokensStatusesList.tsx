@@ -1,0 +1,31 @@
+import { Flex, Skeleton } from "@chakra-ui/react";
+import type { ApprovingToken } from "@/lib/types/tokens";
+import { TokenStatusCard } from "./TokenStatusCard";
+
+interface Props {
+  selectedTokens: ApprovingToken[];
+}
+
+export const TokensStatusesCardsList = ({ selectedTokens }: Props) => {
+  return (
+    <Skeleton loading={!selectedTokens} w={"100%"}>
+      <Flex flexDirection={"column"} gap={"10px"}>
+        {selectedTokens.map((token) => (
+          <TokenStatusCard
+            logoUrl={token.logoURI || "https://ethereum.org/eth-logo.png"}
+            width={"100%"}
+            p={"10px"}
+            size={"sm"}
+            borderRadius={"8px"}
+            fontSize={"18px"}
+            symbol={token.symbol}
+            addon={`${token.balance} ${token.symbol}`}
+            label={token.name}
+            description={token.symbol}
+            isLoading={token.isApproving}
+          />
+        ))}
+      </Flex>
+    </Skeleton>
+  );
+};

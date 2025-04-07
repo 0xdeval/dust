@@ -1,5 +1,5 @@
 export interface Token {
-  address: string;
+  address: `0x${string}`;
   symbol: string;
   name: string;
   decimals: number;
@@ -7,6 +7,15 @@ export interface Token {
   rawBalance: bigint;
   logoURI: string | null;
   price: number;
+}
+
+export interface SelectedToken extends Token {
+  isSelected: boolean;
+}
+
+export interface ApprovingToken extends SelectedToken {
+  isApproving: boolean;
+  isApproved: boolean;
 }
 
 export interface TokenToReceive {

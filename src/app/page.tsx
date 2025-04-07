@@ -1,27 +1,44 @@
 "use client";
 
 import { useAccount } from "wagmi";
-import { Skeleton } from "@chakra-ui/react";
-
-import { InfoContainer } from "@/components/layouts/Content/InfoContainer";
-import { ContentHeadline } from "@/components/layouts/Content/ContentHeadline";
 import { useAppStateContext } from "@/context/AppStateContext";
+import { useTokens } from "@/hooks/useTokens";
+import { WalletConnection } from "@/components/layouts/Features/WalletConnection/WalletConnection";
+import { TokensSelection } from "@/components/layouts/Features/TokensSelect/TokensSelection";
+import { TokensApprovals } from "@/components/layouts/Features/TokensApprovals/TokensApprovals";
 
 export default function Home() {
-  const { phase, state, updateState } = useAppStateContext();
+  // const { address, isConnected } = useAccount();
 
-  return (
-    <Skeleton loading={!state}>
-      <InfoContainer>
-        {state && (
-          <ContentHeadline
-            title={state?.contentHeadline}
-            subtitle={state?.contentSubtitle}
-            buttonLabel={state?.contentButtonLabel}
-            buttonAction={state?.contentButtonAction}
-          />
-        )}
-      </InfoContainer>
-    </Skeleton>
-  );
+  //  const [isActionButtonDisabled, setIsActionButtonDisabled] = useState(true);
+
+  const {
+    phase,
+    state,
+    updateState,
+    approvedTokens,
+    setApprovedTokens,
+    isReadyToSell,
+    setIsReadyToSell,
+    selectedTokens,
+    setSelectedTokens,
+  } = useAppStateContext();
+  const { tokens, isLoading } = useTokens();
+
+  console.log("CURRENT STATE: ", state);
+
+  const renderPhaseContent = () => {
+    switch (phase) {
+      case "CONNECT_WALLET":
+        return <WalletConnection />;
+      case "SELECT_TOKENS":
+        return <TokensSelection />;
+      case "APPROVE_TOKENS":
+        return <TokensApprovals />;
+      default:
+        return null;
+    }
+  };
+
+  return renderPhaseContent();
 }

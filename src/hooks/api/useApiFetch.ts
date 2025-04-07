@@ -6,7 +6,6 @@ import type {
   ResourceName,
   ResourceMethod,
   ResourcePathParams,
-  ResourceError,
 } from "@/lib/types/api/resources";
 
 export interface ApiFetchParams<R extends ResourceName> {

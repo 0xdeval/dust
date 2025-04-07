@@ -6,7 +6,6 @@ export const RootContainer = ({ children }: { children: React.ReactNode }) => {
       w={"100%"}
       h={"100vh"}
       p={"150px 250px"}
-      as={"body"}
       justifyContent={"flex-start"}
       alignItems={"space-between"}
     >

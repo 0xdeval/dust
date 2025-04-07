@@ -6,6 +6,7 @@ interface Props {
   subtitle: string;
   buttonLabel: string;
   buttonAction: () => void;
+  isButtonDisabled?: boolean;
 }
 
 export const ContentHeadline = ({
@@ -13,6 +14,7 @@ export const ContentHeadline = ({
   subtitle,
   buttonLabel,
   buttonAction,
+  isButtonDisabled = true,
 }: Props) => {
   return (
     <Flex
@@ -26,7 +28,12 @@ export const ContentHeadline = ({
         </Heading>
         <Text color="textSecondary">{subtitle}</Text>
       </Flex>
-      <Button size={"lg"} bg={"actionButtonSolid"} onClick={buttonAction}>
+      <Button
+        size={"lg"}
+        bg={"actionButtonSolid"}
+        onClick={buttonAction}
+        disabled={isButtonDisabled}
+      >
         {buttonLabel}
       </Button>
     </Flex>

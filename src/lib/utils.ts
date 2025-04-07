@@ -1,6 +1,8 @@
 import { parseUnits } from "viem";
 import { Phase } from "./types/states";
 import { CopiesState } from "./types/states";
+import { ApprovingToken } from "./types/tokens";
+import { SelectedToken } from "./types/tokens";
 
 export const stringToBigInt = (amount: string, decimals: number = 18) => {
   const bigIntAmount = parseUnits(amount, decimals);
@@ -26,7 +28,7 @@ export const getCopies = (phase: Phase): CopiesState => {
 
     case "APPROVE_TOKENS":
       return {
-        contentHeadline: "Approve Tokens",
+        contentHeadline: "Sell Tokens",
         contentSubtitle: "Approve selected tokens for trading",
         contentButtonLabel: "Approve All",
       };
@@ -45,4 +47,21 @@ export const getCopies = (phase: Phase): CopiesState => {
         contentButtonLabel: "Done",
       };
   }
+};
+
+export const mapTokensWithApprovalStatus = (
+  selectedTokens: SelectedToken[],
+  approvedTokens: SelectedToken[]
+): ApprovingToken[] => {
+  return selectedTokens.map((token) => {
+    const isApproved = approvedTokens.some(
+      (approvedToken) => approvedToken.address === token.address
+    );
+
+    return {
+      ...token,
+      isApproving: !isApproved,
+      isApproved: isApproved,
+    };
+  });
 };
