@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "format": "bunx prettier . --write",
-    "lint": "next lint",
+    "lint": "bunx eslint . --ext .ts,.tsx",
     "prepare": "husky"
   },
   "dependencies": {
