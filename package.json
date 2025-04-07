@@ -6,8 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint . --ext .ts,.tsx",
-    "prepare": "husky install"
+    "format": "bunx prettier . --write",
+    "lint": "next lint",
+    "prepare": "husky"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.15.0",
