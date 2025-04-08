@@ -1,26 +1,83 @@
-import { Icon, Spinner } from "@chakra-ui/react";
-import { MdOutlineDone } from "react-icons/md";
+"use client";
 
-import * as React from "react";
+import { Box, Spinner, Icon, chakra } from "@chakra-ui/react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MdOutlineDone } from "react-icons/md";
+import { MdError } from "react-icons/md";
+
+import { useEffect, useState } from "react";
+
+const MotionBox = motion(chakra.div);
 
 interface CardStatusSpinnerProps {
   isLoading: boolean;
   size: "sm" | "md" | "lg" | "xl" | "xs" | undefined;
   borderWidth?: string;
+  boxSize?: string;
+  status?: "success" | "error" | "pending" | "idle";
 }
 
-export const CardStatusSpinner = ({
+export const StatusSpinner = ({
   isLoading,
   size,
-  borderWidth = "2px",
+  borderWidth = "3px",
+  boxSize,
+  status = "success",
 }: CardStatusSpinnerProps) => {
-  if (!isLoading) {
-    return (
-      <Icon as={MdOutlineDone} color="green.500" fill="green.500" size={size} />
-    );
-  }
+  const [showCheck, setShowCheck] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading) {
+      const timeout = setTimeout(() => setShowCheck(true), 500); // match exit animation delay
+      return () => clearTimeout(timeout);
+    }
+  }, [isLoading]);
 
   return (
-    <Spinner size={size} borderWidth={borderWidth} color="actionButtonSolid" />
+    <AnimatePresence>
+      {isLoading && (
+        <MotionBox
+          key="spinner"
+          initial={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.5 }}
+          transition={{ duration: 0.3 }}
+          position="flex"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          <Spinner boxSize={boxSize} borderWidth={borderWidth} size={size} />
+        </MotionBox>
+      )}
+
+      {showCheck && (
+        <MotionBox
+          key="checkmark"
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+          position="flex"
+          top="0"
+          left="0"
+          right="0"
+          bottom="0"
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+        >
+          {status === "success" && (
+            <Icon as={MdOutlineDone} size={size} boxSize={boxSize} color="green.400" />
+          )}
+          {status === "error" && (
+            <Icon as={MdError} size={size} boxSize={boxSize} color="red.400" />
+          )}
+        </MotionBox>
+      )}
+    </AnimatePresence>
   );
 };

@@ -16,6 +16,7 @@ export interface AppState {
   approvedTokens?: Array<SelectedToken>;
   selectedTokens?: Array<SelectedToken>;
   isReadyToSell?: boolean;
+  receivedToken?: `0x${string}`;
 }
 
 export interface CopiesState {

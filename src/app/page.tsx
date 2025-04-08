@@ -6,7 +6,7 @@ import { useTokens } from "@/hooks/useTokens";
 import { WalletConnection } from "@/components/layouts/Features/WalletConnection/WalletConnection";
 import { TokensSelection } from "@/components/layouts/Features/TokensSelect/TokensSelection";
 import { TokensApprovals } from "@/components/layouts/Features/TokensApprovals/TokensApprovals";
-
+import { TokensSell } from "@/components/layouts/Features/TokensSell/TokensSell";
 export default function Home() {
   // const { address, isConnected } = useAccount();
 
@@ -35,6 +35,8 @@ export default function Home() {
         return <TokensSelection />;
       case "APPROVE_TOKENS":
         return <TokensApprovals />;
+      case "SELL_TOKENS":
+        return <TokensSell />;
       default:
         return null;
     }

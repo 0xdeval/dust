@@ -16,7 +16,7 @@ export const approveTokensList = async (
 
   for (const token of tokensToApprove) {
     try {
-      const balance = stringToBigInt(token.balance);
+      const balance = stringToBigInt(token.balance, token.decimals);
 
       if (balance === BigInt(0)) {
         toaster.create({
@@ -54,7 +54,7 @@ export const approveTokensList = async (
 
       toaster.create({
         title: "Approval sent",
-        description: `Waiting for ${token.symbol} approval...`,
+        description: `Waiting for ${token.symbol} approval. Amount: ${balance}`,
         type: "info",
       });
 

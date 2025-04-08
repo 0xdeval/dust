@@ -1,17 +1,17 @@
-export interface InputToken {
+export interface OdosInputToken {
   tokenAddress: `0x${string}`; // Ensures checksummed address format
   amount: string; // Fixed integer precision amount
 }
 
-export interface OutputToken {
+export interface OdosOutputToken {
   tokenAddress: `0x${string}`; // Ensures checksummed address format
   proportion: number; // Proportion of output (0-1)
 }
 
 export interface OdosQuoteRequest {
   chainId: number;
-  inputTokens: Array<InputToken>;
-  outputTokens: Array<OutputToken>;
+  inputTokens: Array<OdosInputToken>;
+  outputTokens: Array<OdosOutputToken>;
   userAddr: `0x${string}`; // Checksummed user address
   slippageLimitPercent: number;
   referralCode?: number; // Optional referral code
@@ -21,13 +21,6 @@ export interface OdosQuoteRequest {
 
 export interface OdosExecuteRequest {
   userAddr: `0x${string}`;
-  pathId: string;
-  simulate?: boolean;
-}
-
-// Then create the builder function
-export interface BuildExecuteParams {
-  userAddress: `0x${string}`;
   pathId: string;
   simulate?: boolean;
 }
@@ -95,4 +88,10 @@ export interface OdosExecuteResponse {
   outValues: Array<string>;
   transaction: Transaction;
   simulation: Simulation;
+}
+
+export interface OdosAssembleResponse {
+  deprecated: string;
+  traceId: string;
+  blockNumber: number;
 }

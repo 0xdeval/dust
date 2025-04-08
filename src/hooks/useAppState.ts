@@ -3,6 +3,7 @@ import type { AppState, Phase } from "@/lib/types/states";
 import { useAccount } from "wagmi";
 import { getCopies } from "@/lib/utils";
 import type { SelectedToken } from "@/lib/types/tokens";
+import { DEFAULT_TOKEN_TO_RECEIVE } from "@/lib/constants";
 export const useAppState = () => {
   const { isConnected } = useAccount();
 
@@ -12,6 +13,10 @@ export const useAppState = () => {
 
   const [approvedTokens, setApprovedTokens] = useState<Array<SelectedToken>>([]);
 
+  const [receivedToken, setReceivedToken] = useState<`0x${string}`>(
+    DEFAULT_TOKEN_TO_RECEIVE.address
+  );
+
   const defaultCopy = getCopies("CONNECT_WALLET");
 
   const [state, setState] = useState<AppState | null>({
@@ -19,9 +24,10 @@ export const useAppState = () => {
     contentHeadline: defaultCopy.contentHeadline,
     contentSubtitle: defaultCopy.contentSubtitle,
     contentButtonLabel: defaultCopy.contentButtonLabel,
-    selectedTokens: [],
-    approvedTokens: [],
-    isReadyToSell: false,
+    receivedToken: receivedToken,
+    selectedTokens: selectedTokens,
+    approvedTokens: approvedTokens,
+    isReadyToSell: isReadyToSell,
   });
 
   const updateState = (newPhase: Phase) => {
@@ -48,5 +54,7 @@ export const useAppState = () => {
     setSelectedTokens,
     isReadyToSell,
     setIsReadyToSell,
+    receivedToken,
+    setReceivedToken,
   };
 };

@@ -1,6 +1,6 @@
 import type { Token } from "@/lib/types/tokens";
 
-const BLOCKSCOUT_API_URL = "https://eth-sepolia.blockscout.com/api/v2";
+const BLOCKSCOUT_API_URL = "https://base.blockscout.com/api/v2";
 
 interface BlockscoutResponse {
   items: Array<BlockscoutTokenItem>;

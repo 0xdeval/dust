@@ -14,35 +14,35 @@ export const getCopies = (phase: Phase): CopiesState => {
   switch (phase) {
     case "CONNECT_WALLET":
       return {
-        contentHeadline: "Connect Your Wallet",
+        contentHeadline: "CONNECT YOUR WALLET",
         contentSubtitle: "Connect your wallet to start trading",
         contentButtonLabel: "Connect Wallet",
       };
 
     case "SELECT_TOKENS":
       return {
-        contentHeadline: "Select Tokens to Sell",
+        contentHeadline: "SELECT TOKENS TO SELL",
         contentSubtitle: "Choose the tokens you want to sell",
         contentButtonLabel: "Continue",
       };
 
     case "APPROVE_TOKENS":
       return {
-        contentHeadline: "Sell Tokens",
+        contentHeadline: "APPROVING TOKENS",
         contentSubtitle: "Approve selected tokens for trading",
         contentButtonLabel: "Approve All",
       };
 
     case "SELL_TOKENS":
       return {
-        contentHeadline: "Execute Trade",
+        contentHeadline: "SELLING TOKENS",
         contentSubtitle: "Review and confirm your trade",
         contentButtonLabel: "Confirm Trade",
       };
 
     case "COMPLETED":
       return {
-        contentHeadline: "Trade Completed",
+        contentHeadline: "TRADE COMPLETED",
         contentSubtitle: "Your trade has been successfully executed",
         contentButtonLabel: "Done",
       };

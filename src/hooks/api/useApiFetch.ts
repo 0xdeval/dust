@@ -2,18 +2,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { pickBy } from "es-toolkit";
 import { useCallback } from "react";
 import buildUrl from "@/hooks/api/buildUrl";
-import type {
-  ResourceName,
-  ResourceMethod,
-  ResourcePathParams,
-} from "@/lib/types/api/resources";
+import type { ResourceName, ResourceMethod, ResourcePathParams } from "@/lib/types/api/resources";
 
 export interface ApiFetchParams<R extends ResourceName> {
   pathParams?: ResourcePathParams<R>;
-  queryParams?: Record<
-    string,
-    string | Array<string> | number | boolean | undefined | null
-  >;
+  queryParams?: Record<string, string | Array<string> | number | boolean | undefined | null>;
   fetchParams?: {
     body?: BodyInit | null;
     method?: string;
@@ -32,12 +25,7 @@ export default function useApiFetch() {
       resourceEndpoint: M,
       { pathParams, queryParams, fetchParams, logError }: ApiFetchParams<R> = {}
     ): Promise<T> => {
-      const url = buildUrl(
-        resourceName,
-        resourceEndpoint,
-        pathParams,
-        queryParams
-      );
+      const url = buildUrl(resourceName, resourceEndpoint, pathParams, queryParams);
 
       const headers = pickBy(
         {
@@ -47,6 +35,8 @@ export default function useApiFetch() {
         Boolean
       ) as HeadersInit;
 
+      console.log("URL: ", url, "HEADERS: ", headers, "FETCH PARAMS: ", fetchParams);
+
       const response = await fetch(url, {
         headers,
         ...fetchParams,
@@ -54,6 +44,7 @@ export default function useApiFetch() {
 
       if (!response.ok) {
         const error = await response.json();
+        console.log("ERROR: ", error);
         throw new Error(error.message || "API request failed");
       }
 

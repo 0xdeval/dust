@@ -17,6 +17,8 @@ interface AppStateContextType {
   selectedTokens: Array<SelectedToken>;
   setSelectedTokens: (tokens: Array<SelectedToken>) => void;
   updateState: (phase: Phase) => void;
+  receivedToken: `0x${string}`;
+  setReceivedToken: (receivedToken: `0x${string}`) => void;
 }
 
 const AppStateContext = createContext<AppStateContextType | undefined>(undefined);
@@ -32,6 +34,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     selectedTokens,
     setSelectedTokens,
     updateState,
+    receivedToken,
+    setReceivedToken,
   } = useAppState();
 
   const value: AppStateContextType = {
@@ -44,6 +48,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     selectedTokens,
     setSelectedTokens,
     updateState,
+    receivedToken,
+    setReceivedToken,
   };
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

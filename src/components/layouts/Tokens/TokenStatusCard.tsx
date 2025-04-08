@@ -1,4 +1,4 @@
-import { CardStatusSpinner } from "@/components/ui/Spinner";
+import { StatusSpinner } from "@/components/ui/Spinner";
 import type { CardRootProps } from "@chakra-ui/react";
 import { Avatar, Card, Text, Flex } from "@chakra-ui/react";
 import * as React from "react";
@@ -51,9 +51,9 @@ export const TokenStatusCard = React.forwardRef<HTMLDivElement, TokenStatusCardP
                   )}
                 </Flex>
               </Flex>
-              <Flex gap={2}>
+              <Flex justifyContent="flex-end" gap={2}>
                 {addon}
-                <CardStatusSpinner isLoading={isLoading} size="lg" />
+                <StatusSpinner isLoading={isLoading} size="lg" />
               </Flex>
             </Flex>
           </Card.Body>

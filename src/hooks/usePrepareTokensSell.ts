@@ -1,43 +1,71 @@
 import { useEffect, useState } from "react";
 import useApiQuery from "./api/useApiQuery";
 import type {
-  InputToken,
+  OdosInputToken,
   OdosQuoteRequest,
-  OutputToken,
+  OdosOutputToken,
   OdosQuoteResponse,
   OdosExecuteResponse,
+  OdosAssembleResponse,
+  OdosExecuteRequest,
 } from "@/lib/types/api/odos";
-import { buildQuoteRequest } from "@/lib/odos/buildBody";
+import { buildExecuteRequest, buildQuoteRequest } from "@/lib/odos/buildBody";
 import { useAccount } from "wagmi";
+import { useAppStateContext } from "@/context/AppStateContext";
+import { OdosStatus } from "@/lib/types/api/statuses";
+import { stringToBigInt } from "@/lib/utils";
 
 export const usePrepareTokensSell = () => {
   const { address } = useAccount();
-
-  const [tokensToSell, setTokensToSell] = useState<Array<InputToken>>([]);
-  const [tokenToReceive, setTokenToReceive] = useState<Array<OutputToken>>([]);
+  const { approvedTokens, receivedToken, isReadyToSell } = useAppStateContext();
 
   const [quoteRequest, setQuoteRequest] = useState<OdosQuoteRequest | null>(null);
   const [quoteData, setQuoteData] = useState<OdosQuoteResponse | null>(null);
-  const [executeData, setExecuteData] = useState<OdosExecuteResponse | null>(null);
+  const [executionRequest, setExecutionRequest] = useState<OdosExecuteRequest | null>(null);
+  const [executionData, setExecutionData] = useState<OdosExecuteResponse | null>(null);
 
-  const [status, setStatus] = useState<
-    "idle" | "loadingQuote" | "loadingExecute" | "successQuote" | "successExecute" | "error"
-  >("idle");
+  const [status, setStatus] = useState<OdosStatus>("IDLE");
 
   useEffect(() => {
-    const quoteRequest = buildQuoteRequest({
-      inputTokens: tokensToSell,
-      outputTokens: tokenToReceive,
-      userAddress: address as `0x${string}`,
-    });
-    setStatus("loadingQuote");
-    setQuoteRequest(quoteRequest);
-  }, [tokensToSell]);
+    if (isReadyToSell) {
+      const inputTokens = approvedTokens.map((token) => ({
+        tokenAddress: token.address,
+        amount: stringToBigInt(token.balance, token.decimals).toString(), // TODO: pass dynamic decimals and amount
+      })) as Array<OdosInputToken>;
+
+      const outputTokens = [
+        {
+          tokenAddress: receivedToken,
+          proportion: 1,
+        },
+      ] as Array<OdosOutputToken>;
+
+      const quoteRequest = buildQuoteRequest({
+        inputTokens: inputTokens,
+        outputTokens: outputTokens,
+        userAddress: address as `0x${string}`,
+        chainId: 8453,
+      });
+      setStatus("LOADING_QUOTE");
+      setQuoteRequest(quoteRequest);
+    }
+  }, [approvedTokens, receivedToken, isReadyToSell]);
+
+  useEffect(() => {
+    if (quoteData) {
+      const executionRequest = buildExecuteRequest({
+        pathId: quoteData.pathId,
+        userAddress: address as `0x${string}`,
+        simulate: true,
+      });
+      setExecutionRequest(executionRequest);
+    }
+  }, [quoteData]);
 
   const {
     data: generatedQuoteData,
     isLoading: isQuoteLoading,
-    error,
+    error: quoteError,
   } = useApiQuery("odos", "quote", {
     fetchParams: {
       method: "POST",
@@ -49,38 +77,43 @@ export const usePrepareTokensSell = () => {
   });
 
   useEffect(() => {
-    if (generatedQuoteData && !isQuoteLoading) {
+    if (generatedQuoteData && !isQuoteLoading && !quoteError) {
       setQuoteData(generatedQuoteData as OdosQuoteResponse);
-      setStatus("successQuote");
-      setStatus("loadingExecute");
+      setStatus("SUCCESS_QUOTE");
+      setStatus("LOADING_EXECUTE");
     }
-  }, [generatedQuoteData, isQuoteLoading]);
+
+    if (quoteError) {
+      setStatus("ERROR");
+    }
+  }, [generatedQuoteData, isQuoteLoading, quoteError]);
 
   const {
-    data: executeRequest,
-    isLoading: isExecuteLoading,
-    error: executeError,
+    data: odosExecutionRequest,
+    isLoading: isExecutionLoading,
+    error: executionError,
   } = useApiQuery("odos", "execute", {
     fetchParams: {
       method: "POST",
-      body: JSON.stringify(quoteData),
+      body: JSON.stringify(executionRequest),
     },
     queryOptions: {
-      enabled: Boolean(quoteData),
+      enabled: Boolean(executionRequest),
     },
   });
 
   useEffect(() => {
-    if (executeRequest && !isExecuteLoading) {
-      setExecuteData(executeRequest as OdosExecuteResponse);
-      setStatus("successExecute");
+    if (odosExecutionRequest && !isExecutionLoading) {
+      setExecutionData(odosExecutionRequest as OdosExecuteResponse);
+      setStatus("SUCCESS_EXECUTE");
     }
-  }, [executeRequest, isExecuteLoading]);
+  }, [executionRequest, isExecutionLoading]);
 
   return {
-    tokenToReceive,
-    setTokensToSell,
-    setTokenToReceive,
     status,
+    quoteData,
+    quoteError,
+    executionData,
+    executionError,
   };
 };

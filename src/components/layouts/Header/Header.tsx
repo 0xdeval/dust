@@ -3,7 +3,7 @@
 import { Flex, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
-import { TokenSelector } from "@/components/ui/Select";
+import { TokenSelector } from "@/components/ui/TokenSelector";
 import { useAppState } from "@/hooks/useAppState";
 import { useAccount, useDisconnect } from "wagmi";
 import { modal } from "@/context/WagmiContext";
@@ -15,7 +15,7 @@ export function Header() {
   const { isConnected } = useAppState();
   const { disconnect } = useDisconnect();
 
-  const { updateState } = useAppStateContext();
+  const { updateState, setReceivedToken } = useAppStateContext();
 
   const handleButtonAction = () => {
     if (!isConnected) {
@@ -35,12 +35,18 @@ export function Header() {
     }
   }, [isConnected]);
 
+  const handleReceivedTokenSelect = (value: string[]) => {
+    if (value) {
+      setReceivedToken(value[0] as `0x${string}`);
+    }
+  };
+
   return (
     <Flex as="header" width="100%" justifyContent="space-between" mb="50px">
       <Flex flexDirection="column" gap={4} alignItems="flex-start">
         <Logo logoSrcDefaultPath="/logo-black.png" logoSrcDarkPath="/logo-white.png" />
         <Flex justifyContent="flex-start" alignItems="center" gap="10px">
-          to <TokenSelector />
+          to <TokenSelector onSelect={handleReceivedTokenSelect} />
         </Flex>
       </Flex>
       <Button

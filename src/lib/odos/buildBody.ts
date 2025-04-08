@@ -1,14 +1,14 @@
 import type {
   OdosQuoteRequest,
-  InputToken,
-  OutputToken,
   OdosExecuteRequest,
-  BuildExecuteParams,
+  OdosInputToken,
+  OdosOutputToken,
+  OdosQuoteResponse,
 } from "@/lib/types/api/odos";
 
 interface BuildQuoteParams {
-  inputTokens: Array<InputToken>;
-  outputTokens: Array<OutputToken>;
+  inputTokens: Array<OdosInputToken>;
+  outputTokens: Array<OdosOutputToken>;
   userAddress: `0x${string}`;
   chainId?: number;
   slippageLimitPercent?: number;
@@ -39,14 +39,20 @@ export function buildQuoteRequest({
   };
 }
 
+interface BuildExecuteProps {
+  pathId: string;
+  userAddress: `0x${string}`;
+  simulate?: boolean;
+}
+
 export function buildExecuteRequest({
-  userAddress,
   pathId,
-  simulate = true,
-}: BuildExecuteParams): OdosExecuteRequest {
+  userAddress,
+  simulate,
+}: BuildExecuteProps): OdosExecuteRequest {
   return {
     userAddr: userAddress,
-    pathId,
-    simulate,
+    pathId: pathId,
+    simulate: simulate,
   };
 }
