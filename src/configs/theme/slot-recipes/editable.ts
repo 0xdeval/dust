@@ -1,7 +1,18 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const editableSlotRecipe = defineSlotRecipe({
-  slots: ["root", "area", "label", "preview", "input", "editTrigger", "submitTrigger", "cancelTrigger", "control", "textarea"],
+  slots: [
+    "root",
+    "area",
+    "label",
+    "preview",
+    "input",
+    "editTrigger",
+    "submitTrigger",
+    "cancelTrigger",
+    "control",
+    "textarea",
+  ],
   className: "chakra-editable",
   base: {
     root: {
@@ -95,4 +106,4 @@ export const editableSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     size: "md",
   },
-})
+});

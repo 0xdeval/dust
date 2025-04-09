@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { fetchTokens } from "@/lib/blockscout/api";
-import type { Token } from "@/lib/types/tokens";
+import type { Token } from "@/types/tokens";
 
 export function useTokens() {
   const { address } = useAccount();

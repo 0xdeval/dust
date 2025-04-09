@@ -2,7 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { pickBy } from "es-toolkit";
 import { useCallback } from "react";
 import buildUrl from "@/hooks/api/buildUrl";
-import type { ResourceName, ResourceMethod, ResourcePathParams } from "@/lib/types/api/resources";
+import type { ResourceName, ResourceMethod, ResourcePathParams } from "@/types/api/resources";
 
 export interface ApiFetchParams<R extends ResourceName> {
   pathParams?: ResourcePathParams<R>;

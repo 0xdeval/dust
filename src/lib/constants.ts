@@ -1,4 +1,6 @@
-import type { TokenToReceive } from "./types/tokens";
+import type { TokenToReceive } from "../types/tokens";
+
+export const CHAINSSCOUT_URL = "https://chains.blockscout.com/api/chains";
 
 export const AGGREGATOR_CONTRACT_ADDRESS = "0x19ceead7105607cd444f5ad10dd51356436095a1";
 

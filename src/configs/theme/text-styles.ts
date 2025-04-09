@@ -1,4 +1,4 @@
-import { defineTextStyles } from "@chakra-ui/react"
+import { defineTextStyles } from "@chakra-ui/react";
 
 export const textStyles = defineTextStyles({
   "2xs": {
@@ -87,4 +87,4 @@ export const textStyles = defineTextStyles({
       fontWeight: "medium",
     },
   },
-})
+});

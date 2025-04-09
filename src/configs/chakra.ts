@@ -1,8 +1,4 @@
-import {
-  createSystem,
-  defaultBaseConfig,
-  defineConfig,
-} from "@chakra-ui/react";
+import { createSystem, defaultBaseConfig, defineConfig } from "@chakra-ui/react";
 
 const customConfig = defineConfig({
   theme: {

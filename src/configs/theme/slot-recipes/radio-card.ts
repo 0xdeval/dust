@@ -1,8 +1,19 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const radioCardSlotRecipe = defineSlotRecipe({
   className: "chakra-radio-card",
-  slots: ["root", "label", "item", "itemText", "itemControl", "indicator", "itemAddon", "itemIndicator", "itemContent", "itemDescription"],
+  slots: [
+    "root",
+    "label",
+    "item",
+    "itemText",
+    "itemControl",
+    "indicator",
+    "itemAddon",
+    "itemIndicator",
+    "itemContent",
+    "itemDescription",
+  ],
   base: {
     root: {
       display: "flex",
@@ -299,4 +310,4 @@ export const radioCardSlotRecipe = defineSlotRecipe({
     align: "start",
     orientation: "horizontal",
   },
-})
+});

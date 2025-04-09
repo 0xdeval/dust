@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const toastSlotRecipe = defineSlotRecipe({
   slots: ["root", "title", "description", "indicator", "closeTrigger", "actionTrigger"],
@@ -94,4 +94,4 @@ export const toastSlotRecipe = defineSlotRecipe({
       },
     },
   },
-})
+});

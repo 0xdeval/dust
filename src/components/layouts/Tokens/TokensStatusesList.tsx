@@ -1,5 +1,5 @@
 import { Flex, Skeleton } from "@chakra-ui/react";
-import type { ApprovingToken } from "@/lib/types/tokens";
+import type { ApprovingToken } from "@/types/tokens";
 import { TokenStatusCard } from "./TokenStatusCard";
 
 interface Props {
@@ -12,8 +12,8 @@ export const TokensStatusesCardsList = ({ selectedTokens }: Props) => {
       <Flex flexDirection="column" gap="10px">
         {selectedTokens.map((token) => (
           <TokenStatusCard
-            id={token.address}
-            logoUrl={token.logoURI || "https://ethereum.org/eth-logo.png"}
+            key={token.address}
+            logoUrl={token.logoURI || undefined}
             width="100%"
             p="10px"
             size="sm"

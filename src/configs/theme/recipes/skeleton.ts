@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const skeletonRecipe = defineRecipe({
   className: "chakra-skeleton",
@@ -34,7 +34,8 @@ export const skeletonRecipe = defineRecipe({
         "--animate-to": "-200%",
         "--start-color": "colors.bg.muted",
         "--end-color": "colors.bg.emphasized",
-        backgroundImage: "linear-gradient(270deg,var(--start-color),var(--end-color),var(--end-color),var(--start-color))",
+        backgroundImage:
+          "linear-gradient(270deg,var(--start-color),var(--end-color),var(--end-color),var(--start-color))",
         backgroundSize: "400% 100%",
         animation: "bg-position var(--duration, 5s) ease-in-out infinite",
       },
@@ -47,4 +48,4 @@ export const skeletonRecipe = defineRecipe({
     variant: "pulse",
     loading: true,
   },
-})
+});

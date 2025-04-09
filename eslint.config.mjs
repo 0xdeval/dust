@@ -21,7 +21,16 @@ export default tseslint.config(
 
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}", "**/*.pw.tsx"] },
   {
-    ignores: ["abi", "public/", ".git/", "next.config.js", ".next/", ".vercel/", "node_modules/"],
+    ignores: [
+      "src/configs/theme/**",
+      "abi",
+      "public/",
+      ".git/",
+      "next.config.js",
+      ".next/",
+      ".vercel/",
+      "node_modules/",
+    ],
   },
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   { settings: { react: { version: "detect" } } },
@@ -41,9 +50,53 @@ export default tseslint.config(
         "error",
         {
           selector: "default",
-          format: ["camelCase"],
+          format: ["camelCase", "UPPER_CASE"],
           leadingUnderscore: "allow",
           trailingUnderscore: "forbid",
+        },
+        {
+          selector: "interface",
+          format: ["PascalCase"],
+          custom: {
+            regex: "^I[A-Z]",
+            match: false,
+          },
+        },
+        {
+          selector: "typeAlias",
+          format: ["PascalCase"],
+          custom: {
+            regex: "^T[A-Z]",
+            match: false,
+          },
+        },
+        {
+          selector: "variableLike",
+          format: ["camelCase", "UPPER_CASE"],
+        },
+        {
+          selector: "function",
+          format: ["camelCase"],
+        },
+        {
+          selector: "typeParameter",
+          format: ["PascalCase"],
+        },
+        {
+          selector: "enumMember",
+          format: ["UPPER_CASE"],
+        },
+        {
+          selector: "class",
+          format: ["PascalCase"],
+        },
+        {
+          selector: "property",
+          format: ["camelCase"],
+        },
+        {
+          selector: "method",
+          format: ["camelCase"],
         },
       ],
       "@typescript-eslint/no-empty-function": ["off"],
@@ -106,7 +159,7 @@ export default tseslint.config(
 
   {
     rules: {
-      "no-console": "error",
+      "no-console": "off",
       eqeqeq: ["error", "allow-null"],
       "id-match": ["error", "^[\\w$]+$"],
       "max-len": ["error", 160, 4],

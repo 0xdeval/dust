@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const emptyStateSlotRecipe = defineSlotRecipe({
   slots: ["root", "content", "indicator", "title", "description"],
@@ -82,4 +82,4 @@ export const emptyStateSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     size: "md",
   },
-})
+});

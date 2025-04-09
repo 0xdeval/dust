@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const inputAddonRecipe = defineRecipe({
   className: "chakra-input-addon",
@@ -73,4 +73,4 @@ export const inputAddonRecipe = defineRecipe({
     size: "md",
     variant: "outline",
   },
-})
+});

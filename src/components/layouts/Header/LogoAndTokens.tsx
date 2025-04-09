@@ -1,0 +1,24 @@
+import { Flex } from "@chakra-ui/react";
+
+import { TokenSelector } from "@/components/ui/TokenSelector";
+import { Logo } from "@/components/ui/Logo";
+import { useAppStateContext } from "@/context/AppStateContext";
+
+export const LogoAndTokens = () => {
+  const { setReceivedToken } = useAppStateContext();
+
+  const handleReceivedTokenSelect = (value: Array<string>) => {
+    if (value) {
+      setReceivedToken(value[0] as `0x${string}`);
+    }
+  };
+
+  return (
+    <Flex flexDirection="column" gap={4} alignItems="flex-start">
+      <Logo logoSrcDefaultPath="/logo-black.png" logoSrcDarkPath="/logo-white.png" />
+      <Flex justifyContent="flex-start" alignItems="center" gap="10px">
+        to <TokenSelector onSelect={handleReceivedTokenSelect} />
+      </Flex>
+    </Flex>
+  );
+};

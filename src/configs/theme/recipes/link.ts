@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const linkRecipe = defineRecipe({
   className: "chakra-link",
@@ -32,4 +32,4 @@ export const linkRecipe = defineRecipe({
   defaultVariants: {
     variant: "plain",
   },
-})
+});

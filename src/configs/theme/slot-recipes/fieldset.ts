@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const fieldsetSlotRecipe = defineSlotRecipe({
   className: "fieldset",
@@ -74,4 +74,4 @@ export const fieldsetSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     size: "md",
   },
-})
+});

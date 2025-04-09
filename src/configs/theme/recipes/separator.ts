@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const separatorRecipe = defineRecipe({
   className: "chakra-separator",
@@ -46,4 +46,4 @@ export const separatorRecipe = defineRecipe({
     variant: "solid",
     orientation: "horizontal",
   },
-})
+});

@@ -1,8 +1,10 @@
 import { parseUnits } from "viem";
-import type { Phase } from "./types/states";
-import type { CopiesState } from "./types/states";
-import type { ApprovingToken } from "./types/tokens";
-import type { SelectedToken } from "./types/tokens";
+import type { Phase } from "../types/states";
+import type { CopiesState } from "../types/states";
+import type { ApprovingToken } from "../types/tokens";
+import type { SelectedToken } from "../types/tokens";
+import { CHAINSSCOUT_URL } from "./constants";
+import type { NetworkInfo } from "../types/utils";
 
 export const stringToBigInt = (amount: string, decimals: number = 18) => {
   const bigIntAmount = parseUnits(amount, decimals);
@@ -64,4 +66,39 @@ export const mapTokensWithApprovalStatus = (
       isApproved: isApproved,
     };
   });
+};
+
+const cache: Record<number, NetworkInfo> = {};
+
+export const getNetworkInfo = async (chainId: number): Promise<NetworkInfo | null> => {
+  if (cache[chainId]) {
+    return cache[chainId];
+  }
+
+  try {
+    const response = await fetch(`${CHAINSSCOUT_URL}/${chainId}`);
+
+    if (!response.ok) {
+      console.error(`Failed to fetch network info for chainId ${chainId}: ${response.statusText}`);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.log(`Failed to fetch network info for chainId ${chainId}: ${response.statusText}`);
+      return null;
+    }
+
+    cache[chainId] = data;
+
+    return {
+      name: data.name,
+      logoUrl: data.logo,
+      blockExplorer: data?.explorers[0]?.url,
+    };
+  } catch (error) {
+    console.error(`Error fetching network info for chainId ${chainId}:`, error);
+    return null;
+  }
 };

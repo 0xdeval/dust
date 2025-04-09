@@ -1,3 +1,4 @@
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 import { StatusSpinner } from "@/components/ui/Spinner";
 import type { CardRootProps } from "@chakra-ui/react";
 import { Avatar, Card, Text, Flex } from "@chakra-ui/react";
@@ -38,10 +39,9 @@ export const TokenStatusCard = React.forwardRef<HTMLDivElement, TokenStatusCardP
           <Card.Body>
             <Flex justifyContent="space-between" alignItems="center">
               <Flex gap={2}>
-                <Avatar.Root>
-                  <Avatar.Image src={logoUrl} />
-                  <Avatar.Fallback name={symbol} />
-                </Avatar.Root>
+                <Flex flexDirection="row" alignItems="center" gap={2}>
+                  <ImageWithFallback srcUrl={logoUrl} alt={symbol} />
+                </Flex>
                 <Flex justifyContent="flex-start" alignItems="center" gap={2}>
                   <Text fontWeight="bold">{label ?? symbol}</Text>
                   {description && (

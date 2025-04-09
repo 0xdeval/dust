@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const pinInputSlotRecipe = defineSlotRecipe({
   className: "chakra-pin-input",
@@ -139,4 +139,4 @@ export const pinInputSlotRecipe = defineSlotRecipe({
     size: "md",
     variant: "outline",
   },
-})
+});

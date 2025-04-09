@@ -6,7 +6,7 @@ import { useTokens } from "@/hooks/useTokens";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
-import type { SelectedToken } from "@/lib/types/tokens";
+import type { SelectedToken } from "@/types/tokens";
 import { AGGREGATOR_CONTRACT_ADDRESS } from "@/lib/constants";
 import { approveTokensList } from "@/lib/actions/tokenApprovals";
 

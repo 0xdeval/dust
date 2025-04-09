@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const textareaRecipe = defineRecipe({
   className: "chakra-textarea",
@@ -83,4 +83,4 @@ export const textareaRecipe = defineRecipe({
     size: "md",
     variant: "outline",
   },
-})
+});

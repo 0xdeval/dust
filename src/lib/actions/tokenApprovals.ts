@@ -2,7 +2,7 @@ import { toaster } from "@/components/ui/Toaster";
 import { erc20Abi } from "@/lib/abis/erc-20";
 import { stringToBigInt } from "@/lib/utils";
 
-import type { SelectedToken } from "@/lib/types/tokens";
+import type { SelectedToken } from "@/types/tokens";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";
 import { config } from "@/configs/wagmi";
 
@@ -75,11 +75,11 @@ export const approveTokensList = async (
           type: "error",
         });
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error(`[approveTokensIfNeeded] Error with ${token.symbol}:`, err);
       toaster.create({
         title: "Error",
-        description: `Approval error for ${token.symbol}: ${err.message ?? "unknown"}`,
+        description: `Approval error for ${token.symbol}: ${err ?? "unknown"}`,
         type: "error",
       });
     }

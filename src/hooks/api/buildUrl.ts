@@ -6,8 +6,8 @@ import type {
   Resource,
   ResourceName,
   ResourcePathParams,
-} from "@/lib/types/api/resources";
-import type { ResourceMethod } from "@/lib/types/api/resources";
+} from "@/types/api/resources";
+import type { ResourceMethod } from "@/types/api/resources";
 
 export default function buildUrl<R extends ResourceName>(
   resourceName: R,

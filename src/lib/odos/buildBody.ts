@@ -4,7 +4,7 @@ import type {
   OdosInputToken,
   OdosOutputToken,
   OdosQuoteResponse,
-} from "@/lib/types/api/odos";
+} from "@/types/api/odos";
 
 interface BuildQuoteParams {
   inputTokens: Array<OdosInputToken>;

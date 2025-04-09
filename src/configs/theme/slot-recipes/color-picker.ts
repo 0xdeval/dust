@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const colorPickerSlotRecipe = defineSlotRecipe({
   className: "colorPicker",
@@ -389,4 +389,4 @@ export const colorPickerSlotRecipe = defineSlotRecipe({
     size: "md",
     variant: "outline",
   },
-})
+});

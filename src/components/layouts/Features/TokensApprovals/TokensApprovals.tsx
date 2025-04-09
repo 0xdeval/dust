@@ -7,13 +7,8 @@ import { TokensStatusesCardsList } from "../../Tokens/TokensStatusesList";
 import { mapTokensWithApprovalStatus } from "@/lib/utils";
 
 export const TokensApprovals = () => {
-  const {
-    state,
-    selectedTokens,
-    approvedTokens,
-    updateState,
-    setIsReadyToSell,
-  } = useAppStateContext();
+  const { state, selectedTokens, approvedTokens, updateState, setIsReadyToSell } =
+    useAppStateContext();
 
   const selectedTokensWithAppproveStatuses = useMemo(() => {
     return mapTokensWithApprovalStatus(selectedTokens, approvedTokens);
@@ -23,10 +18,7 @@ export const TokensApprovals = () => {
     return selectedTokens.length === approvedTokens.length;
   }, [selectedTokens, approvedTokens]);
 
-  console.log(
-    "SELECTED TOKENS WITH APPROVE STATUSES: ",
-    selectedTokensWithAppproveStatuses
-  );
+  console.log("SELECTED TOKENS WITH APPROVE STATUSES: ", selectedTokensWithAppproveStatuses);
 
   const handleActionButtonClick = () => {
     setIsReadyToSell(true);
@@ -45,9 +37,7 @@ export const TokensApprovals = () => {
               buttonAction={handleActionButtonClick}
               isButtonDisabled={!isAllTokensApproved}
             />
-            <TokensStatusesCardsList
-              selectedTokens={selectedTokensWithAppproveStatuses}
-            />
+            <TokensStatusesCardsList selectedTokens={selectedTokensWithAppproveStatuses} />
           </>
         )}
       </ContentContainer>

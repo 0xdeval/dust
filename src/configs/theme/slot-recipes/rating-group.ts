@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const ratingGroupSlotRecipe = defineSlotRecipe({
   className: "chakra-rating-group",
@@ -80,4 +80,4 @@ export const ratingGroupSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     size: "md",
   },
-})
+});

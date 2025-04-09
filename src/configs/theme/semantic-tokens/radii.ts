@@ -1,4 +1,4 @@
-import { defineSemanticTokens } from "@chakra-ui/react"
+import { defineSemanticTokens } from "@chakra-ui/react";
 
 export const radii = defineSemanticTokens.radii({
   l1: {
@@ -10,4 +10,4 @@ export const radii = defineSemanticTokens.radii({
   l3: {
     value: "{radii.md}",
   },
-})
+});

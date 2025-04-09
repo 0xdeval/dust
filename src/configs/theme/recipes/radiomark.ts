@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const radiomarkRecipe = defineRecipe({
   className: "chakra-radiomark",
@@ -94,4 +94,4 @@ export const radiomarkRecipe = defineRecipe({
     variant: "solid",
     size: "md",
   },
-})
+});

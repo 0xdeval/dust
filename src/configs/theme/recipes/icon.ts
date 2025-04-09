@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const iconRecipe = defineRecipe({
   className: "chakra-icon",
@@ -35,4 +35,4 @@ export const iconRecipe = defineRecipe({
   defaultVariants: {
     size: "inherit",
   },
-})
+});

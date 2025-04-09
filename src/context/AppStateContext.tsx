@@ -2,10 +2,10 @@
 
 import type { ReactNode } from "react";
 import { createContext, useContext } from "react";
-import type { AppState, Phase } from "@/lib/types/states";
+import type { AppState, Phase } from "@/types/states";
 import { useAppState } from "@/hooks/useAppState";
-import type { SelectedToken } from "@/lib/types/tokens";
-import { Token } from "@/lib/types/tokens";
+import type { SelectedToken } from "@/types/tokens";
+import type { SupportedChain } from "@/types/networks";
 
 interface AppStateContextType {
   phase: Phase | null;
@@ -19,6 +19,8 @@ interface AppStateContextType {
   updateState: (phase: Phase) => void;
   receivedToken: `0x${string}`;
   setReceivedToken: (receivedToken: `0x${string}`) => void;
+  selectedNetwork: SupportedChain;
+  setSelectedNetwork: (network: SupportedChain) => void;
 }
 
 const AppStateContext = createContext<AppStateContextType | undefined>(undefined);
@@ -36,6 +38,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     updateState,
     receivedToken,
     setReceivedToken,
+    selectedNetwork,
+    setSelectedNetwork,
   } = useAppState();
 
   const value: AppStateContextType = {
@@ -50,6 +54,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
     updateState,
     receivedToken,
     setReceivedToken,
+    selectedNetwork,
+    setSelectedNetwork,
   };
 
   return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;

@@ -4,7 +4,7 @@ import { TOKENS_TO_RECEIVE } from "@/lib/constants";
 import { Portal, Select, createListCollection } from "@chakra-ui/react";
 
 interface Props {
-  onSelect: (value: string[]) => void;
+  onSelect: (value: Array<string>) => void;
 }
 
 export const TokenSelector = ({ onSelect }: Props) => {

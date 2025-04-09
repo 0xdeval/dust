@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const spinnerRecipe = defineRecipe({
   className: "chakra-spinner",
@@ -41,4 +41,4 @@ export const spinnerRecipe = defineRecipe({
   defaultVariants: {
     size: "md",
   },
-})
+});

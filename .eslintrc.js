@@ -6,14 +6,7 @@ module.exports = {
     ecmaVersion: 2020,
     sourceType: "module",
   },
-  plugins: [
-    "react",
-    "react-hooks",
-    "@typescript-eslint",
-    "jsx-a11y",
-    "import",
-    "unused-imports",
-  ],
+  plugins: ["react", "react-hooks", "@typescript-eslint", "jsx-a11y", "import", "unused-imports"],
   extends: [
     "eslint:recommended",
     "plugin:react/recommended",
@@ -29,6 +22,7 @@ module.exports = {
     "unused-imports/no-unused-imports": "error",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
+    "no-console": "off",
   },
   settings: {
     react: {

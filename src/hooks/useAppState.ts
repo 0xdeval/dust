@@ -1,9 +1,12 @@
 import { useState } from "react";
-import type { AppState, Phase } from "@/lib/types/states";
+import type { AppState, Phase } from "@/types/states";
 import { useAccount } from "wagmi";
 import { getCopies } from "@/lib/utils";
-import type { SelectedToken } from "@/lib/types/tokens";
+import type { SelectedToken } from "@/types/tokens";
 import { DEFAULT_TOKEN_TO_RECEIVE } from "@/lib/constants";
+import type { SupportedChain } from "@/types/networks";
+import { networksConfig } from "@/configs/networks";
+
 export const useAppState = () => {
   const { isConnected } = useAccount();
 
@@ -12,6 +15,7 @@ export const useAppState = () => {
   const [selectedTokens, setSelectedTokens] = useState<Array<SelectedToken>>([]);
 
   const [approvedTokens, setApprovedTokens] = useState<Array<SelectedToken>>([]);
+  const [selectedNetwork, setSelectedNetwork] = useState<SupportedChain>(networksConfig[0]);
 
   const [receivedToken, setReceivedToken] = useState<`0x${string}`>(
     DEFAULT_TOKEN_TO_RECEIVE.address
@@ -56,5 +60,7 @@ export const useAppState = () => {
     setIsReadyToSell,
     receivedToken,
     setReceivedToken,
+    selectedNetwork,
+    setSelectedNetwork,
   };
 };

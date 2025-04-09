@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const avatarSlotRecipe = defineSlotRecipe({
   slots: ["root", "image", "fallback"],
@@ -136,4 +136,4 @@ export const avatarSlotRecipe = defineSlotRecipe({
     shape: "full",
     variant: "subtle",
   },
-})
+});

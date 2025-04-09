@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const breadcrumbSlotRecipe = defineSlotRecipe({
   className: "chakra-breadcrumb",
@@ -93,4 +93,4 @@ export const breadcrumbSlotRecipe = defineSlotRecipe({
     variant: "plain",
     size: "md",
   },
-})
+});

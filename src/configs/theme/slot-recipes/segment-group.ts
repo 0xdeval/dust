@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const segmentGroupSlotRecipe = defineSlotRecipe({
   className: "chakra-segment-group",
@@ -111,4 +111,4 @@ export const segmentGroupSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     size: "md",
   },
-})
+});

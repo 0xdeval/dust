@@ -6,13 +6,12 @@ import type {
   OdosOutputToken,
   OdosQuoteResponse,
   OdosExecuteResponse,
-  OdosAssembleResponse,
   OdosExecuteRequest,
-} from "@/lib/types/api/odos";
+} from "@/types/api/odos";
 import { buildExecuteRequest, buildQuoteRequest } from "@/lib/odos/buildBody";
 import { useAccount } from "wagmi";
 import { useAppStateContext } from "@/context/AppStateContext";
-import { OdosStatus } from "@/lib/types/api/statuses";
+import type { OdosStatus } from "@/types/api/statuses";
 import { stringToBigInt } from "@/lib/utils";
 
 export const usePrepareTokensSell = () => {
@@ -30,7 +29,7 @@ export const usePrepareTokensSell = () => {
     if (isReadyToSell) {
       const inputTokens = approvedTokens.map((token) => ({
         tokenAddress: token.address,
-        amount: stringToBigInt(token.balance, token.decimals).toString(), // TODO: pass dynamic decimals and amount
+        amount: stringToBigInt(token.balance, token.decimals).toString(),
       })) as Array<OdosInputToken>;
 
       const outputTokens = [

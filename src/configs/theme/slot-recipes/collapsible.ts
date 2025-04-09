@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const collapsibleSlotRecipe = defineSlotRecipe({
   slots: ["root", "trigger", "content", "indicator"],
@@ -16,4 +16,4 @@ export const collapsibleSlotRecipe = defineSlotRecipe({
       },
     },
   },
-})
+});

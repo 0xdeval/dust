@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const hoverCardSlotRecipe = defineSlotRecipe({
   className: "chakra-hover-card",
@@ -62,4 +62,4 @@ export const hoverCardSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     size: "md",
   },
-})
+});

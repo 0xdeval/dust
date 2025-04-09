@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const listSlotRecipe = defineSlotRecipe({
   className: "chakra-list",
@@ -64,4 +64,4 @@ export const listSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     variant: "marker",
   },
-})
+});

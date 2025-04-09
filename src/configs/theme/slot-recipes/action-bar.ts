@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const actionBarSlotRecipe = defineSlotRecipe({
   className: "chakra-action-bar",
@@ -51,4 +51,4 @@ export const actionBarSlotRecipe = defineSlotRecipe({
       borderStyle: "dashed",
     },
   },
-})
+});

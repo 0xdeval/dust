@@ -1,8 +1,21 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const stepsSlotRecipe = defineSlotRecipe({
   className: "chakra-steps",
-  slots: ["root", "list", "item", "trigger", "indicator", "separator", "content", "title", "description", "nextTrigger", "prevTrigger", "progress"],
+  slots: [
+    "root",
+    "list",
+    "item",
+    "trigger",
+    "indicator",
+    "separator",
+    "content",
+    "title",
+    "description",
+    "nextTrigger",
+    "prevTrigger",
+    "progress",
+  ],
   base: {
     root: {
       display: "flex",
@@ -211,4 +224,4 @@ export const stepsSlotRecipe = defineSlotRecipe({
     variant: "solid",
     orientation: "horizontal",
   },
-})
+});

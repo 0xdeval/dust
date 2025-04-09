@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const skipNavLinkRecipe = defineRecipe({
   className: "chakra-skip-nav",
@@ -28,4 +28,4 @@ export const skipNavLinkRecipe = defineRecipe({
       insetStart: "6",
     },
   },
-})
+});

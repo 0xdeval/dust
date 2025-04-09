@@ -1,4 +1,4 @@
-import { defineSemanticTokens } from "@chakra-ui/react"
+import { defineSemanticTokens } from "@chakra-ui/react";
 
 export const shadows = defineSemanticTokens.shadows({
   xs: {
@@ -49,4 +49,4 @@ export const shadows = defineSemanticTokens.shadows({
       _dark: "inset 0 0 0 1px {colors.gray.300/5}",
     },
   },
-})
+});

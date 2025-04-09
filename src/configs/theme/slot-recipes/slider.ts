@@ -1,8 +1,20 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const sliderSlotRecipe = defineSlotRecipe({
   className: "chakra-slider",
-  slots: ["root", "label", "thumb", "valueText", "track", "range", "control", "markerGroup", "marker", "draggingIndicator", "markerIndicator"],
+  slots: [
+    "root",
+    "label",
+    "thumb",
+    "valueText",
+    "track",
+    "range",
+    "control",
+    "markerGroup",
+    "marker",
+    "draggingIndicator",
+    "markerIndicator",
+  ],
   base: {
     root: {
       display: "flex",
@@ -198,4 +210,4 @@ export const sliderSlotRecipe = defineSlotRecipe({
     variant: "outline",
     orientation: "horizontal",
   },
-})
+});

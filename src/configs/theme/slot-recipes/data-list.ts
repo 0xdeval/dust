@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const dataListSlotRecipe = defineSlotRecipe({
   slots: ["root", "item", "itemLabel", "itemValue"],
@@ -90,4 +90,4 @@ export const dataListSlotRecipe = defineSlotRecipe({
     orientation: "vertical",
     variant: "subtle",
   },
-})
+});

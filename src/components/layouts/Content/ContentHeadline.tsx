@@ -1,4 +1,5 @@
-import { Flex, FlexProps, Heading, Text } from "@chakra-ui/react";
+import type { FlexProps } from "@chakra-ui/react";
+import { Flex, Heading, Text } from "@chakra-ui/react";
 import { Button } from "@/components/ui/Button";
 import { forwardRef } from "react";
 import { ContentHeadlineCopies } from "./ContentHeadlineCopies";

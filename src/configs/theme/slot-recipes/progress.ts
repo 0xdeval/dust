@@ -1,7 +1,17 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const progressSlotRecipe = defineSlotRecipe({
-  slots: ["root", "label", "track", "range", "valueText", "view", "circle", "circleTrack", "circleRange"],
+  slots: [
+    "root",
+    "label",
+    "track",
+    "range",
+    "valueText",
+    "view",
+    "circle",
+    "circleTrack",
+    "circleRange",
+  ],
   className: "chakra-progress",
   base: {
     root: {
@@ -27,7 +37,8 @@ export const progressSlotRecipe = defineSlotRecipe({
         willChange: "left",
         minWidth: "50%",
         animation: "position 1s ease infinite normal none running",
-        backgroundImage: "linear-gradient(to right, transparent 0%, var(--track-color) 50%, transparent 100%)",
+        backgroundImage:
+          "linear-gradient(to right, transparent 0%, var(--track-color) 50%, transparent 100%)",
       },
     },
     label: {
@@ -130,4 +141,4 @@ export const progressSlotRecipe = defineSlotRecipe({
     size: "md",
     shape: "rounded",
   },
-})
+});

@@ -1,4 +1,4 @@
-import { defineGlobalStyles } from "@chakra-ui/react"
+import { defineGlobalStyles } from "@chakra-ui/react";
 
 export const globalCss = defineGlobalStyles({
   "*": {
@@ -42,4 +42,4 @@ export const globalCss = defineGlobalStyles({
   "*::selection": {
     bg: "colorPalette.muted/80",
   },
-})
+});

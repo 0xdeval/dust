@@ -1,8 +1,22 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const popoverSlotRecipe = defineSlotRecipe({
   className: "chakra-popover",
-  slots: ["arrow", "arrowTip", "anchor", "trigger", "indicator", "positioner", "content", "title", "description", "closeTrigger", "header", "body", "footer"],
+  slots: [
+    "arrow",
+    "arrowTip",
+    "anchor",
+    "trigger",
+    "indicator",
+    "positioner",
+    "content",
+    "title",
+    "description",
+    "closeTrigger",
+    "header",
+    "body",
+    "footer",
+  ],
   base: {
     content: {
       position: "relative",
@@ -83,4 +97,4 @@ export const popoverSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     size: "md",
   },
-})
+});

@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const kbdRecipe = defineRecipe({
   className: "chakra-kbd",
@@ -54,4 +54,4 @@ export const kbdRecipe = defineRecipe({
     size: "md",
     variant: "raised",
   },
-})
+});

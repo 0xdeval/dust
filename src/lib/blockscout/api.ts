@@ -1,4 +1,4 @@
-import type { Token } from "@/lib/types/tokens";
+import type { Token } from "@/types/tokens";
 
 const BLOCKSCOUT_API_URL = "https://base.blockscout.com/api/v2";
 

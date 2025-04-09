@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const buttonRecipe = defineRecipe({
   className: "chakra-button",
@@ -175,4 +175,4 @@ export const buttonRecipe = defineRecipe({
     size: "md",
     variant: "solid",
   },
-})
+});

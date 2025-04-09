@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const nativeSelectSlotRecipe = defineSlotRecipe({
   className: "chakra-native-select",
@@ -146,4 +146,4 @@ export const nativeSelectSlotRecipe = defineSlotRecipe({
     size: "md",
     variant: "outline",
   },
-})
+});

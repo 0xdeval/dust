@@ -1,8 +1,18 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const fieldSlotRecipe = defineSlotRecipe({
   className: "chakra-field",
-  slots: ["root", "errorText", "helperText", "input", "label", "select", "textarea", "requiredIndicator", "requiredIndicator"],
+  slots: [
+    "root",
+    "errorText",
+    "helperText",
+    "input",
+    "label",
+    "select",
+    "textarea",
+    "requiredIndicator",
+    "requiredIndicator",
+  ],
   base: {
     requiredIndicator: {
       color: "fg.error",
@@ -62,4 +72,4 @@ export const fieldSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     orientation: "vertical",
   },
-})
+});

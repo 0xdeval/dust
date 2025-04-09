@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const qrCodeSlotRecipe = defineSlotRecipe({
   slots: ["root", "frame", "pattern", "overlay", "downloadTrigger"],
@@ -72,4 +72,4 @@ export const qrCodeSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     size: "md",
   },
-})
+});

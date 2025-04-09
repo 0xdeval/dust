@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const markRecipe = defineRecipe({
   className: "chakra-mark",
@@ -23,4 +23,4 @@ export const markRecipe = defineRecipe({
       plain: {},
     },
   },
-})
+});

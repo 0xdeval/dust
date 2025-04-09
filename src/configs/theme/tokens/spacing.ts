@@ -1,4 +1,4 @@
-import { defineTokens } from "@chakra-ui/react"
+import { defineTokens } from "@chakra-ui/react";
 
 export const spacing = defineTokens.spacing({
   "1": {
@@ -103,4 +103,4 @@ export const spacing = defineTokens.spacing({
   "4.5": {
     value: "1.125rem",
   },
-})
+});

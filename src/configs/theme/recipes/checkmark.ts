@@ -1,4 +1,4 @@
-import { defineRecipe } from "@chakra-ui/react"
+import { defineRecipe } from "@chakra-ui/react";
 
 export const checkmarkRecipe = defineRecipe({
   className: "chakra-checkmark",
@@ -81,4 +81,4 @@ export const checkmarkRecipe = defineRecipe({
     variant: "solid",
     size: "md",
   },
-})
+});

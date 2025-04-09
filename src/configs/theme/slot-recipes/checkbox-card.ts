@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const checkboxCardSlotRecipe = defineSlotRecipe({
   slots: ["root", "control", "label", "description", "addon", "indicator", "content"],
@@ -274,4 +274,4 @@ export const checkboxCardSlotRecipe = defineSlotRecipe({
     align: "start",
     orientation: "horizontal",
   },
-})
+});

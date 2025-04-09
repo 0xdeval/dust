@@ -1,4 +1,4 @@
-import { defineSlotRecipe } from "@chakra-ui/react"
+import { defineSlotRecipe } from "@chakra-ui/react";
 
 export const statSlotRecipe = defineSlotRecipe({
   className: "chakra-stat",
@@ -76,4 +76,4 @@ export const statSlotRecipe = defineSlotRecipe({
   defaultVariants: {
     size: "md",
   },
-})
+});
