@@ -50,53 +50,31 @@ export default tseslint.config(
         "error",
         {
           selector: "default",
-          format: ["camelCase", "UPPER_CASE"],
+          format: ["camelCase"],
           leadingUnderscore: "allow",
           trailingUnderscore: "forbid",
         },
         {
-          selector: "interface",
+          selector: "objectLiteralProperty",
+          format: null,
+        },
+        {
+          selector: "typeLike",
           format: ["PascalCase"],
           custom: {
             regex: "^I[A-Z]",
             match: false,
           },
+          leadingUnderscore: "forbid",
+          trailingUnderscore: "forbid",
         },
         {
-          selector: "typeAlias",
-          format: ["PascalCase"],
-          custom: {
-            regex: "^T[A-Z]",
-            match: false,
-          },
+          selector: "import",
+          format: ["camelCase", "PascalCase"],
         },
         {
           selector: "variableLike",
-          format: ["camelCase", "UPPER_CASE"],
-        },
-        {
-          selector: "function",
-          format: ["camelCase"],
-        },
-        {
-          selector: "typeParameter",
-          format: ["PascalCase"],
-        },
-        {
-          selector: "enumMember",
-          format: ["UPPER_CASE"],
-        },
-        {
-          selector: "class",
-          format: ["PascalCase"],
-        },
-        {
-          selector: "property",
-          format: ["camelCase"],
-        },
-        {
-          selector: "method",
-          format: ["camelCase"],
+          format: ["camelCase", "PascalCase"],
         },
       ],
       "@typescript-eslint/no-empty-function": ["off"],
@@ -106,6 +84,30 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-expressions": [
         "error",
         { allowShortCircuit: true, allowTernary: true },
+      ],
+    },
+  },
+  {
+    files: ["src/lib/constants.ts"],
+    rules: {
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "variable",
+          format: ["UPPER_CASE"],
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/lib/blockscout/**"],
+    rules: {
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: "typeLike",
+          format: ["snake_case", "PascalCase"],
+        },
       ],
     },
   },

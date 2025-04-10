@@ -4,7 +4,7 @@ import { TokensList } from "../../Tokens/TokensList";
 import { ContentHeadline } from "../../Content/ContentHeadline";
 import { useTokens } from "@/hooks/useTokens";
 import { useAppStateContext } from "@/context/AppStateContext";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import type { SelectedToken } from "@/types/tokens";
 import { AGGREGATOR_CONTRACT_ADDRESS } from "@/lib/constants";
@@ -28,7 +28,7 @@ export const TokensSelection = () => {
         },
       ];
     }, [] as Array<SelectedToken>);
-  }, [tokens, isConnected]);
+  }, [tokens]);
 
   const [sessionSelectedTokens, setSessionSelectedTokens] =
     useState<Array<SelectedToken>>(initialSelectedTokens);
@@ -37,12 +37,12 @@ export const TokensSelection = () => {
     setSessionSelectedTokens(initialSelectedTokens);
   }, [initialSelectedTokens]);
 
-  const handleCardSelect = (token: SelectedToken) => {
+  const handleCardSelect = useCallback((token: SelectedToken) => {
     console.log("token selected", token);
     setSessionSelectedTokens((prev) =>
       prev.map((t) => (t.address === token.address ? { ...t, isSelected: !t.isSelected } : t))
     );
-  };
+  }, []);
 
   useEffect(() => {
     const selectedTokens = sessionSelectedTokens.filter((t) => t.isSelected);
@@ -50,7 +50,7 @@ export const TokensSelection = () => {
     setIsActionButtonDisabled(selectedTokens.length === 0);
   }, [sessionSelectedTokens]);
 
-  const handleActionButtonClick = async () => {
+  const handleActionButtonClick = useCallback(async () => {
     const selectedTokens = sessionSelectedTokens.filter((t) => t.isSelected);
 
     setSelectedTokens(selectedTokens);
@@ -61,7 +61,7 @@ export const TokensSelection = () => {
       address as `0x${string}`,
       AGGREGATOR_CONTRACT_ADDRESS
     );
-  };
+  }, [setApprovedTokens, setSelectedTokens, address, sessionSelectedTokens, updateState]);
 
   return (
     <Skeleton loading={!state}>

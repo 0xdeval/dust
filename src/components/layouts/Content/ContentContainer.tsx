@@ -1,6 +1,7 @@
 import type { FlexProps } from "@chakra-ui/react";
 import { Flex } from "@chakra-ui/react";
 import { forwardRef } from "react";
+import React from "react";
 
 interface ContentContainerProps extends FlexProps {
   children: React.ReactNode;

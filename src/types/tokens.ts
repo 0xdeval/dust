@@ -25,3 +25,9 @@ export interface TokenToReceive {
   name: string;
   decimals: number;
 }
+
+export interface SelectItem {
+  label: string | undefined;
+  value: string;
+  icon: string | undefined;
+}

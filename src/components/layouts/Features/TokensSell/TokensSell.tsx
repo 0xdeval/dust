@@ -34,7 +34,7 @@ export const TokensSell = () => {
 
       sendTransaction(tx);
     }
-  }, [executionData]);
+  }, [executionData, sendTransaction]);
 
   useEffect(() => {
     console.log("EXECUTIONSTATE: ", { status, executionData, executionError });

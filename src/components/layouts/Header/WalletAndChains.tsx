@@ -8,6 +8,7 @@ import { useAccount, useDisconnect } from "wagmi";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { modal } from "@/context/WagmiContext";
 import type { SupportedChain } from "@/types/networks";
+import { useCallback } from "react";
 
 export const WalletAndChainsActions = () => {
   const { isConnected, address } = useAccount();
@@ -16,17 +17,20 @@ export const WalletAndChainsActions = () => {
 
   const { setSelectedNetwork } = useAppStateContext();
 
-  const handleSelectNetwork = (network: SupportedChain) => {
-    setSelectedNetwork(network);
-  };
+  const handleSelectNetwork = useCallback(
+    (network: SupportedChain) => {
+      setSelectedNetwork(network);
+    },
+    [setSelectedNetwork]
+  );
 
-  const handleButtonAction = () => {
+  const handleButtonAction = useCallback(() => {
     if (!isConnected) {
       modal.open();
     } else {
       disconnect();
     }
-  };
+  }, [isConnected, disconnect]);
 
   return (
     <Flex width="100%" justifyContent="flex-end" alignItems="flex-start" gap="10px">

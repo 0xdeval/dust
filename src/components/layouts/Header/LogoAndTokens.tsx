@@ -3,15 +3,18 @@ import { Flex } from "@chakra-ui/react";
 import { TokenSelector } from "@/components/ui/TokenSelector";
 import { Logo } from "@/components/ui/Logo";
 import { useAppStateContext } from "@/context/AppStateContext";
-
+import { useCallback } from "react";
 export const LogoAndTokens = () => {
   const { setReceivedToken } = useAppStateContext();
 
-  const handleReceivedTokenSelect = (value: Array<string>) => {
-    if (value) {
-      setReceivedToken(value[0] as `0x${string}`);
-    }
-  };
+  const handleReceivedTokenSelect = useCallback(
+    (value: Array<string>) => {
+      if (value) {
+        setReceivedToken(value[0] as `0x${string}`);
+      }
+    },
+    [setReceivedToken]
+  );
 
   return (
     <Flex flexDirection="column" gap={4} alignItems="flex-start">

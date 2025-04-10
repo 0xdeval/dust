@@ -50,6 +50,6 @@ export default function useApiFetch() {
 
       return response.json();
     },
-    [queryClient]
+    []
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAccount } from "wagmi";
 import { fetchTokens } from "@/lib/blockscout/api";
 import type { Token } from "@/types/tokens";
@@ -8,7 +8,7 @@ export function useTokens() {
   const [tokens, setTokens] = useState<Array<Token>>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const loadTokens = async () => {
+  const loadTokens = useCallback(async () => {
     setIsLoading(true);
     try {
       const fetchedTokens = await fetchTokens(address as string);
@@ -19,13 +19,13 @@ export function useTokens() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [address]);
 
   useEffect(() => {
     if (address) {
       loadTokens();
     }
-  }, [address]);
+  }, [address, loadTokens]);
 
   return { tokens, isLoading, loadTokens };
 }

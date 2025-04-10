@@ -8,16 +8,11 @@ import {
   createListCollection,
   useSelectContext,
 } from "@chakra-ui/react";
-import { forwardRef } from "react";
+import type { SelectValueChangeDetails } from "@chakra-ui/react";
+import { forwardRef, useCallback } from "react";
 import NetworkLogo from "./NetworkLogo";
 import type { SupportedChain } from "@/types/networks";
-
-interface SelectItem {
-  label: string;
-  value: string;
-  icon: React.ReactNode;
-}
-
+import type { SelectItem } from "@/types/tokens";
 interface NetworksSelectorProps extends Omit<SelectRootProps, "collection"> {
   onSelectNetwork: (value: SupportedChain) => void;
   byDefaultNetwork?: number;
@@ -60,6 +55,16 @@ export const NetworksSelector = forwardRef<HTMLDivElement, NetworksSelectorProps
       (n) => n.value === defaultNetwork?.id.toString()
     ) as SelectItem;
 
+    const handleValueChange = useCallback(
+      (details: SelectValueChangeDetails<SelectItem>) => {
+        const network = networks.find((n) => n.name === details.value[0]);
+        if (network) {
+          onSelectNetwork(network);
+        }
+      },
+      [onSelectNetwork, networks]
+    );
+
     return (
       <Select.Root
         ref={ref}
@@ -69,12 +74,7 @@ export const NetworksSelector = forwardRef<HTMLDivElement, NetworksSelectorProps
         width={props.width}
         defaultValue={[networksList.items[0].value]}
         defaultChecked
-        onValueChange={(item) => {
-          const network = networks.find((n) => n.name === item.value[0]);
-          if (network) {
-            onSelectNetwork(network);
-          }
-        }}
+        onValueChange={handleValueChange}
         {...props}
       >
         <Select.HiddenSelect />

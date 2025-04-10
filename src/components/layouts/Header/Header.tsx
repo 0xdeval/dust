@@ -20,7 +20,7 @@ export function Header() {
     if (!isConnected) {
       updateState("CONNECT_WALLET");
     }
-  }, [isConnected]);
+  }, [isConnected, updateState]);
 
   return (
     <Flex as="header" width="100%" justifyContent="space-between" mb="50px">

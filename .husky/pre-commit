@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 bunx lint-staged
-# bun run lint
+bun run lint
 
 echo ✅ All pre-commit jobs are done

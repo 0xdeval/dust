@@ -3,7 +3,7 @@ import { ContentContainer } from "../../Content/ContentContainer";
 import { ContentHeadline } from "../../Content/ContentHeadline";
 import { modal } from "@/context/WagmiContext";
 import { useAppStateContext } from "@/context/AppStateContext";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { useAccount } from "wagmi";
 export const WalletConnection = () => {
   const { isConnected } = useAccount();
@@ -13,7 +13,11 @@ export const WalletConnection = () => {
     if (isConnected && state?.phase === "CONNECT_WALLET") {
       updateState("SELECT_TOKENS");
     }
-  }, [state, isConnected]);
+  }, [state, isConnected, updateState]);
+
+  const handleButtonAction = useCallback(() => {
+    modal.open();
+  }, []);
 
   return (
     <Skeleton loading={!state}>
@@ -24,7 +28,7 @@ export const WalletConnection = () => {
               title={state?.contentHeadline}
               subtitle={state?.contentSubtitle}
               buttonLabel={state?.contentButtonLabel}
-              buttonAction={() => modal.open()}
+              buttonAction={handleButtonAction}
             />
           </>
         )}

@@ -7,6 +7,7 @@ import { Header } from "@/components/layouts/Header/Header";
 import { Toaster } from "@/components/ui/Toaster";
 import { RootContainer } from "@/components/layouts/Container/RootContainer";
 import { AppStateProvider } from "@/context/AppStateContext";
+import React from "react";
 
 const inter = Inter({
   variable: "--font-inter",

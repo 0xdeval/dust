@@ -48,7 +48,7 @@ export const usePrepareTokensSell = () => {
       setStatus("LOADING_QUOTE");
       setQuoteRequest(quoteRequest);
     }
-  }, [approvedTokens, receivedToken, isReadyToSell]);
+  }, [approvedTokens, receivedToken, isReadyToSell, address]);
 
   useEffect(() => {
     if (quoteData) {
@@ -59,7 +59,7 @@ export const usePrepareTokensSell = () => {
       });
       setExecutionRequest(executionRequest);
     }
-  }, [quoteData]);
+  }, [quoteData, address]);
 
   const {
     data: generatedQuoteData,
@@ -106,7 +106,7 @@ export const usePrepareTokensSell = () => {
       setExecutionData(odosExecutionRequest as OdosExecuteResponse);
       setStatus("SUCCESS_EXECUTE");
     }
-  }, [executionRequest, isExecutionLoading]);
+  }, [executionRequest, isExecutionLoading, odosExecutionRequest]);
 
   return {
     status,

@@ -2,7 +2,7 @@ import { useAppStateContext } from "@/context/AppStateContext";
 import { ContentContainer } from "../../Content/ContentContainer";
 import { Skeleton } from "@chakra-ui/react";
 import { ContentHeadline } from "../../Content/ContentHeadline";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { TokensStatusesCardsList } from "../../Tokens/TokensStatusesList";
 import { mapTokensWithApprovalStatus } from "@/lib/utils";
 
@@ -20,10 +20,10 @@ export const TokensApprovals = () => {
 
   console.log("SELECTED TOKENS WITH APPROVE STATUSES: ", selectedTokensWithAppproveStatuses);
 
-  const handleActionButtonClick = () => {
+  const handleActionButtonClick = useCallback(() => {
     setIsReadyToSell(true);
     updateState("SELL_TOKENS");
-  };
+  }, [setIsReadyToSell, updateState]);
 
   return (
     <Skeleton loading={!state}>
