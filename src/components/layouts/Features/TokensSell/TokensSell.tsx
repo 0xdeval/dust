@@ -1,5 +1,4 @@
 import { usePrepareTokensSell } from "@/hooks/usePrepareTokensSell";
-import { Skeleton } from "@chakra-ui/react";
 import { ContentHeadline } from "../../Content/ContentHeadline";
 import { ContentContainer } from "../../Content/ContentContainer";
 import { useAppStateContext } from "@/context/AppStateContext";
@@ -45,34 +44,32 @@ export const TokensSell = () => {
   }, [quoteData, quoteError]);
 
   return (
-    <Skeleton loading={!state}>
-      <ContentContainer justifyContent="center" alignItems="center">
-        {state && (
-          <>
-            <StatusSpinner
-              isLoading={
-                status === "LOADING_EXECUTE" || status === "LOADING_QUOTE" || isTransactionPending
-              }
-              size="xl"
-              boxSize="100px"
-              borderWidth="5px"
-              status={status === "SUCCESS_EXECUTE" ? "success" : "error"}
-            />
-            <ContentHeadline
-              title={state?.contentHeadline}
-              subtitle={state?.contentSubtitle}
-              hasActionButton={false}
-              justifyContent="center"
-              alignItems="center"
-              copiesJustifyContent="center"
-              copiesItemsAlign="center"
-            />
-            {approvedTokens.length} tokens are selling
-            {isTransactionExecuted && "Transaction hash: " + hash}
-            {isTransactionFailed && "Transaction error: " + transactionError}
-          </>
-        )}
-      </ContentContainer>
-    </Skeleton>
+    <ContentContainer isLoading={!state}>
+      {state && (
+        <>
+          <StatusSpinner
+            isLoading={
+              status === "LOADING_EXECUTE" || status === "LOADING_QUOTE" || isTransactionPending
+            }
+            size="xl"
+            boxSize="100px"
+            borderWidth="5px"
+            status={status === "SUCCESS_EXECUTE" ? "success" : "error"}
+          />
+          <ContentHeadline
+            title={state?.contentHeadline}
+            subtitle={state?.contentSubtitle}
+            hasActionButton={false}
+            justifyContent="center"
+            alignItems="center"
+            copiesJustifyContent="center"
+            copiesItemsAlign="center"
+          />
+          {approvedTokens.length} tokens are selling
+          {isTransactionExecuted && "Transaction hash: " + hash}
+          {isTransactionFailed && "Transaction error: " + transactionError}
+        </>
+      )}
+    </ContentContainer>
   );
 };

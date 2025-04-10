@@ -1,5 +1,5 @@
 import type { FlexProps } from "@chakra-ui/react";
-import { Flex, Heading, Text } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import { Button } from "@/components/ui/Button";
 import { forwardRef } from "react";
 import { ContentHeadlineCopies } from "./ContentHeadlineCopies";
@@ -37,12 +37,6 @@ export const ContentHeadline = forwardRef<HTMLDivElement, ContentHeadlineProps>(
         alignItems="flex-start"
         {...props}
       >
-        {/* <Flex flexDirection="column" gap={4}>
-          <Heading as="h1" size="4xl">
-            {title}
-          </Heading>
-          <Text color="textSecondary">{subtitle}</Text>
-        </Flex> */}
         <ContentHeadlineCopies
           title={title}
           subtitle={subtitle}

@@ -1,6 +1,5 @@
 import { useAppStateContext } from "@/context/AppStateContext";
 import { ContentContainer } from "../../Content/ContentContainer";
-import { Skeleton } from "@chakra-ui/react";
 import { ContentHeadline } from "../../Content/ContentHeadline";
 import { useCallback, useMemo } from "react";
 import { TokensStatusesCardsList } from "../../Tokens/TokensStatusesList";
@@ -26,21 +25,19 @@ export const TokensApprovals = () => {
   }, [setIsReadyToSell, updateState]);
 
   return (
-    <Skeleton loading={!state}>
-      <ContentContainer>
-        {state && (
-          <>
-            <ContentHeadline
-              title={state?.contentHeadline}
-              subtitle={state?.contentSubtitle}
-              buttonLabel={state?.contentButtonLabel}
-              buttonAction={handleActionButtonClick}
-              isButtonDisabled={!isAllTokensApproved}
-            />
-            <TokensStatusesCardsList selectedTokens={selectedTokensWithAppproveStatuses} />
-          </>
-        )}
-      </ContentContainer>
-    </Skeleton>
+    <ContentContainer isLoading={!state}>
+      {state && (
+        <>
+          <ContentHeadline
+            title={state?.contentHeadline}
+            subtitle={state?.contentSubtitle}
+            buttonLabel={state?.contentButtonLabel}
+            buttonAction={handleActionButtonClick}
+            isButtonDisabled={!isAllTokensApproved}
+          />
+          <TokensStatusesCardsList selectedTokens={selectedTokensWithAppproveStatuses} />
+        </>
+      )}
+    </ContentContainer>
   );
 };

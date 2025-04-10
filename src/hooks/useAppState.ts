@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { AppState, Phase } from "@/types/states";
 import { useAccount } from "wagmi";
 import { getCopies } from "@/lib/utils";
@@ -21,29 +21,25 @@ export const useAppState = () => {
     DEFAULT_TOKEN_TO_RECEIVE.address
   );
 
-  const defaultCopy = getCopies("CONNECT_WALLET");
+  const [state, setState] = useState<AppState | null>(null);
 
-  const [state, setState] = useState<AppState | null>({
-    phase: phase,
-    contentHeadline: defaultCopy.contentHeadline,
-    contentSubtitle: defaultCopy.contentSubtitle,
-    contentButtonLabel: defaultCopy.contentButtonLabel,
-    receivedToken: receivedToken,
-    selectedTokens: selectedTokens,
-    approvedTokens: approvedTokens,
-    isReadyToSell: isReadyToSell,
-  });
+  useEffect(() => {
+    if (!phase) return;
+
+    const currentCopy = getCopies(phase);
+    setState({
+      phase,
+      contentHeadline: currentCopy.contentHeadline,
+      contentSubtitle: currentCopy.contentSubtitle,
+      contentButtonLabel: currentCopy.contentButtonLabel,
+      receivedToken,
+      selectedTokens,
+      approvedTokens,
+      isReadyToSell,
+    });
+  }, [phase, receivedToken, selectedTokens, approvedTokens, isReadyToSell]);
 
   const updateState = (newPhase: Phase) => {
-    const newCopy = getCopies(newPhase);
-
-    setState({
-      phase: newPhase,
-      contentHeadline: newCopy.contentHeadline,
-      contentSubtitle: newCopy.contentSubtitle,
-      contentButtonLabel: newCopy.contentButtonLabel,
-    });
-
     setPhase(newPhase);
   };
 

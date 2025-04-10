@@ -2,7 +2,7 @@ import { getNetworkInfo } from "@/lib/utils";
 import * as allNetworks from "viem/chains";
 import type { Chain } from "viem";
 import dotenv from "dotenv";
-import type { SupportedChain } from "@/types/networks";
+import type { SupportedChain, EnvChainsProps } from "@/types/networks";
 
 dotenv.config();
 
@@ -10,7 +10,7 @@ if (!process.env.NEXT_PUBLIC_SUPPORTED_CHAINS) {
   throw new Error("NEXT_PUBLIC_SUPPORTED_CHAINS is not set");
 }
 
-const supportedChains: Record<string, string> = JSON.parse(
+const supportedChains: Record<string, EnvChainsProps> = JSON.parse(
   process.env.NEXT_PUBLIC_SUPPORTED_CHAINS
 );
 const supportedChainIds: Array<number> = Object.keys(supportedChains).map(Number);
@@ -25,7 +25,8 @@ const intersectedChains = intersectedChainIds.map((chainId: number) => {
   return {
     id: chainId,
     name: wagmiNetwork?.name,
-    explorerUrl: supportedChains[chainId.toString()],
+    explorerUrl: supportedChains[chainId.toString()].explorerUrl,
+    apiUrl: supportedChains[chainId.toString()].apiUrl,
   };
 });
 
@@ -41,7 +42,8 @@ export const networksConfig: Array<SupportedChain> = await Promise.all(
       id: network.id,
       name: name,
       logo: logoUrl,
-      blockExplorer: blockExplorer,
+      explorerUrl: blockExplorer,
+      apiUrl: network.apiUrl,
     } as SupportedChain;
   })
 );

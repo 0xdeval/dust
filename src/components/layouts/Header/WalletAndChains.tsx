@@ -4,7 +4,7 @@ import { NetworksSelector } from "../NetworkSelect/NetworksSelector";
 
 import { Flex } from "@chakra-ui/react";
 import { AiOutlineDisconnect } from "react-icons/ai";
-import { useAccount, useDisconnect } from "wagmi";
+import { useAccount, useDisconnect, useSwitchChain } from "wagmi";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { modal } from "@/context/WagmiContext";
 import type { SupportedChain } from "@/types/networks";
@@ -12,6 +12,7 @@ import { useCallback } from "react";
 
 export const WalletAndChainsActions = () => {
   const { isConnected, address } = useAccount();
+  const { switchChain } = useSwitchChain();
 
   const { disconnect } = useDisconnect();
 
@@ -19,9 +20,12 @@ export const WalletAndChainsActions = () => {
 
   const handleSelectNetwork = useCallback(
     (network: SupportedChain) => {
+      console.log("Switching to network: ", network);
+
       setSelectedNetwork(network);
+      switchChain({ chainId: network.id });
     },
-    [setSelectedNetwork]
+    [setSelectedNetwork, switchChain]
   );
 
   const handleButtonAction = useCallback(() => {

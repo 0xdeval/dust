@@ -1,6 +1,5 @@
 import type { Token } from "@/types/tokens";
-
-const BLOCKSCOUT_API_URL = "https://base.blockscout.com/api/v2";
+import type { SupportedChain } from "@/types/networks";
 
 interface BlockscoutResponse {
   items: Array<BlockscoutTokenItem>;
@@ -25,9 +24,11 @@ interface BlockscoutTokenItem {
   value: string;
 }
 
-export async function fetchTokens(address: string): Promise<Array<Token>> {
+export async function fetchTokens(address: string, network: SupportedChain): Promise<Array<Token>> {
   try {
-    const response = await fetch(`${BLOCKSCOUT_API_URL}/addresses/${address}/tokens`);
+    const response = await fetch(
+      `${network.apiUrl || network.explorerUrl}/api/v2/addresses/${address}/tokens`
+    );
 
     if (!response.ok) {
       throw new Error(`API error: ${response.status} ${response.statusText}`);
@@ -35,6 +36,7 @@ export async function fetchTokens(address: string): Promise<Array<Token>> {
 
     const data: BlockscoutResponse = await response.json();
 
+    // TODO: Add pagination fetching
     return data.items
       .filter((item) => {
         const value = BigInt(item.value || "0");
