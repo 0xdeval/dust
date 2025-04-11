@@ -10,14 +10,16 @@ export const TokensApprovals = () => {
     useAppStateContext();
 
   const selectedTokensWithAppproveStatuses = useMemo(() => {
-    return mapTokensWithApprovalStatus(selectedTokens, approvedTokens);
+    console.log("Selected Tokens:", selectedTokens);
+    console.log("Approved Tokens:", approvedTokens);
+    const mappedTokens = mapTokensWithApprovalStatus(selectedTokens, approvedTokens);
+    console.log("Mapped Tokens Result:", mappedTokens);
+    return mappedTokens;
   }, [selectedTokens, approvedTokens]);
 
   const isAllTokensApproved = useMemo(() => {
     return selectedTokens.length === approvedTokens.length;
   }, [selectedTokens, approvedTokens]);
-
-  console.log("SELECTED TOKENS WITH APPROVE STATUSES: ", selectedTokensWithAppproveStatuses);
 
   const handleActionButtonClick = useCallback(() => {
     setIsReadyToSell(true);

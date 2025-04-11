@@ -40,7 +40,7 @@ export const TokenStatusCard = React.forwardRef<HTMLDivElement, TokenStatusCardP
             <Flex justifyContent="space-between" alignItems="center">
               <Flex gap={2}>
                 <Flex flexDirection="row" alignItems="center" gap={2}>
-                  <ImageWithFallback srcUrl={logoUrl} alt={symbol} />
+                  <ImageWithFallback srcUrl={logoUrl} alt={symbol} borderRadius="50%" />
                 </Flex>
                 <Flex justifyContent="flex-start" alignItems="center" gap={2}>
                   <Text fontWeight="bold">{label ?? symbol}</Text>

@@ -12,7 +12,7 @@ export const approveTokensList = async (
   owner: `0x${string}`,
   spender: `0x${string}`
 ) => {
-  const approvedTokens: Array<SelectedToken> = [];
+  let approvedTokens: Array<SelectedToken> = [];
 
   for (const token of tokensToApprove) {
     try {
@@ -40,8 +40,8 @@ export const approveTokensList = async (
           description: `${token.symbol} allowance is sufficient`,
           type: "success",
         });
-        approvedTokens.push(token);
-        setApprovedTokens(approvedTokens);
+        approvedTokens = [...approvedTokens, token];
+        setApprovedTokens([...approvedTokens]);
         continue;
       }
 
@@ -61,13 +61,13 @@ export const approveTokensList = async (
       const { status } = await waitForTransactionReceipt(config, { hash });
 
       if (status === "success") {
-        approvedTokens.push(token);
+        approvedTokens = [...approvedTokens, token];
+        setApprovedTokens([...approvedTokens]);
         toaster.create({
           title: "Approved",
           description: `${token.symbol} approved`,
           type: "success",
         });
-        setApprovedTokens(approvedTokens);
       } else {
         toaster.create({
           title: "Error",

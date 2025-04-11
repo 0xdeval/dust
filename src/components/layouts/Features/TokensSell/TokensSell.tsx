@@ -27,7 +27,7 @@ export const TokensSell = () => {
   );
 
   const sendSwapTransaction = useCallback(() => {
-    if (executionData && !isTransactionFailed) {
+    if (executionData) {
       const tx = {
         to: executionData.transaction.to as `0x${string}`,
         data: executionData.transaction.data as `0x${string}`,
@@ -38,11 +38,11 @@ export const TokensSell = () => {
 
       sendTransaction(tx);
     }
-  }, [executionData, sendTransaction, isTransactionFailed]);
+  }, [executionData, sendTransaction]);
 
   useEffect(() => {
-    if (executionData) sendSwapTransaction();
-  }, [executionData, sendSwapTransaction]);
+    if (executionData && !isTransactionFailed) sendSwapTransaction();
+  }, [executionData, sendSwapTransaction, isTransactionFailed]);
 
   const startFromScratch = () => {
     updateState("SELECT_TOKENS");
