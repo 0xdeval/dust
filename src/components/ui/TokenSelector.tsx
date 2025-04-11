@@ -2,14 +2,16 @@
 
 import { TOKENS_TO_RECEIVE } from "@/lib/constants";
 import type { SelectValueChangeDetails } from "@chakra-ui/react";
-import { Portal, Select, createListCollection } from "@chakra-ui/react";
+import { Portal, Select, Skeleton, createListCollection } from "@chakra-ui/react";
 import type { SelectItem } from "@/types/tokens";
 import { useCallback } from "react";
+
 interface Props {
   onSelect: (value: Array<string>) => void;
+  loading: boolean;
 }
 
-export const TokenSelector = ({ onSelect }: Props) => {
+export const TokenSelector = ({ onSelect, loading }: Props) => {
   const tokensCollection = createListCollection({
     items: TOKENS_TO_RECEIVE.map((token) => ({
       label: token.symbol,
@@ -26,36 +28,38 @@ export const TokenSelector = ({ onSelect }: Props) => {
   );
 
   return (
-    <Select.Root
-      collection={tokensCollection}
-      variant="outline"
-      size="sm"
-      width="120px"
-      defaultChecked
-      defaultValue={[TOKENS_TO_RECEIVE[0].address]}
-      onValueChange={handleValueChange}
-    >
-      <Select.HiddenSelect />
-      <Select.Control>
-        <Select.Trigger>
-          <Select.ValueText placeholder="Received token" />
-        </Select.Trigger>
-        <Select.IndicatorGroup>
-          <Select.Indicator />
-        </Select.IndicatorGroup>
-      </Select.Control>
-      <Portal>
-        <Select.Positioner>
-          <Select.Content>
-            {tokensCollection.items.map((token) => (
-              <Select.Item item={token} key={token.value}>
-                {token.label}
-                <Select.ItemIndicator />
-              </Select.Item>
-            ))}
-          </Select.Content>
-        </Select.Positioner>
-      </Portal>
-    </Select.Root>
+    <Skeleton loading={loading}>
+      <Select.Root
+        collection={tokensCollection}
+        variant="outline"
+        size="sm"
+        width="120px"
+        defaultChecked
+        defaultValue={[TOKENS_TO_RECEIVE[0].address]}
+        onValueChange={handleValueChange}
+      >
+        <Select.HiddenSelect />
+        <Select.Control>
+          <Select.Trigger>
+            <Select.ValueText placeholder="Received token" />
+          </Select.Trigger>
+          <Select.IndicatorGroup>
+            <Select.Indicator />
+          </Select.IndicatorGroup>
+        </Select.Control>
+        <Portal>
+          <Select.Positioner>
+            <Select.Content>
+              {tokensCollection.items.map((token) => (
+                <Select.Item item={token} key={token.value}>
+                  {token.label}
+                  <Select.ItemIndicator />
+                </Select.Item>
+              ))}
+            </Select.Content>
+          </Select.Positioner>
+        </Portal>
+      </Select.Root>
+    </Skeleton>
   );
 };

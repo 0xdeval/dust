@@ -1,32 +1,26 @@
 "use client";
 
 import { Flex } from "@chakra-ui/react";
-import { useAppStateContext } from "@/context/AppStateContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import { WalletAndChainsActions } from "./WalletAndChains";
 import { LogoAndTokens } from "./LogoAndTokens";
-import { useAppState } from "@/hooks/useAppState";
-export function Header() {
-  const { isConnected } = useAppState();
 
-  const { updateState } = useAppStateContext();
+export function Header() {
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
   useEffect(() => {
-    if (isConnected) {
-      updateState("SELECT_TOKENS");
-    }
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 1000);
 
-    if (!isConnected) {
-      updateState("CONNECT_WALLET");
-    }
-  }, [isConnected, updateState]);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <Flex as="header" width="100%" justifyContent="space-between" mb="50px">
-      <LogoAndTokens />
-      <WalletAndChainsActions />
-      {/* <ColorModeButton /> */}
+      <LogoAndTokens isPageLoading={isPageLoading} />
+      <WalletAndChainsActions isPageLoading={isPageLoading} />
     </Flex>
   );
 }

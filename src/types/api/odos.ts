@@ -1,22 +1,22 @@
 export interface OdosInputToken {
-  tokenAddress: `0x${string}`; // Ensures checksummed address format
-  amount: string; // Fixed integer precision amount
+  tokenAddress: `0x${string}`;
+  amount: string;
 }
 
 export interface OdosOutputToken {
-  tokenAddress: `0x${string}`; // Ensures checksummed address format
-  proportion: number; // Proportion of output (0-1)
+  tokenAddress: `0x${string}`;
+  proportion: number;
 }
 
 export interface OdosQuoteRequest {
   chainId: number;
   inputTokens: Array<OdosInputToken>;
   outputTokens: Array<OdosOutputToken>;
-  userAddr: `0x${string}`; // Checksummed user address
+  userAddr: `0x${string}`;
   slippageLimitPercent: number;
-  referralCode?: number; // Optional referral code
-  disableRFQs?: boolean; // Optional RFQ disable flag
-  compact?: boolean; // Optional compact response flag
+  referralCode?: number;
+  disableRFQs?: boolean;
+  compact?: boolean;
 }
 
 export interface OdosExecuteRequest {
@@ -95,3 +95,11 @@ export interface OdosAssembleResponse {
   traceId: string;
   blockNumber: number;
 }
+
+export type OdosStatus =
+  | "IDLE"
+  | "LOADING_QUOTE"
+  | "LOADING_EXECUTE"
+  | "SUCCESS_QUOTE"
+  | "SUCCESS_EXECUTE"
+  | "ERROR";

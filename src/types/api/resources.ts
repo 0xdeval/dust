@@ -19,5 +19,4 @@ export type ResourceError<E = unknown> = {
   data?: E;
 };
 
-// Path parameters type
 export type ResourcePathParams<R extends ResourceName> = Record<string, string>;

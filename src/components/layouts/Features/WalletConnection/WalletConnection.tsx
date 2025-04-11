@@ -27,6 +27,7 @@ export const WalletConnection = () => {
             subtitle={state?.contentSubtitle}
             buttonLabel={state?.contentButtonLabel}
             buttonAction={handleButtonAction}
+            isButtonDisabled={false}
           />
         </>
       )}

@@ -32,7 +32,7 @@ export const getCopies = (phase: Phase): CopiesState => {
       return {
         contentHeadline: "APPROVING TOKENS",
         contentSubtitle: "Approve selected tokens for trading",
-        contentButtonLabel: "Approve All",
+        contentButtonLabel: "Sell All",
       };
 
     case "SELL_TOKENS":
@@ -49,6 +49,33 @@ export const getCopies = (phase: Phase): CopiesState => {
         contentButtonLabel: "Done",
       };
   }
+};
+
+export const getTxnStatusCopies = (
+  isError: boolean | null,
+  props?: { [key: string]: string | `0x${string}` | undefined }
+) => {
+  switch (isError) {
+    case true:
+      return {
+        contentHeadline: "TRADE FAILED",
+        contentSubtitle: "Your trade has failed. Error: " + props?.error,
+        contentButtonLabel: "Try again",
+      };
+    case false:
+      return {
+        contentHeadline: "TRADE IS COMPLETED",
+        contentSubtitle:
+          "Your trade has been successfully executed. Transaction hash: " + props?.hash,
+        contentButtonLabel: "Dust again",
+      };
+  }
+  return {
+    contentHeadline: "ERROR OCCURED",
+    contentSubtitle:
+      "An error occurred while executing your trade. Please, try again or contact our support",
+    contentButtonLabel: "Try again",
+  };
 };
 
 export const mapTokensWithApprovalStatus = (
@@ -101,4 +128,11 @@ export const getNetworkInfo = async (chainId: number): Promise<NetworkInfo | nul
     console.error(`Error fetching network info for chainId ${chainId}:`, error);
     return null;
   }
+};
+
+export const txnErrorToHumanReadable = (error: string | undefined) => {
+  if (error?.includes("User rejected the request")) {
+    return "User rejected the request in his wallet. Try again";
+  }
+  return error;
 };

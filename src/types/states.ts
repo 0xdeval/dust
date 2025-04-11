@@ -1,5 +1,4 @@
 import type { SelectedToken } from "./tokens";
-import { Token } from "./tokens";
 
 export type Phase =
   | "CONNECT_WALLET"

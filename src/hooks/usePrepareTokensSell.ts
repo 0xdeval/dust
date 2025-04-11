@@ -11,7 +11,7 @@ import type {
 import { buildExecuteRequest, buildQuoteRequest } from "@/lib/odos/buildBody";
 import { useAccount } from "wagmi";
 import { useAppStateContext } from "@/context/AppStateContext";
-import type { OdosStatus } from "@/types/api/statuses";
+import type { OdosStatus } from "@/types/api/odos";
 import { stringToBigInt } from "@/lib/utils";
 
 export const usePrepareTokensSell = () => {

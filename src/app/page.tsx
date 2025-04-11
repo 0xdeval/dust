@@ -5,9 +5,15 @@ import { WalletConnection } from "@/components/layouts/Features/WalletConnection
 import { TokensSelection } from "@/components/layouts/Features/TokensSelect/TokensSelection";
 import { TokensApprovals } from "@/components/layouts/Features/TokensApprovals/TokensApprovals";
 import { TokensSell } from "@/components/layouts/Features/TokensSell/TokensSell";
+import { useEffect } from "react";
 
 export default function Home() {
-  const { phase } = useAppStateContext();
+  const { phase, state } = useAppStateContext();
+
+  useEffect(() => {
+    console.log("phase", phase);
+    console.log("state", state);
+  }, [state, phase]);
 
   const renderPhaseContent = () => {
     switch (phase) {

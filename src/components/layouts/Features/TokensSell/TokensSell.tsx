@@ -3,11 +3,13 @@ import { ContentHeadline } from "../../Content/ContentHeadline";
 import { ContentContainer } from "../../Content/ContentContainer";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { StatusSpinner } from "@/components/ui/Spinner";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { config } from "@/configs/wagmi";
 import { useSendTransaction } from "wagmi";
+import { getTxnStatusCopies, txnErrorToHumanReadable } from "@/lib/utils";
+
 export const TokensSell = () => {
-  const { state, approvedTokens } = useAppStateContext();
+  const { state, updateState } = useAppStateContext();
   const { status, executionData, executionError, quoteData, quoteError } = usePrepareTokensSell();
 
   const {
@@ -17,12 +19,15 @@ export const TokensSell = () => {
     isError: isTransactionFailed,
     error: transactionError,
     sendTransaction,
-  } = useSendTransaction({
-    config,
-  });
+  } = useSendTransaction({ config });
 
-  useEffect(() => {
-    if (executionData) {
+  const isOperationPending = useMemo(
+    () => status === "LOADING_EXECUTE" || status === "LOADING_QUOTE" || isTransactionPending,
+    [status, isTransactionPending]
+  );
+
+  const sendSwapTransaction = useCallback(() => {
+    if (executionData && !isTransactionFailed) {
       const tx = {
         to: executionData.transaction.to as `0x${string}`,
         data: executionData.transaction.data as `0x${string}`,
@@ -33,7 +38,15 @@ export const TokensSell = () => {
 
       sendTransaction(tx);
     }
-  }, [executionData, sendTransaction]);
+  }, [executionData, sendTransaction, isTransactionFailed]);
+
+  useEffect(() => {
+    if (executionData) sendSwapTransaction();
+  }, [executionData, sendSwapTransaction]);
+
+  const startFromScratch = () => {
+    updateState("SELECT_TOKENS");
+  };
 
   useEffect(() => {
     console.log("EXECUTIONSTATE: ", { status, executionData, executionError });
@@ -43,31 +56,51 @@ export const TokensSell = () => {
     console.log("QUOTESTATE: ", { quoteData, quoteError });
   }, [quoteData, quoteError]);
 
+  const txnStatusCopies = useMemo(() => {
+    if (isTransactionFailed || status === "ERROR") {
+      return getTxnStatusCopies(true, {
+        error: txnErrorToHumanReadable(transactionError?.message),
+      });
+    }
+    if (isTransactionExecuted) {
+      return getTxnStatusCopies(false, { hash });
+    }
+
+    return getTxnStatusCopies(null, { hash });
+  }, [isTransactionFailed, isTransactionExecuted, status, hash, transactionError]);
+
+  const handelSecondaryButtonClick = useCallback(() => {
+    updateState("APPROVE_TOKENS");
+  }, [updateState]);
+
   return (
     <ContentContainer isLoading={!state}>
       {state && (
         <>
           <StatusSpinner
-            isLoading={
-              status === "LOADING_EXECUTE" || status === "LOADING_QUOTE" || isTransactionPending
-            }
+            isLoading={isOperationPending}
             size="xl"
             boxSize="100px"
             borderWidth="5px"
-            status={status === "SUCCESS_EXECUTE" ? "success" : "error"}
+            status={!isTransactionFailed ? "success" : "error"}
           />
           <ContentHeadline
-            title={state?.contentHeadline}
-            subtitle={state?.contentSubtitle}
-            hasActionButton={false}
-            justifyContent="center"
-            alignItems="center"
-            copiesJustifyContent="center"
-            copiesItemsAlign="center"
+            title={isOperationPending ? state.contentHeadline : txnStatusCopies?.contentHeadline}
+            subtitle={isOperationPending ? state.contentSubtitle : txnStatusCopies?.contentSubtitle}
+            hasActionButton={isTransactionFailed || !isOperationPending ? true : false}
+            buttonLabel={!isOperationPending ? txnStatusCopies?.contentButtonLabel : undefined}
+            buttonAction={
+              isTransactionFailed
+                ? sendSwapTransaction
+                : !isOperationPending
+                  ? startFromScratch
+                  : undefined
+            }
+            isButtonDisabled={isOperationPending}
+            secondaryButtonLabel="Back"
+            secondaryButtonAction={handelSecondaryButtonClick}
+            isSecondaryButtonDisabled={false}
           />
-          {approvedTokens.length} tokens are selling
-          {isTransactionExecuted && "Transaction hash: " + hash}
-          {isTransactionFailed && "Transaction error: " + transactionError}
         </>
       )}
     </ContentContainer>

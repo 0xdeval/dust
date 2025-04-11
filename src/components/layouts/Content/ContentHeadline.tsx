@@ -1,14 +1,19 @@
 import type { FlexProps } from "@chakra-ui/react";
 import { Flex } from "@chakra-ui/react";
-import { Button } from "@/components/ui/Button";
-import { forwardRef } from "react";
+import { forwardRef, useMemo } from "react";
 import { ContentHeadlineCopies } from "./ContentHeadlineCopies";
+import { ContentHeadlineButtons } from "./ContentHeadlineButtons";
+import { useAppStateContext } from "@/context/AppStateContext";
+
 interface ContentHeadlineProps extends FlexProps {
   title: string;
   subtitle: string;
   buttonLabel?: string;
   buttonAction?: () => void;
   isButtonDisabled?: boolean;
+  secondaryButtonLabel?: string;
+  secondaryButtonAction?: () => void;
+  isSecondaryButtonDisabled?: boolean;
   hasActionButton?: boolean;
   copiesItemsAlign?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around";
   copiesJustifyContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around";
@@ -22,6 +27,9 @@ export const ContentHeadline = forwardRef<HTMLDivElement, ContentHeadlineProps>(
       buttonLabel,
       buttonAction,
       isButtonDisabled = true,
+      secondaryButtonLabel,
+      secondaryButtonAction,
+      isSecondaryButtonDisabled,
       hasActionButton = true,
       copiesItemsAlign = "flex-start",
       copiesJustifyContent = "space-between",
@@ -29,6 +37,11 @@ export const ContentHeadline = forwardRef<HTMLDivElement, ContentHeadlineProps>(
     },
     ref
   ) => {
+    const { phase } = useAppStateContext();
+
+    const isSecondaryButtonAvaialble = useMemo(() => {
+      return phase !== "CONNECT_WALLET" && phase !== "SELECT_TOKENS";
+    }, [phase]);
     return (
       <Flex
         ref={ref}
@@ -44,14 +57,18 @@ export const ContentHeadline = forwardRef<HTMLDivElement, ContentHeadlineProps>(
           alignItems={copiesItemsAlign}
         />
         {hasActionButton && (
-          <Button
-            size="lg"
-            bg="actionButtonSolid"
-            onClick={buttonAction}
-            disabled={isButtonDisabled}
-          >
-            {buttonLabel}
-          </Button>
+          <ContentHeadlineButtons
+            buttonLabel={buttonLabel}
+            buttonAction={buttonAction}
+            isButtonDisabled={isButtonDisabled}
+            secondaryButtonLabel={isSecondaryButtonAvaialble ? secondaryButtonLabel : undefined}
+            secondaryButtonAction={isSecondaryButtonAvaialble ? secondaryButtonAction : undefined}
+            isSecondaryButtonDisabled={
+              isSecondaryButtonAvaialble ? isSecondaryButtonDisabled : undefined
+            }
+            flexDirection="column"
+            gap={2}
+          />
         )}
       </Flex>
     );

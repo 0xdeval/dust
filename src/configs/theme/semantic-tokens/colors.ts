@@ -615,6 +615,12 @@ export const colors = defineSemanticTokens.colors({
       _dark: "{colors.orange.500}",
     },
   },
+  actionButtonSolidHover: {
+    value: {
+      _light: "{colors.orange.600}",
+      _dark: "{colors.orange.600}",
+    },
+  },
   bgSurface: {
     value: {
       _light: "{colors.white}",
@@ -631,6 +637,12 @@ export const colors = defineSemanticTokens.colors({
     value: {
       _light: "{colors.gray.600}",
       _dark: "{colors.gray.400}",
+    },
+  },
+  secondaryHover: {
+    value: {
+      _light: "{colors.gray.200}",
+      _dark: "{colors.gray.600}",
     },
   },
   accentBorder: {

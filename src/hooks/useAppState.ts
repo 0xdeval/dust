@@ -10,12 +10,16 @@ import { networksConfig } from "@/configs/networks";
 export const useAppState = () => {
   const { isConnected } = useAccount();
 
-  const [phase, setPhase] = useState<Phase | null>("CONNECT_WALLET");
+  const [phase, setPhase] = useState<Phase | null>(() =>
+    isConnected ? "SELECT_TOKENS" : "CONNECT_WALLET"
+  );
   const [isReadyToSell, setIsReadyToSell] = useState(false);
   const [selectedTokens, setSelectedTokens] = useState<Array<SelectedToken>>([]);
 
   const [approvedTokens, setApprovedTokens] = useState<Array<SelectedToken>>([]);
   const [selectedNetwork, setSelectedNetwork] = useState<SupportedChain>(networksConfig[0]);
+
+  const [originalNetwork, setOriginalNetwork] = useState<SupportedChain>(selectedNetwork);
 
   const [receivedToken, setReceivedToken] = useState<`0x${string}`>(
     DEFAULT_TOKEN_TO_RECEIVE.address
@@ -42,6 +46,19 @@ export const useAppState = () => {
   const updateState = (newPhase: Phase) => {
     setPhase(newPhase);
   };
+
+  useEffect(() => {
+    if (!isConnected) {
+      setPhase("CONNECT_WALLET");
+    } else if (phase === "CONNECT_WALLET") {
+      setPhase("SELECT_TOKENS");
+    }
+
+    if (selectedNetwork !== originalNetwork) {
+      setOriginalNetwork(selectedNetwork);
+      setPhase("SELECT_TOKENS");
+    }
+  }, [phase, isConnected, selectedNetwork, originalNetwork]);
 
   return {
     phase,

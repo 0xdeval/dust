@@ -4,7 +4,12 @@ import { TokenSelector } from "@/components/ui/TokenSelector";
 import { Logo } from "@/components/ui/Logo";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { useCallback } from "react";
-export const LogoAndTokens = () => {
+
+interface Props {
+  isPageLoading: boolean;
+}
+
+export const LogoAndTokens = ({ isPageLoading }: Props) => {
   const { setReceivedToken } = useAppStateContext();
 
   const handleReceivedTokenSelect = useCallback(
@@ -20,7 +25,7 @@ export const LogoAndTokens = () => {
     <Flex flexDirection="column" gap={4} alignItems="flex-start">
       <Logo logoSrcDefaultPath="/logo-black.png" logoSrcDarkPath="/logo-white.png" />
       <Flex justifyContent="flex-start" alignItems="center" gap="10px">
-        to <TokenSelector onSelect={handleReceivedTokenSelect} />
+        to <TokenSelector loading={isPageLoading} onSelect={handleReceivedTokenSelect} />
       </Flex>
     </Flex>
   );

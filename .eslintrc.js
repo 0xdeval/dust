@@ -15,10 +15,10 @@ module.exports = {
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
-    "prettier", // disables conflicting ESLint rules
+    "prettier",
   ],
   rules: {
-    "react/react-in-jsx-scope": "off", // Next.js doesn't require React in scope
+    "react/react-in-jsx-scope": "off",
     "unused-imports/no-unused-imports": "error",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",

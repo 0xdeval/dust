@@ -24,6 +24,10 @@ export const TokensApprovals = () => {
     updateState("SELL_TOKENS");
   }, [setIsReadyToSell, updateState]);
 
+  const handelSecondaryButtonClick = useCallback(() => {
+    updateState("SELECT_TOKENS");
+  }, [updateState]);
+
   return (
     <ContentContainer isLoading={!state}>
       {state && (
@@ -34,6 +38,9 @@ export const TokensApprovals = () => {
             buttonLabel={state?.contentButtonLabel}
             buttonAction={handleActionButtonClick}
             isButtonDisabled={!isAllTokensApproved}
+            secondaryButtonLabel="Back"
+            secondaryButtonAction={handelSecondaryButtonClick}
+            isSecondaryButtonDisabled={false}
           />
           <TokensStatusesCardsList selectedTokens={selectedTokensWithAppproveStatuses} />
         </>
