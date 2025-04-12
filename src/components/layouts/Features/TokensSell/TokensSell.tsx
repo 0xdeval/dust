@@ -41,8 +41,8 @@ export const TokensSell = () => {
   }, [executionData, sendTransaction]);
 
   useEffect(() => {
-    if (executionData && !isTransactionFailed) sendSwapTransaction();
-  }, [executionData, sendSwapTransaction, isTransactionFailed]);
+    if (executionData && !isTransactionFailed && !isTransactionExecuted) sendSwapTransaction();
+  }, [executionData, sendSwapTransaction, isTransactionFailed, isTransactionExecuted]);
 
   const startFromScratch = () => {
     updateState("SELECT_TOKENS");

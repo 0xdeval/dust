@@ -15,7 +15,7 @@ export const ContentContainer = forwardRef<HTMLDivElement, ContentContainerProps
         <Flex
           ref={ref}
           flexDirection="column"
-          p="60px 85px"
+          p={{ base: "40px 20px", md: "60px 40px" }}
           border="1px solid"
           borderColor="primaryBorder"
           borderRadius="12px"

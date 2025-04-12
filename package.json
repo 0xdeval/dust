@@ -26,7 +26,7 @@
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
     "typescript-eslint": "^8.29.1",
-    "viem": "2.x"
+    "viem": "^2.26.3"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.8",

@@ -10,8 +10,8 @@ interface ContentHeadlineCopiesProps extends FlexProps {
 export const ContentHeadlineCopies = forwardRef<HTMLDivElement, ContentHeadlineCopiesProps>(
   ({ title, subtitle, ...props }, ref) => {
     return (
-      <Flex ref={ref} flexDirection="column" gap={4} {...props}>
-        <Heading as="h1" size="4xl">
+      <Flex ref={ref} flexDirection="column" {...props}>
+        <Heading as="h1" size="4xl" fontWeight="bold">
           {title}
         </Heading>
         <Text color="textSecondary">{subtitle}</Text>

@@ -136,3 +136,7 @@ export const txnErrorToHumanReadable = (error: string | undefined) => {
   }
   return error;
 };
+
+export const truncateText = (text: string, mintCharacterLimit: number = 20) => {
+  return text.length > mintCharacterLimit ? `${text.slice(0, mintCharacterLimit)}...` : text;
+};

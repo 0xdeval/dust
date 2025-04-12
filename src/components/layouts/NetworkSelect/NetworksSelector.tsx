@@ -1,6 +1,7 @@
 import { networksConfig } from "@/configs/networks";
 import type { SelectRootProps } from "@chakra-ui/react";
 import {
+  Box,
   HStack,
   IconButton,
   Portal,
@@ -10,7 +11,7 @@ import {
   useSelectContext,
 } from "@chakra-ui/react";
 import type { SelectValueChangeDetails } from "@chakra-ui/react";
-import { forwardRef, useCallback, useEffect, useState } from "react";
+import { forwardRef, useCallback } from "react";
 import NetworkLogo from "./NetworkLogo";
 import type { SupportedChain } from "@/types/networks";
 import type { SelectItem } from "@/types/tokens";
@@ -33,7 +34,9 @@ const SelectTrigger = ({ defaultItem }: { defaultItem: SelectItem }) => {
             select.hasSelectedItems ? items[0].icon?.toString() : defaultItem.icon?.toString()
           }
         />
-        {select.hasSelectedItems ? items[0].label : defaultItem.label}
+        <Box display={{ base: "none", sm: "block" }}>
+          {select.hasSelectedItems ? items[0].label : defaultItem.label}
+        </Box>
       </HStack>
     </IconButton>
   );

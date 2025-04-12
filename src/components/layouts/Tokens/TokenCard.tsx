@@ -1,4 +1,5 @@
-import { CheckboxCard as ChakraCheckboxCard, Flex } from "@chakra-ui/react";
+import { truncateText } from "@/lib/utils";
+import { Box, CheckboxCard as ChakraCheckboxCard, Flex } from "@chakra-ui/react";
 import * as React from "react";
 
 export interface TokenCardProps extends ChakraCheckboxCard.RootProps {
@@ -36,15 +37,24 @@ export const TokenCard = React.forwardRef<HTMLInputElement, TokenCardProps>(
             <ContentWrapper>
               <Flex flexDirection="row" alignItems="center" gap={2}>
                 {icon}
-                {label && <ChakraCheckboxCard.Label>{label}</ChakraCheckboxCard.Label>}
-                {description && (
-                  <ChakraCheckboxCard.Description>{description}</ChakraCheckboxCard.Description>
-                )}
+                <Flex flexDirection="column" gap={1}>
+                  {label && (
+                    <ChakraCheckboxCard.Label>
+                      {truncateText(label as string)}
+                    </ChakraCheckboxCard.Label>
+                  )}
+                  {description && (
+                    <ChakraCheckboxCard.Description>
+                      {truncateText(description as string)}
+                    </ChakraCheckboxCard.Description>
+                  )}
+                </Flex>
               </Flex>
+              <Box display={{ base: "block", md: "none" }}>{addon}</Box>
               {indicatorPlacement === "inside" && indicator}
             </ContentWrapper>
           )}
-          {addon}
+          <Box display={{ base: "none", md: "block" }}>{addon}</Box>
           {indicatorPlacement === "end" && indicator}
         </ChakraCheckboxCard.Control>
       </ChakraCheckboxCard.Root>

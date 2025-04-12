@@ -1,4 +1,4 @@
-import { Flex, Skeleton } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
 import type { SelectedToken } from "@/types/tokens";
 import { TokenCard } from "./TokenCard";
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
@@ -36,7 +36,7 @@ export const TokensList = ({ tokens, isLoading, onCardSelect }: Props) => {
           p="10px"
           size="lg"
           borderRadius="8px"
-          fontSize="18px"
+          fontSize={{ base: "14px", md: "18px" }}
           label={token.name}
           description={token.symbol}
           addon={`${token.balance} ${token.symbol}`}

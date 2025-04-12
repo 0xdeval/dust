@@ -48,6 +48,8 @@ export const ContentHeadline = forwardRef<HTMLDivElement, ContentHeadlineProps>(
         width="100%"
         justifyContent="space-between"
         alignItems="flex-start"
+        flexDirection={{ base: "column", md: "row" }}
+        gap={5}
         {...props}
       >
         <ContentHeadlineCopies
@@ -55,6 +57,7 @@ export const ContentHeadline = forwardRef<HTMLDivElement, ContentHeadlineProps>(
           subtitle={subtitle}
           justifyContent={copiesJustifyContent}
           alignItems={copiesItemsAlign}
+          gap={2}
         />
         {hasActionButton && (
           <ContentHeadlineButtons
@@ -66,7 +69,7 @@ export const ContentHeadline = forwardRef<HTMLDivElement, ContentHeadlineProps>(
             isSecondaryButtonDisabled={
               isSecondaryButtonAvaialble ? isSecondaryButtonDisabled : undefined
             }
-            flexDirection="column"
+            flexDirection={{ base: "row", md: "column" }}
             gap={2}
           />
         )}

@@ -22,7 +22,7 @@ export const LogoAndTokens = ({ isPageLoading }: Props) => {
   );
 
   return (
-    <Flex flexDirection="column" gap={4} alignItems="flex-start">
+    <Flex flexDirection="column" gap={2} alignItems="flex-start">
       <Logo logoSrcDefaultPath="/logo-black.png" logoSrcDarkPath="/logo-white.png" />
       <Flex justifyContent="flex-start" alignItems="center" gap="10px">
         to <TokenSelector loading={isPageLoading} onSelect={handleReceivedTokenSelect} />

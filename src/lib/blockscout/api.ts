@@ -105,15 +105,9 @@ function formatBalance(value: bigint, decimals: number): string {
     const integerPart = value / divisor;
     const fractionalPart = value % divisor;
 
-    let fractionalStr = fractionalPart.toString();
-    fractionalStr = fractionalStr.padStart(decimals, "0");
-    fractionalStr = fractionalStr.replace(/0+$/, "");
+    const fullNumber = Number(integerPart) + Number(fractionalPart) / Number(divisor);
 
-    if (fractionalStr === "") {
-      return integerPart.toString();
-    }
-
-    return `${integerPart}.${fractionalStr}`;
+    return fullNumber.toFixed(4);
   } catch (error) {
     console.error("Error formatting balance:", error);
     return "0";
