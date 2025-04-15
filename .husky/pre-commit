@@ -1,5 +1,13 @@
 #!/usr/bin/env sh
+
+echo "⏳ Running lint-staged config..."
 bunx lint-staged
+echo "✅ Lint-staged config passed"
+echo "--------------------------------"
+
+echo "⏳ Running lint..."
 bun run lint
+echo "✅ Lint passed"
+echo "--------------------------------"
 
 echo ✅ All pre-commit jobs are done

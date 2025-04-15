@@ -1,5 +1,6 @@
 import type { Token } from "@/types/tokens";
 import type { SupportedChain } from "@/types/networks";
+import { formatBalance } from "./utils";
 
 interface BlockscoutResponse {
   items: Array<BlockscoutTokenItem>;
@@ -81,35 +82,5 @@ export async function fetchTokens(address: string, network: SupportedChain): Pro
       console.error("Error details:", error.message);
     }
     return [];
-  }
-}
-
-function formatBalance(value: bigint, decimals: number): string {
-  if (decimals < 0 || decimals > 30) {
-    throw new Error("Invalid decimals value: must be between 0 and 30");
-  }
-  if (value < BigInt(0)) {
-    throw new Error("Invalid value: must be non-negative");
-  }
-
-  if (decimals === 0 || value === BigInt(0)) {
-    return value.toString();
-  }
-
-  try {
-    let divisor = BigInt(1);
-    for (let i = 0; i < decimals; i++) {
-      divisor *= BigInt(10);
-    }
-
-    const integerPart = value / divisor;
-    const fractionalPart = value % divisor;
-
-    const fullNumber = Number(integerPart) + Number(fractionalPart) / Number(divisor);
-
-    return fullNumber.toFixed(4);
-  } catch (error) {
-    console.error("Error formatting balance:", error);
-    return "0";
   }
 }

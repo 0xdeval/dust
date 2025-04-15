@@ -96,14 +96,14 @@ export const mapTokensWithApprovalStatus = (
 };
 
 const cache: Record<number, NetworkInfo> = {};
-
+export const networkInfoCache = cache;
 export const getNetworkInfo = async (chainId: number): Promise<NetworkInfo | null> => {
   if (cache[chainId]) {
     return cache[chainId];
   }
 
   try {
-    const response = await fetch(`${CHAINSSCOUT_URL}/${chainId}`);
+    const response = await fetch(`/api/chains/${chainId}`);
 
     if (!response.ok) {
       console.error(`Failed to fetch network info for chainId ${chainId}: ${response.statusText}`);
@@ -111,19 +111,9 @@ export const getNetworkInfo = async (chainId: number): Promise<NetworkInfo | nul
     }
 
     const data = await response.json();
-
-    if (!response.ok) {
-      console.log(`Failed to fetch network info for chainId ${chainId}: ${response.statusText}`);
-      return null;
-    }
-
     cache[chainId] = data;
 
-    return {
-      name: data.name,
-      logoUrl: data.logo,
-      blockExplorer: data?.explorers[0]?.url,
-    };
+    return data;
   } catch (error) {
     console.error(`Error fetching network info for chainId ${chainId}:`, error);
     return null;
