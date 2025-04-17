@@ -7,10 +7,12 @@ import { useCallback, useEffect, useMemo } from "react";
 import { config } from "@/configs/wagmi";
 import { useSendTransaction } from "wagmi";
 import { getTxnStatusCopies, txnErrorToHumanReadable } from "@/lib/utils";
+import { DefaultPopup } from "../../Popup/DefaultPopup";
 
 export const TokensSell = () => {
   const { state, updateState } = useAppStateContext();
-  const { status, executionData, executionError, quoteData, quoteError } = usePrepareTokensSell();
+  const { status, unsellableTokens, executionData, executionError, quoteError, refetchQuote } =
+    usePrepareTokensSell();
 
   const {
     data: hash,
@@ -48,61 +50,88 @@ export const TokensSell = () => {
     updateState("SELECT_TOKENS");
   };
 
-  useEffect(() => {
-    console.log("EXECUTIONSTATE: ", { status, executionData, executionError });
-  }, [status, executionData, executionError]);
-
-  useEffect(() => {
-    console.log("QUOTESTATE: ", { quoteData, quoteError });
-  }, [quoteData, quoteError]);
-
   const txnStatusCopies = useMemo(() => {
-    if (isTransactionFailed || status === "ERROR") {
+    if (isTransactionFailed && status === "ERROR") {
+      console.log("transactionError:", transactionError);
       return getTxnStatusCopies(true, {
         error: txnErrorToHumanReadable(transactionError?.message),
       });
     }
+
+    if (quoteError && status === "ERROR") {
+      console.log("Quote error:", quoteError);
+      return getTxnStatusCopies(true, {
+        error: txnErrorToHumanReadable(quoteError),
+      });
+    }
+
     if (isTransactionExecuted) {
       return getTxnStatusCopies(false, { hash });
     }
 
     return getTxnStatusCopies(null, { hash });
-  }, [isTransactionFailed, isTransactionExecuted, status, hash, transactionError]);
+  }, [isTransactionFailed, isTransactionExecuted, status, hash, transactionError, quoteError]);
 
   const handelSecondaryButtonClick = useCallback(() => {
     updateState("APPROVE_TOKENS");
   }, [updateState]);
 
+  console.log(
+    "status for a spinner:",
+    isTransactionFailed,
+    quoteError,
+    executionError,
+    unsellableTokens,
+    isTransactionFailed || Boolean(quoteError) || Boolean(executionError) ? "error" : "success"
+  );
+
   return (
-    <ContentContainer isLoading={!state}>
-      {state && (
-        <>
-          <StatusSpinner
-            isLoading={isOperationPending}
-            size="xl"
-            boxSize="100px"
-            borderWidth="5px"
-            status={!isTransactionFailed ? "success" : "error"}
+    <>
+      <ContentContainer isLoading={!state}>
+        {quoteError && unsellableTokens.length > 0 && (
+          <DefaultPopup
+            isOpen={true}
+            title="Some tokens are not sellable"
+            subtitle="We can't find routes for some tokens, but we can sell the rest. Do you want to proceed?"
+            buttonCta="Sell rest"
+            buttonHandler={refetchQuote}
           />
-          <ContentHeadline
-            title={isOperationPending ? state.contentHeadline : txnStatusCopies?.contentHeadline}
-            subtitle={isOperationPending ? state.contentSubtitle : txnStatusCopies?.contentSubtitle}
-            hasActionButton={isTransactionFailed || !isOperationPending ? true : false}
-            buttonLabel={!isOperationPending ? txnStatusCopies?.contentButtonLabel : undefined}
-            buttonAction={
-              isTransactionFailed
-                ? sendSwapTransaction
-                : !isOperationPending
-                  ? startFromScratch
-                  : undefined
-            }
-            isButtonDisabled={isOperationPending}
-            secondaryButtonLabel="Back"
-            secondaryButtonAction={handelSecondaryButtonClick}
-            isSecondaryButtonDisabled={false}
-          />
-        </>
-      )}
-    </ContentContainer>
+        )}
+        {state && (
+          <>
+            <StatusSpinner
+              isLoading={isOperationPending}
+              size="xl"
+              boxSize="100px"
+              borderWidth="5px"
+              status={
+                isTransactionFailed || Boolean(quoteError) || Boolean(executionError)
+                  ? "error"
+                  : "success"
+              }
+            />
+            <ContentHeadline
+              title={isOperationPending ? state.contentHeadline : txnStatusCopies?.contentHeadline}
+              subtitle={
+                isOperationPending ? state.contentSubtitle : txnStatusCopies?.contentSubtitle
+              }
+              hasActionButton={isTransactionFailed || !isOperationPending ? true : false}
+              buttonLabel={!isOperationPending ? txnStatusCopies?.contentButtonLabel : undefined}
+              buttonAction={
+                isTransactionFailed
+                  ? sendSwapTransaction
+                  : !isOperationPending
+                    ? startFromScratch
+                    : undefined
+              }
+              isButtonDisabled={isOperationPending}
+              secondaryButtonLabel="Back"
+              secondaryButtonAction={handelSecondaryButtonClick}
+              isSecondaryButtonDisabled={false}
+            />
+          </>
+        )}
+      </ContentContainer>
+    </>
   );
 };

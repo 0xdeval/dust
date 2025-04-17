@@ -6,8 +6,8 @@ import { useAppStateContext } from "@/context/AppStateContext";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import type { SelectedToken } from "@/types/tokens";
-import { AGGREGATOR_CONTRACT_ADDRESS } from "@/lib/constants";
 import { approveTokensList } from "@/lib/actions/tokenApprovals";
+import { getAggregatorContractAddress } from "@/lib/utils";
 
 export const TokensSelection = () => {
   const { address } = useAccount();
@@ -16,6 +16,23 @@ export const TokensSelection = () => {
 
   const { state, updateState, setApprovedTokens, setSelectedTokens } = useAppStateContext();
   const { tokens, isLoading } = useTokens();
+
+  // const {
+  //   tokensToBurn,
+  //   tokensToSell,
+  //   isPending: isTokensCheckPending,
+  //   error: tokensCheckError,
+  // } = useTokensCheck(tokens);
+
+  // useEffect(() => {
+  //   if (tokensCheckError) {
+  //     console.error("tokensCheckError", tokensCheckError);
+  //   }
+  // }, [tokensCheckError]);
+
+  // useEffect(() => {
+  //   console.log("tokensToSell", tokensToSell, tokensToBurn);
+  // }, [tokensToSell, tokensToBurn]);
 
   useEffect(() => {
     const initialSelectedTokens = tokens.map((token) => ({
@@ -49,10 +66,25 @@ export const TokensSelection = () => {
       setApprovedTokens,
       selectedTokens,
       address as `0x${string}`,
-      AGGREGATOR_CONTRACT_ADDRESS
+      getAggregatorContractAddress(selectedNetwork.id)
     );
-  }, [setApprovedTokens, setSelectedTokens, address, sessionSelectedTokens, updateState]);
+  }, [
+    setApprovedTokens,
+    setSelectedTokens,
+    address,
+    sessionSelectedTokens,
+    updateState,
+    selectedNetwork,
+  ]);
 
+  // const publicClient = usePublicClient();
+  // const handleClick = useCallback(async () => {
+  //   const res = await checkTokensHaveMethods(
+  //     ["0xCa83b628dF8a9c208d0b7F9ef44E38DAcf28A452", "0xf31b1555cd7c8305bc7b27399f7aee263979d884"],
+  //     publicClient as PublicClient
+  //   );
+  //   console.log("res", res);
+  // }, [publicClient]);
   return (
     <ContentContainer isLoading={!state}>
       {state && (
@@ -69,6 +101,7 @@ export const TokensSelection = () => {
             isLoading={isLoading}
             onCardSelect={handleCardSelect}
           />
+          {/* <Button onClick={handleClick}>Check</Button> */}
         </>
       )}
     </ContentContainer>

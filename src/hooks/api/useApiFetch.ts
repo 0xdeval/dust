@@ -16,6 +16,11 @@ export interface ApiFetchParams<R extends ResourceName> {
   logError?: boolean;
 }
 
+export interface ApiResponse<T> {
+  data: T;
+  rawResponse: Response;
+}
+
 export default function useApiFetch() {
   const queryClient = useQueryClient();
 
@@ -23,8 +28,8 @@ export default function useApiFetch() {
     async <R extends ResourceName, M extends ResourceMethod<R>, T = unknown>(
       resourceName: R,
       resourceEndpoint: M,
-      { pathParams, queryParams, fetchParams, logError }: ApiFetchParams<R> = {}
-    ): Promise<T> => {
+      { pathParams, queryParams, fetchParams, logError = true }: ApiFetchParams<R> = {}
+    ): Promise<ApiResponse<T>> => {
       const url = buildUrl(resourceName, resourceEndpoint, pathParams, queryParams);
 
       const headers = pickBy(
@@ -35,8 +40,6 @@ export default function useApiFetch() {
         Boolean
       ) as HeadersInit;
 
-      console.log("URL: ", url, "HEADERS: ", headers, "FETCH PARAMS: ", fetchParams);
-
       const response = await fetch(url, {
         headers,
         ...fetchParams,
@@ -44,11 +47,16 @@ export default function useApiFetch() {
 
       if (!response.ok) {
         const error = await response.json();
-        console.log("ERROR: ", error);
-        throw new Error(error.message || "API request failed");
+        logError && console.log(`ERROR:`, error);
+        throw {
+          status: response.status,
+          message: error.message || response.statusText,
+          data: error,
+        };
       }
 
-      return response.json();
+      const data = await response.json();
+      return { data, rawResponse: response };
     },
     []
   );

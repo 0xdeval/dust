@@ -7,14 +7,21 @@ import type {
   ResourcePathParams,
   ResourcePayload,
 } from "@/types/api/resources";
-import type { ApiFetchParams } from "@/hooks/api/useApiFetch";
+import type { ApiFetchParams, ApiResponse } from "@/hooks/api/useApiFetch";
 import useApiFetch from "@/hooks/api/useApiFetch";
 
 export interface ApiQueryParams<R extends ResourceName, M extends ResourceMethod<R>, E = unknown> {
   pathParams?: ResourcePathParams<R>;
   queryParams?: Record<string, string | Array<string> | number | boolean | undefined>;
   fetchParams?: Omit<ApiFetchParams<R>["fetchParams"], "signal">;
-  queryOptions?: Partial<Omit<UseQueryOptions<ResourcePayload<R, M>, ResourceError<E>>, "queryFn">>;
+  queryOptions?: Partial<
+    UseQueryOptions<
+      ApiResponse<ResourcePayload<R, M>>,
+      ResourceError<E>,
+      ApiResponse<ResourcePayload<R, M>>,
+      ReadonlyArray<unknown>
+    >
+  >;
   logError?: boolean;
 }
 
@@ -40,7 +47,12 @@ export default function useApiQuery<
 ) {
   const apiFetch = useApiFetch();
 
-  return useQuery<ResourcePayload<R, M>, ResourceError<E>>({
+  return useQuery<
+    ApiResponse<ResourcePayload<R, M>>,
+    ResourceError<E>,
+    ApiResponse<ResourcePayload<R, M>>,
+    ReadonlyArray<unknown>
+  >({
     queryKey:
       queryOptions?.queryKey || getResourceKey(resource, method, { pathParams, queryParams }),
     queryFn: async ({ signal }) => {

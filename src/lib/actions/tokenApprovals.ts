@@ -16,9 +16,9 @@ export const approveTokensList = async (
 
   for (const token of tokensToApprove) {
     try {
-      const balance = stringToBigInt(token.balance, token.decimals);
+      // const balance = stringToBigInt(token.balance, token.decimals);
 
-      if (balance === BigInt(0)) {
+      if (token.rawBalance === BigInt(0)) {
         toaster.create({
           title: "Skip",
           description: `${token.symbol} has 0 balance`,
@@ -34,7 +34,7 @@ export const approveTokensList = async (
         args: [owner, spender],
       })) as bigint;
 
-      if (allowance >= balance) {
+      if (allowance >= token.rawBalance) {
         toaster.create({
           title: "Already approved",
           description: `${token.symbol} allowance is sufficient`,
@@ -49,12 +49,12 @@ export const approveTokensList = async (
         address: token.address,
         abi: erc20Abi,
         functionName: "approve",
-        args: [spender, balance],
+        args: [spender, token.rawBalance],
       });
 
       toaster.create({
         title: "Approval sent",
-        description: `Waiting for ${token.symbol} approval. Amount: ${balance}`,
+        description: `Waiting for ${token.symbol} approval. Amount: ${token.balance} ${token.symbol}`,
         type: "info",
       });
 

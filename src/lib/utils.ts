@@ -3,8 +3,8 @@ import type { Phase } from "../types/states";
 import type { CopiesState } from "../types/states";
 import type { ApprovingToken } from "../types/tokens";
 import type { SelectedToken } from "../types/tokens";
-import { CHAINSSCOUT_URL } from "./constants";
 import type { NetworkInfo } from "../types/utils";
+import { AGGREGATOR_CONTRACT_ADDRESS, TOKENS_TO_RECEIVE } from "./constants";
 
 export const stringToBigInt = (amount: string, decimals: number = 18) => {
   const bigIntAmount = parseUnits(amount, decimals);
@@ -129,4 +129,16 @@ export const txnErrorToHumanReadable = (error: string | undefined) => {
 
 export const truncateText = (text: string, mintCharacterLimit: number = 20) => {
   return text.length > mintCharacterLimit ? `${text.slice(0, mintCharacterLimit)}...` : text;
+};
+
+export const getDefaultTokenToReceive = (chainId: number) => {
+  return TOKENS_TO_RECEIVE[chainId][0];
+};
+
+export const getAllTokensToReceiveForChain = (chainId: number) => {
+  return TOKENS_TO_RECEIVE[chainId];
+};
+
+export const getAggregatorContractAddress = (chainId: number) => {
+  return AGGREGATOR_CONTRACT_ADDRESS[chainId.toString()];
 };

@@ -70,7 +70,7 @@ export async function fetchTokens(address: string, network: SupportedChain): Pro
           symbol: item.token.symbol,
           name: item.token.name,
           decimals,
-          balance: formattedBalance,
+          balance: formattedBalance.toFixed(4),
           rawBalance,
           logoURI: item.token.icon_url,
           price,

@@ -4,7 +4,9 @@ import { TOKENS_TO_RECEIVE } from "@/lib/constants";
 import type { SelectValueChangeDetails } from "@chakra-ui/react";
 import { Portal, Select, Skeleton, createListCollection } from "@chakra-ui/react";
 import type { SelectItem } from "@/types/tokens";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { useAppStateContext } from "@/context/AppStateContext";
+import { getAllTokensToReceiveForChain, getDefaultTokenToReceive } from "@/lib/utils";
 
 interface Props {
   onSelect: (value: Array<string>) => void;
@@ -12,21 +14,38 @@ interface Props {
 }
 
 export const TokenSelector = ({ onSelect, loading }: Props) => {
+  const { selectedNetwork } = useAppStateContext();
+  const [selectedToken, setSelectedToken] = useState<Array<string>>([
+    getDefaultTokenToReceive(selectedNetwork.id).address,
+  ]);
+
   const tokensCollection = createListCollection({
-    items: TOKENS_TO_RECEIVE.map((token) => ({
+    items: getAllTokensToReceiveForChain(selectedNetwork.id).map((token) => ({
       label: token.symbol,
       value: token.address,
       icon: undefined,
     })),
   });
 
+  useEffect(() => {
+    setSelectedToken([getDefaultTokenToReceive(selectedNetwork.id).address]);
+    onSelect([getDefaultTokenToReceive(selectedNetwork.id).address]);
+  }, [selectedNetwork.id, onSelect]);
+
   const handleValueChange = useCallback(
     (details: SelectValueChangeDetails<SelectItem>) => {
+      setSelectedToken(details.value);
       onSelect(details.value);
     },
     [onSelect]
   );
 
+  console.log(
+    "Current default value for chain:",
+    selectedNetwork.id,
+    getDefaultTokenToReceive(selectedNetwork.id).address,
+    tokensCollection
+  );
   return (
     <Skeleton loading={loading}>
       <Select.Root
@@ -34,8 +53,7 @@ export const TokenSelector = ({ onSelect, loading }: Props) => {
         variant="outline"
         size="sm"
         width="120px"
-        defaultChecked
-        defaultValue={[TOKENS_TO_RECEIVE[0].address]}
+        value={selectedToken}
         onValueChange={handleValueChange}
       >
         <Select.HiddenSelect />

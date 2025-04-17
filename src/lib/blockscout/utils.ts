@@ -1,4 +1,4 @@
-export function formatBalance(value: bigint, decimals: number): string {
+export function formatBalance(value: bigint, decimals: number): number {
   if (decimals < 0 || decimals > 30) {
     throw new Error("Invalid decimals value: must be between 0 and 30");
   }
@@ -7,7 +7,7 @@ export function formatBalance(value: bigint, decimals: number): string {
   }
 
   if (decimals === 0 || value === BigInt(0)) {
-    return value.toString();
+    return Number(value);
   }
 
   try {
@@ -21,9 +21,9 @@ export function formatBalance(value: bigint, decimals: number): string {
 
     const fullNumber = Number(integerPart) + Number(fractionalPart) / Number(divisor);
 
-    return fullNumber.toFixed(4);
+    return fullNumber;
   } catch (error) {
     console.error("Error formatting balance:", error);
-    return "0";
+    return 0;
   }
 }
