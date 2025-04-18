@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { usePublicClient } from "wagmi";
-import { checkTokensHaveMethods } from "@/lib/smartContracts/checkAbiMethods";
 import type { Token } from "@/types/tokens";
 import type { PublicClient } from "viem";
+import type { TokenSellabilityResult } from "@/lib/smartContracts/checkTokenSellable";
+import { checkTokensSellability } from "@/lib/smartContracts/checkTokenSellable";
 
 interface TokenCheckResult {
   address: `0x${string}`;
@@ -35,16 +36,22 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
       setError(null);
 
       try {
-        const tokenAddresses = tokens.map((token) => token.address as `0x${string}`);
-        const results = await checkTokensHaveMethods(tokenAddresses, publicClient);
+        const tokenAddresses = Array.from(
+          new Set(tokens.map((token) => token.address as `0x${string}`))
+        );
+        const results: Array<TokenSellabilityResult> = await checkTokensSellability(
+          tokenAddresses,
+          publicClient
+        );
 
         const burnableTokens: Array<Token> = [];
         const sellableTokens: Array<Token> = [];
 
         tokens.forEach((token) => {
-          const tokenResults = results[token.address as `0x${string}`];
+          const tokenResults = results.find((result) => result.address === token.address);
           if (tokenResults) {
-            const hasAllMethods = Object.values(tokenResults).every((hasMethod) => hasMethod);
+            console.log("tokenResults", tokenResults);
+            const hasAllMethods = tokenResults.proxyHasMethods || tokenResults.implHasMethods;
             if (hasAllMethods) {
               sellableTokens.push(token);
             } else {
