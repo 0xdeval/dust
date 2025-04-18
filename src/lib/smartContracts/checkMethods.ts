@@ -21,7 +21,7 @@ export const checkMethods = async (
   console.log(`Bytecode for ${contractAddress} received`);
   const cleanedBytecode = bytecode?.toLowerCase().replace(/^0x/, "") ?? "";
 
-  console.log(`Cleaned bytecode for ${contractAddress}`);
+  console.log(`Cleaned bytecode for ${contractAddress} has received`);
 
   const results: Record<string, boolean> = {};
 
@@ -29,7 +29,7 @@ export const checkMethods = async (
     Object.entries(REQUIRED_METHOD_SELECTORS).map(async ([method, selector]) => {
       // 1. Check if selector is in bytecode
       if (cleanedBytecode.includes(selector.slice(2))) {
-        console.log(`Bytecode for tokens ${contractAddress}: ${cleanedBytecode}`);
+        console.log(`Method in bytecode for tokens ${contractAddress} is found`);
         results[method] = true;
         return;
       }
