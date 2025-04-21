@@ -103,7 +103,12 @@ export const getNetworkInfo = async (chainId: number): Promise<NetworkInfo | nul
   }
 
   try {
-    const response = await fetch(`/api/chains/${chainId}`);
+    if (process.env.NEXT_PHASE === "phase-production-build") {
+      return null;
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const response = await fetch(`${baseUrl}/api/chains/${chainId}`);
 
     if (!response.ok) {
       console.error(`Failed to fetch network info for chainId ${chainId}: ${response.statusText}`);
