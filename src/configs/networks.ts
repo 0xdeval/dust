@@ -22,9 +22,9 @@ if (!process.env.NEXT_PUBLIC_SUPPORTED_CHAINS) {
   throw new Error("NEXT_PUBLIC_SUPPORTED_CHAINS is not set");
 }
 
-const supportedChains: Record<string, EnvChainsProps> = JSON.parse(
-  process.env.NEXT_PUBLIC_SUPPORTED_CHAINS
-);
+// Handle potential string escaping issues
+const supportedChainsString = process.env.NEXT_PUBLIC_SUPPORTED_CHAINS.replace(/^['"]|['"]$/g, "");
+const supportedChains: Record<string, EnvChainsProps> = JSON.parse(supportedChainsString);
 const supportedChainIds: Array<number> = Object.keys(supportedChains).map((id) => Number(id));
 
 export const wagmiNetworks: Array<AppKitNetwork> = [

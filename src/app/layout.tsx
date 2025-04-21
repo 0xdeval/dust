@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Web3ContextProvider from "@/context/WagmiContext";
 import { headers } from "next/headers";
-import { Provider } from "@/components/ui/Provider";
+import { CustomChakraProvider } from "@/components/ui/Provider";
 import { Header } from "@/components/layouts/Header/Header";
-import { Toaster } from "@/components/ui/Toaster";
+import { NotificationToaster } from "@/components/ui/Toaster";
 import { RootContainer } from "@/components/layouts/Container/RootContainer";
 import { AppStateProvider } from "@/context/AppStateContext";
 import React from "react";
@@ -33,13 +33,13 @@ export default async function RootLayout({
       <body>
         <Web3ContextProvider cookies={cookies}>
           <AppStateProvider>
-            <Provider>
+            <CustomChakraProvider>
               <RootContainer>
                 <Header />
                 {children}
-                <Toaster />
+                <NotificationToaster />
               </RootContainer>
-            </Provider>
+            </CustomChakraProvider>
           </AppStateProvider>
         </Web3ContextProvider>
       </body>
