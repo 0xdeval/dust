@@ -9,7 +9,7 @@ import { RootContainer } from "@/components/layouts/Container/RootContainer";
 import { AppStateProvider } from "@/context/AppStateContext";
 import React from "react";
 
-Inter({
+const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
@@ -30,7 +30,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>
+      <body className={inter.className}>
         <Web3ContextProvider cookies={cookies}>
           <AppStateProvider>
             <CustomChakraProvider>

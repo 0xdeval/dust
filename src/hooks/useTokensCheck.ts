@@ -16,7 +16,7 @@ interface UseTokenChecksResult {
 }
 
 export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
-  const [isPending, setIsPending] = useState(false);
+  const [isPending, setIsPending] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [tokensToBurn, setTokensToBurn] = useState<Array<Token>>([]);
   const [tokensToSell, setTokensToSell] = useState<Array<Token>>([]);
@@ -25,11 +25,15 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
   const { selectedNetwork, receivedToken } = useAppStateContext();
   const { address } = useAccount();
 
+  console.log("tokensToSell", tokensToSell);
+  console.log("tokensToBurn", tokensToBurn);
+
   const checkTokens = useCallback(
     async (appName: SubgraphAppName = "uniswap") => {
       if (tokens.length === 0) {
         setTokensToBurn([]);
         setTokensToSell([]);
+        setIsPending(false);
         return;
       }
 
@@ -47,9 +51,10 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
 
         if (cachedResult) {
           results = cachedResult;
-          // Update UI immediately with cached results
+          // Update UI with cached results
           setTokensToBurn(convertAddressesToTokens(results.burnable, tokens));
           setTokensToSell(convertAddressesToTokens(results.sellable, tokens));
+          setIsPending(false);
         } else {
           // Start the check in the background
           checkTokensSellability(
@@ -65,20 +70,19 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
             })
             .catch((err) => {
               setError(err instanceof Error ? err : new Error("Failed to check tokens"));
+            })
+            .finally(() => {
+              setIsPending(false);
             });
         }
       } catch (err) {
         setError(err instanceof Error ? err : new Error("Failed to check tokens"));
-        setTokensToBurn([]);
-        setTokensToSell([]);
-      } finally {
         setIsPending(false);
       }
     },
     [tokens, selectedNetwork.id, receivedToken, address]
   );
 
-  // Check tokens only when they actually change
   useEffect(() => {
     const currentTokenAddresses = tokens.map((t) => t.address.toLowerCase());
     const prevTokenAddresses = prevTokensRef.current;
@@ -88,6 +92,9 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
       !currentTokenAddresses.every((addr, i) => addr === prevTokenAddresses[i]);
 
     if (hasTokensChanged && tokens.length > 0 && receivedToken) {
+      setTokensToBurn([]);
+      setTokensToSell([]);
+      setIsPending(true);
       prevTokensRef.current = currentTokenAddresses;
       checkTokens();
     }

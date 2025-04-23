@@ -23,8 +23,9 @@ export const getCopies = (phase: Phase): CopiesState => {
 
     case "SELECT_TOKENS":
       return {
-        contentHeadline: "SELECT TOKENS TO SELL",
-        contentSubtitle: "Choose the tokens you want to sell",
+        contentHeadline: "SELECT TOKENS",
+        contentSubtitle:
+          "Choose the tokens you want to sell or burn. One type of operation at a time so far",
         contentButtonLabel: "Continue",
       };
 

@@ -5,10 +5,11 @@ import { useTokens } from "@/hooks/useTokens";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import type { SelectedToken } from "@/types/tokens";
+import type { SelectedToken, Token } from "@/types/tokens";
 import { approveTokensList } from "@/utils/actions/tokenApprovals";
 import { getAggregatorContractAddress } from "@/utils/utils";
-// import { useTokensCheck } from "@/hooks/useTokensCheck";
+import { Tabs } from "@/components/ui/Tabs";
+import { useTokensCheck } from "@/hooks/useTokensCheck";
 
 export const TokensSelection = () => {
   const { address } = useAccount();
@@ -19,29 +20,10 @@ export const TokensSelection = () => {
   const { state, updateState, setApprovedTokens, setSelectedTokens } = useAppStateContext();
   const { tokens, isLoading } = useTokens();
 
-  // const {
-  //   tokensToBurn,
-  //   tokensToSell,
-  //   isPending: isTokensCheckPending,
-  //   error: tokensCheckError,
-  //   checkTokens,
-  // } = useTokensCheck(tokens);
+  const { tokensToBurn, tokensToSell, isPending: isTokensCheckPending } = useTokensCheck(tokens);
 
-  // useEffect(() => {
-  //   if (tokensCheckError) {
-  //     console.error("tokensCheckError", tokensCheckError);
-  //   }
-  // }, [tokensCheckError]);
-
-  // useEffect(() => {
-  //   console.log("isTokensCheckPending", isTokensCheckPending);
-  // }, [isTokensCheckPending]);
-
-  // useEffect(() => {
-  //   console.log("tokens length", tokens.length);
-  //   console.log("tokensToSell", tokensToSell);
-  //   console.log("tokensToBurn", tokensToBurn);
-  // }, [tokensToSell, tokensToBurn]);
+  console.log("tokensToSell", tokensToSell);
+  console.log("tokensToBurn", tokensToBurn);
 
   useEffect(() => {
     const initialSelectedTokens = tokens.map((token) => ({
@@ -86,6 +68,23 @@ export const TokensSelection = () => {
     selectedNetwork,
   ]);
 
+  const renderTokensList = (tokens: Array<Token>) => {
+    const tokensWithSelection = tokens.map((token) => ({
+      ...token,
+      isSelected: sessionSelectedTokens.some((t) => t.address === token.address && t.isSelected),
+    }));
+
+    console.log("state: ", isLoading, isTokensCheckPending);
+
+    return (
+      <TokensList
+        tokens={tokensWithSelection}
+        isLoading={isLoading || isTokensCheckPending}
+        onCardSelect={handleCardSelect}
+      />
+    );
+  };
+
   return (
     <ContentContainer isLoading={!state}>
       {state && (
@@ -97,11 +96,19 @@ export const TokensSelection = () => {
             buttonAction={handleActionButtonClick}
             isButtonDisabled={isActionButtonDisabled}
           />
-          <TokensList
-            tokens={sessionSelectedTokens}
-            isLoading={isLoading}
-            onCardSelect={handleCardSelect}
-          />
+
+          <Tabs defaultValue="sellable" variant="enclosed">
+            <Tabs.List>
+              <Tabs.Trigger value="sellable" disabled={tokensToSell.length === 0}>
+                Sellable tokens
+              </Tabs.Trigger>
+              <Tabs.Trigger value="burnable" disabled={tokensToBurn.length === 0}>
+                Burnable tokens
+              </Tabs.Trigger>
+            </Tabs.List>
+            <Tabs.Content value="sellable">{renderTokensList(tokensToSell)}</Tabs.Content>
+            <Tabs.Content value="burnable">{renderTokensList(tokensToBurn)}</Tabs.Content>
+          </Tabs>
         </>
       )}
     </ContentContainer>
