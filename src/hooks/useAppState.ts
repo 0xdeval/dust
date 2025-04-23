@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { AppState, Phase } from "@/types/states";
 import { useAccount } from "wagmi";
-import { getCopies, getDefaultTokenToReceive } from "@/lib/utils";
+import { getCopies, getDefaultTokenToReceive } from "@/utils/utils";
 import type { SelectedToken } from "@/types/tokens";
 import type { SupportedChain } from "@/types/networks";
 import { networksConfig } from "@/configs/networks";

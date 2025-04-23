@@ -1,4 +1,4 @@
-import { CHAINSSCOUT_URL } from "@/lib/constants";
+import { CHAINSSCOUT_URL } from "@/utils/constants";
 import type { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ chainId: string }> }) {

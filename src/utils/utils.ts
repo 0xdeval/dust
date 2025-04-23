@@ -147,3 +147,7 @@ export const getAllTokensToReceiveForChain = (chainId: number) => {
 export const getAggregatorContractAddress = (chainId: number) => {
   return AGGREGATOR_CONTRACT_ADDRESS[chainId.toString()];
 };
+
+export const getAvaialbleToRecieveTokens = (chainId: number) => {
+  return TOKENS_TO_RECEIVE[chainId];
+};

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import useApiQuery from "./api/useApiQuery";
-import type { ApiResponse } from "./api/useApiFetch";
 import type {
   OdosInputToken,
   OdosQuoteRequest,
@@ -13,9 +12,6 @@ import { buildExecuteRequest, buildQuoteRequest } from "@/lib/odos/buildBody";
 import { useAccount } from "wagmi";
 import { useAppStateContext } from "@/context/AppStateContext";
 import type { OdosStatus } from "@/types/api/odos";
-import { stringToBigInt } from "@/lib/utils";
-import type { UseQueryOptions } from "@tanstack/react-query";
-import type { ResourceError } from "@/types/api/resources";
 
 interface OdosErrorResponse {
   detail: string;
@@ -196,8 +192,10 @@ export const usePrepareTokensSell = () => {
     if (odosExecutionRequest?.data && !isExecutionLoading) {
       setExecutionData(odosExecutionRequest.data as OdosExecuteResponse);
       setStatus("SUCCESS_EXECUTE");
+    } else {
+      setCurrentExecutionRequestError("An error occurred during an execution!");
     }
-  }, [executionRequest, isExecutionLoading, odosExecutionRequest]);
+  }, [executionRequest, isExecutionLoading, odosExecutionRequest, executionError]);
 
   console.log("params:", currentQuoteRequestError, currentExecutionRequestError);
 

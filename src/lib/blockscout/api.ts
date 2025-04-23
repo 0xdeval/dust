@@ -52,10 +52,10 @@ export async function fetchTokens(address: string, network: SupportedChain): Pro
           rawBalance = BigInt(0);
         }
 
-        console.log("rawBalance", rawBalance);
+        // console.log("rawBalance", rawBalance);
 
         const formattedBalance = formatBalance(rawBalance, decimals);
-        console.log("formattedBalance", formattedBalance);
+        // console.log("formattedBalance", formattedBalance);
 
         let price = 0;
         if (item.token.exchange_rate) {

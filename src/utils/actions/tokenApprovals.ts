@@ -1,5 +1,5 @@
 import { toaster } from "@/components/ui/Toaster";
-import { erc20Abi } from "@/lib/abis/erc-20";
+import { erc20Abi } from "@/utils/abis/erc-20";
 
 import type { SelectedToken } from "@/types/tokens";
 import { readContract, waitForTransactionReceipt, writeContract } from "@wagmi/core";

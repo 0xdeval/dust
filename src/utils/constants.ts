@@ -155,3 +155,11 @@ export const TOKENS_TO_RECEIVE: Record<string, Array<TokenToReceive>> = {
     },
   ],
 };
+
+export const SUBGRAPH_BASE_URL = "https://gateway.thegraph.com";
+
+export const CACHE_KEY_PREFIX = "token_sellability_";
+export const CACHE_EXPIRY = 24 * 60 * 60 * 1000;
+
+export const MAX_RETRIES = 3;
+export const INITIAL_RETRY_DELAY = 1000; // 1 second

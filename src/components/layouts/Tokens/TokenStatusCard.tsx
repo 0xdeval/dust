@@ -1,6 +1,6 @@
 import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 import { StatusSpinner } from "@/components/ui/Spinner";
-import { truncateText } from "@/lib/utils";
+import { truncateText } from "@/utils/utils";
 import type { CardRootProps } from "@chakra-ui/react";
 import { Card, Text, Flex, Box } from "@chakra-ui/react";
 import * as React from "react";
@@ -14,7 +14,6 @@ interface TokenStatusCardProps extends CardRootProps {
   addon?: React.ReactNode;
   footer?: React.ReactNode;
   isLoading?: boolean;
-  actionLabel?: string;
   onAction?: () => void;
 }
 
@@ -30,7 +29,6 @@ export const TokenStatusCard = React.forwardRef<HTMLDivElement, TokenStatusCardP
       footer,
       onAction,
       isLoading = false,
-      actionLabel = "Approve",
       ...rest
     } = props;
 

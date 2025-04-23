@@ -3,7 +3,7 @@ import { ContentContainer } from "../../Content/ContentContainer";
 import { ContentHeadline } from "../../Content/ContentHeadline";
 import { useCallback, useMemo } from "react";
 import { TokensStatusesCardsList } from "../../Tokens/TokensStatusesList";
-import { mapTokensWithApprovalStatus } from "@/lib/utils";
+import { mapTokensWithApprovalStatus } from "@/utils/utils";
 
 export const TokensApprovals = () => {
   const { state, selectedTokens, approvedTokens, updateState, setIsReadyToSell } =

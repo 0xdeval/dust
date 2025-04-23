@@ -76,6 +76,11 @@ export default tseslint.config(
           selector: "variableLike",
           format: ["camelCase", "PascalCase"],
         },
+        {
+          selector: "typeParameter",
+          format: ["PascalCase", "camelCase"],
+          leadingUnderscore: "allow",
+        },
       ],
       "@typescript-eslint/no-empty-function": ["off"],
       "@typescript-eslint/no-use-before-define": "off",
@@ -85,10 +90,22 @@ export default tseslint.config(
         "error",
         { allowShortCircuit: true, allowTernary: true },
       ],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          vars: "all",
+          args: "after-used",
+          ignoreRestSiblings: true,
+          varsIgnorePattern: "^_",
+          argsIgnorePattern: "^_",
+          caughtErrors: "all",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
     },
   },
   {
-    files: ["src/lib/constants.ts"],
+    files: ["src/utils/constants.ts", "src/lib/subgraph/configs/**"],
     rules: {
       "@typescript-eslint/naming-convention": [
         "error",

@@ -6,9 +6,9 @@ import { useAppStateContext } from "@/context/AppStateContext";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import type { SelectedToken } from "@/types/tokens";
-import { approveTokensList } from "@/lib/actions/tokenApprovals";
-import { getAggregatorContractAddress } from "@/lib/utils";
-import { useTokensCheck } from "@/hooks/useTokensCheck";
+import { approveTokensList } from "@/utils/actions/tokenApprovals";
+import { getAggregatorContractAddress } from "@/utils/utils";
+// import { useTokensCheck } from "@/hooks/useTokensCheck";
 
 export const TokensSelection = () => {
   const { address } = useAccount();
@@ -19,23 +19,29 @@ export const TokensSelection = () => {
   const { state, updateState, setApprovedTokens, setSelectedTokens } = useAppStateContext();
   const { tokens, isLoading } = useTokens();
 
-  const {
-    tokensToBurn,
-    tokensToSell,
-    isPending: isTokensCheckPending,
-    error: tokensCheckError,
-  } = useTokensCheck(tokens);
+  // const {
+  //   tokensToBurn,
+  //   tokensToSell,
+  //   isPending: isTokensCheckPending,
+  //   error: tokensCheckError,
+  //   checkTokens,
+  // } = useTokensCheck(tokens);
 
-  useEffect(() => {
-    if (tokensCheckError) {
-      console.error("tokensCheckError", tokensCheckError);
-    }
-  }, [tokensCheckError]);
+  // useEffect(() => {
+  //   if (tokensCheckError) {
+  //     console.error("tokensCheckError", tokensCheckError);
+  //   }
+  // }, [tokensCheckError]);
 
-  useEffect(() => {
-    console.log("tokensToSell", tokensToSell);
-    console.log("tokensToBurn", tokensToBurn);
-  }, [tokensToSell, tokensToBurn]);
+  // useEffect(() => {
+  //   console.log("isTokensCheckPending", isTokensCheckPending);
+  // }, [isTokensCheckPending]);
+
+  // useEffect(() => {
+  //   console.log("tokens length", tokens.length);
+  //   console.log("tokensToSell", tokensToSell);
+  //   console.log("tokensToBurn", tokensToBurn);
+  // }, [tokensToSell, tokensToBurn]);
 
   useEffect(() => {
     const initialSelectedTokens = tokens.map((token) => ({

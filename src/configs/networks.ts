@@ -1,4 +1,4 @@
-import { getNetworkInfo } from "@/lib/utils";
+import { getNetworkInfo } from "@/utils/utils";
 import {
   base,
   mainnet,

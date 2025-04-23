@@ -3,7 +3,6 @@ import type {
   OdosExecuteRequest,
   OdosInputToken,
   OdosOutputToken,
-  OdosQuoteResponse,
 } from "@/types/api/odos";
 
 interface BuildQuoteParams {

@@ -1,12 +1,11 @@
 "use client";
 
-import { TOKENS_TO_RECEIVE } from "@/lib/constants";
 import type { SelectValueChangeDetails } from "@chakra-ui/react";
 import { Portal, Select, Skeleton, createListCollection } from "@chakra-ui/react";
 import type { SelectItem } from "@/types/tokens";
 import { useCallback, useState, useEffect } from "react";
 import { useAppStateContext } from "@/context/AppStateContext";
-import { getAllTokensToReceiveForChain, getDefaultTokenToReceive } from "@/lib/utils";
+import { getAllTokensToReceiveForChain, getDefaultTokenToReceive } from "@/utils/utils";
 
 interface Props {
   onSelect: (value: Array<string>) => void;

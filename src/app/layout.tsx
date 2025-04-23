@@ -9,7 +9,7 @@ import { RootContainer } from "@/components/layouts/Container/RootContainer";
 import { AppStateProvider } from "@/context/AppStateContext";
 import React from "react";
 
-const inter = Inter({
+Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",

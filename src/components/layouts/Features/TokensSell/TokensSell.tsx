@@ -6,7 +6,7 @@ import { StatusSpinner } from "@/components/ui/Spinner";
 import { useCallback, useEffect, useMemo } from "react";
 import { config } from "@/configs/wagmi";
 import { useSendTransaction } from "wagmi";
-import { getTxnStatusCopies, txnErrorToHumanReadable } from "@/lib/utils";
+import { getTxnStatusCopies, txnErrorToHumanReadable } from "@/utils/utils";
 import { DefaultPopup } from "../../Popup/DefaultPopup";
 
 export const TokensSell = () => {

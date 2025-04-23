@@ -10,7 +10,9 @@ import {
   networkInfoCache,
 } from "./utils";
 import type { SelectedToken } from "@/types/tokens";
+import dotenv from "dotenv";
 
+dotenv.config();
 describe("stringToBigInt", () => {
   it("converts string to BigInt with default decimals", () => {
     expect(stringToBigInt("1.0")).toBe(1000000000000000000n);
@@ -141,7 +143,9 @@ describe("getNetworkInfo", () => {
 
     const result = await getNetworkInfo(1);
 
-    expect(mockFetch).toHaveBeenCalledWith("/api/chains/1");
+    expect(mockFetch).toHaveBeenCalledWith(
+      `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/api/chains/1`
+    );
     expect(result).toEqual(mockData);
   });
 

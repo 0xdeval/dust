@@ -1,4 +1,4 @@
-import { truncateText } from "@/lib/utils";
+import { truncateText } from "@/utils/utils";
 import { Box, CheckboxCard as ChakraCheckboxCard, Flex } from "@chakra-ui/react";
 import * as React from "react";
 

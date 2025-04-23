@@ -1,4 +1,3 @@
-import { useQueryClient } from "@tanstack/react-query";
 import { pickBy } from "es-toolkit";
 import { useCallback } from "react";
 import buildUrl from "@/hooks/api/buildUrl";
@@ -22,8 +21,6 @@ export interface ApiResponse<T> {
 }
 
 export default function useApiFetch() {
-  const queryClient = useQueryClient();
-
   return useCallback(
     async <R extends ResourceName, M extends ResourceMethod<R>, T = unknown>(
       resourceName: R,

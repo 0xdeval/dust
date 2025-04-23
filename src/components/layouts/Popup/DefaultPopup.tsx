@@ -1,20 +1,7 @@
 "use client";
 
 import type { DialogContentProps } from "@chakra-ui/react";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverHeader,
-  PopoverBody,
-  Button,
-  Text,
-  Box,
-  PopoverContentProps,
-  useDisclosure,
-  Dialog,
-} from "@chakra-ui/react";
+import { Button, Text, useDisclosure, Dialog } from "@chakra-ui/react";
 import { forwardRef, useCallback, useEffect } from "react";
 
 type CustomDialogProps = DialogContentProps & {

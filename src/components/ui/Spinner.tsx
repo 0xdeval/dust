@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Spinner, Icon, chakra } from "@chakra-ui/react";
+import { Spinner, Icon, chakra } from "@chakra-ui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MdOutlineDone } from "react-icons/md";
 import { MdError } from "react-icons/md";
