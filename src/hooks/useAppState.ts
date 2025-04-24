@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { AppState, Phase } from "@/types/states";
+import type { AppState, OperationType, Phase } from "@/types/states";
 import { useAccount } from "wagmi";
 import { getCopies, getDefaultTokenToReceive } from "@/utils/utils";
 import type { SelectedToken } from "@/types/tokens";
@@ -19,6 +19,8 @@ export const useAppState = () => {
   const [selectedNetwork, setSelectedNetwork] = useState<SupportedChain>(networksConfig[0]);
 
   const [originalNetwork, setOriginalNetwork] = useState<SupportedChain>(selectedNetwork);
+
+  const [operationType, setOperationType] = useState<OperationType>("sell");
 
   const [receivedToken, setReceivedToken] = useState<`0x${string}`>(
     getDefaultTokenToReceive(selectedNetwork.id).address
@@ -74,5 +76,7 @@ export const useAppState = () => {
     setReceivedToken,
     selectedNetwork,
     setSelectedNetwork,
+    operationType,
+    setOperationType,
   };
 };

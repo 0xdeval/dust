@@ -23,3 +23,5 @@ export interface CopiesState {
   contentSubtitle: string;
   contentButtonLabel: string;
 }
+
+export type OperationType = "sell" | "burn";

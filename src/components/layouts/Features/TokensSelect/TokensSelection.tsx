@@ -10,6 +10,7 @@ import { approveTokensList } from "@/utils/actions/tokenApprovals";
 import { getAggregatorContractAddress } from "@/utils/utils";
 import { Tabs } from "@/components/ui/Tabs";
 import { useTokensCheck } from "@/hooks/useTokensCheck";
+import { NoTokensStub } from "@/components/ui/Stubs/NoTokens";
 
 export const TokensSelection = () => {
   const { address } = useAccount();
@@ -17,13 +18,22 @@ export const TokensSelection = () => {
   const { selectedNetwork } = useAppStateContext();
   const [isActionButtonDisabled, setIsActionButtonDisabled] = useState(true);
 
-  const { state, updateState, setApprovedTokens, setSelectedTokens } = useAppStateContext();
+  const {
+    state,
+    updateState,
+    setApprovedTokens,
+    setSelectedTokens,
+    setOperationType,
+    operationType,
+  } = useAppStateContext();
   const { tokens, isLoading } = useTokens();
 
   const { tokensToBurn, tokensToSell, isPending: isTokensCheckPending } = useTokensCheck(tokens);
 
   console.log("tokensToSell", tokensToSell);
   console.log("tokensToBurn", tokensToBurn);
+  console.log("tokens", tokens);
+  console.log("isTokensCheckPending", isTokensCheckPending);
 
   useEffect(() => {
     const initialSelectedTokens = tokens.map((token) => ({
@@ -68,6 +78,14 @@ export const TokensSelection = () => {
     selectedNetwork,
   ]);
 
+  const handleSellClick = useCallback(() => {
+    setOperationType("sell");
+  }, [setOperationType]);
+
+  const handleBurnClick = useCallback(() => {
+    setOperationType("burn");
+  }, [setOperationType]);
+
   const renderTokensList = (tokens: Array<Token>) => {
     const tokensWithSelection = tokens.map((token) => ({
       ...token,
@@ -89,26 +107,44 @@ export const TokensSelection = () => {
     <ContentContainer isLoading={!state}>
       {state && (
         <>
-          <ContentHeadline
-            title={state?.contentHeadline}
-            subtitle={state?.contentSubtitle}
-            buttonLabel={state?.contentButtonLabel}
-            buttonAction={handleActionButtonClick}
-            isButtonDisabled={isActionButtonDisabled}
-          />
+          {!isTokensCheckPending &&
+          !isLoading &&
+          tokens.length === 0 &&
+          tokensToSell.length === 0 &&
+          tokensToBurn.length === 0 ? (
+            <NoTokensStub />
+          ) : (
+            <>
+              <ContentHeadline
+                title={state?.contentHeadline}
+                subtitle={state?.contentSubtitle}
+                buttonLabel={operationType === "sell" ? state?.contentButtonLabel : "Soon..."}
+                buttonAction={operationType === "sell" ? handleActionButtonClick : undefined}
+                isButtonDisabled={operationType === "sell" ? isActionButtonDisabled : true}
+              />
 
-          <Tabs defaultValue="sellable" variant="enclosed">
-            <Tabs.List>
-              <Tabs.Trigger value="sellable" disabled={tokensToSell.length === 0}>
-                Sellable tokens
-              </Tabs.Trigger>
-              <Tabs.Trigger value="burnable" disabled={tokensToBurn.length === 0}>
-                Burnable tokens
-              </Tabs.Trigger>
-            </Tabs.List>
-            <Tabs.Content value="sellable">{renderTokensList(tokensToSell)}</Tabs.Content>
-            <Tabs.Content value="burnable">{renderTokensList(tokensToBurn)}</Tabs.Content>
-          </Tabs>
+              <Tabs defaultValue="sellable" variant="enclosed">
+                <Tabs.List>
+                  <Tabs.Trigger
+                    value="sellable"
+                    disabled={tokensToSell.length === 0}
+                    onClick={handleSellClick}
+                  >
+                    Sellable tokens
+                  </Tabs.Trigger>
+                  <Tabs.Trigger
+                    value="burnable"
+                    disabled={tokensToBurn.length === 0}
+                    onClick={handleBurnClick}
+                  >
+                    Burnable tokens
+                  </Tabs.Trigger>
+                </Tabs.List>
+                <Tabs.Content value="sellable">{renderTokensList(tokensToSell)}</Tabs.Content>
+                <Tabs.Content value="burnable">{renderTokensList(tokensToBurn)}</Tabs.Content>
+              </Tabs>
+            </>
+          )}
         </>
       )}
     </ContentContainer>

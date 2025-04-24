@@ -39,12 +39,6 @@ export const TokenSelector = ({ onSelect, loading }: Props) => {
     [onSelect]
   );
 
-  // console.log(
-  //   "Current default value for chain:",
-  //   selectedNetwork.id,
-  //   getDefaultTokenToReceive(selectedNetwork.id).address,
-  //   tokensCollection
-  // );
   return (
     <Skeleton loading={loading}>
       <Select.Root

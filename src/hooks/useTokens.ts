@@ -10,6 +10,7 @@ export function useTokens() {
   const [tokens, setTokens] = useState<Array<Token>>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  console.log("Wallet info: ", address, selectedNetwork);
   useEffect(() => {
     async function fetchUserTokens() {
       if (!address || !selectedNetwork) {
@@ -21,8 +22,10 @@ export function useTokens() {
       setIsLoading(true);
       setTokens([]);
 
+      console.log("fetching tokens");
       try {
         const fetchedTokens = await fetchTokens(address as string, selectedNetwork);
+        console.log("fetchedTokens", fetchedTokens);
         setTokens(fetchedTokens);
       } catch (error) {
         console.error("Error fetching tokens:", error);
