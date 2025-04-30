@@ -1,4 +1,4 @@
-import { getNetworkInfo } from "@/utils/utils";
+import { getNetworkInfo } from "@/utils/network";
 import {
   base,
   mainnet,
@@ -15,6 +15,7 @@ import {
 import type { AppKitNetwork } from "@reown/appkit/networks";
 import dotenv from "dotenv";
 import type { SupportedChain, EnvChainsProps } from "@/types/networks";
+import { MOCK_NETWORKS } from "@/utils/mocks/networks";
 
 dotenv.config();
 
@@ -22,7 +23,6 @@ if (!process.env.NEXT_PUBLIC_SUPPORTED_CHAINS) {
   throw new Error("NEXT_PUBLIC_SUPPORTED_CHAINS is not set");
 }
 
-// Handle potential string escaping issues
 const supportedChainsString = process.env.NEXT_PUBLIC_SUPPORTED_CHAINS.replace(/^['"]|['"]$/g, "");
 const supportedChains: Record<string, EnvChainsProps> = JSON.parse(supportedChainsString);
 const supportedChainIds: Array<number> = Object.keys(supportedChains).map((id) => Number(id));
@@ -57,16 +57,22 @@ const intersectedChains = intersectedChainIds.map((chainId: number) => {
   };
 });
 
-export const networksConfig: Array<SupportedChain> = await Promise.all(
-  intersectedChains.map(async (network) => {
-    const chainInfo = await getNetworkInfo(Number(network.id));
+export const defineNetworksConfig = async (): Promise<Array<SupportedChain>> => {
+  const networksConfig: Array<SupportedChain> = process.env.NEXT_PUBLIC_USE_MOCKS
+    ? MOCK_NETWORKS
+    : await Promise.all(
+        intersectedChains.map(async (network) => {
+          const chainInfo = await getNetworkInfo(Number(network.id));
 
-    return {
-      ...network,
-      name: chainInfo?.name || network.name,
-      logo: chainInfo?.logoUrl,
-      explorerUrl: supportedChains[network.id.toString()].explorerUrl,
-      apiUrl: supportedChains[network.id.toString()].apiUrl,
-    } as SupportedChain;
-  })
-);
+          return {
+            ...network,
+            name: chainInfo?.name || network.name,
+            logo: chainInfo?.logoUrl,
+            explorerUrl: supportedChains[network.id.toString()].explorerUrl,
+            apiUrl: supportedChains[network.id.toString()].apiUrl,
+          } as SupportedChain;
+        })
+      );
+
+  return networksConfig;
+};

@@ -22,7 +22,7 @@ export const ImageWithFallback = forwardRef<HTMLImageElement, ImageWithFallbackP
         bg="gray.200"
         borderRadius="full"
       >
-        <Text fontSize="lg" fontWeight="bold" color="gray.700">
+        <Text fontSize="sm" fontWeight="bold" color="gray.700">
           {firstLetter}
         </Text>
       </Box>

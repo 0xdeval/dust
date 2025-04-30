@@ -7,10 +7,11 @@ export default defineConfig({
     setupFiles: "./vitest.setup.ts",
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
     alias: {
-      "@/*": "./src/*",
-      "@/components/*": "./src/components/*",
-      "@/types/*": "./src/types/*",
-      "@/lib/**": "./src/lib/**",
+      "@": "./src",
+      "@/components": "./src/components",
+      "@/types": "./src/types",
+      "@/lib": "./src/lib",
+      "@/utils": "./src/utils",
     },
   },
 });

@@ -1,5 +1,6 @@
 import type { TokenSellabilityResult } from "@/types/subgraph";
-import { CACHE_KEY_PREFIX, CACHE_EXPIRY } from "./constants";
+import { CACHE_KEY_PREFIX, CACHE_EXPIRY } from "@/utils/constants";
+
 interface CachedResult {
   result: TokenSellabilityResult;
   timestamp: number;

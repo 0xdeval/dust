@@ -1,0 +1,60 @@
+import type { BlockscoutResponse } from "@/types/api/blockscout";
+
+export const TOKENS_MOCK: BlockscoutResponse = {
+  items: [
+    {
+      token: {
+        address: "0x854270147d8a07e3bd95bd0d56f3524177206411",
+        circulating_market_cap: "2000",
+        decimals: "18",
+        exchange_rate: null,
+        holders: "100",
+        icon_url: null,
+        name: "USD Token",
+        symbol: "USDC",
+        total_supply: "100000",
+        type: "ERC-20",
+        volume_24h: "10000",
+      },
+      token_id: null,
+      token_instance: null,
+      value: "12220000000000000000",
+    },
+    {
+      token: {
+        address: "0x82a992617d8a07e3bd95bd0d56f3524151087552",
+        circulating_market_cap: "100",
+        decimals: "18",
+        exchange_rate: null,
+        holders: "12300",
+        icon_url: null,
+        name: "USA Token",
+        symbol: "USDA",
+        total_supply: "560000",
+        type: "ERC-20",
+        volume_24h: "1000",
+      },
+      token_id: null,
+      token_instance: null,
+      value: "16690000000000000000",
+    },
+    {
+      token: {
+        address: "0x88af49447d8a07667815bd0d56f3524155510ab1",
+        circulating_market_cap: "200000",
+        decimals: "18",
+        exchange_rate: null,
+        holders: "6660",
+        icon_url: null,
+        name: "MARO Token",
+        symbol: "MAROT",
+        total_supply: "120000",
+        type: "ERC-20",
+        volume_24h: "999000",
+      },
+      token_id: null,
+      token_instance: null,
+      value: "66660000000000000000",
+    },
+  ],
+};

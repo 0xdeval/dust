@@ -105,7 +105,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["src/utils/constants.ts", "src/lib/subgraph/configs/**"],
+    files: ["src/utils/constants.ts", "src/lib/subgraph/configs/**", "src/utils/mocks/**"],
     rules: {
       "@typescript-eslint/naming-convention": [
         "error",
@@ -117,7 +117,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ["src/lib/blockscout/**"],
+    files: ["src/lib/blockscout/**", "src/types/api/blockscout.ts"],
     rules: {
       "@typescript-eslint/naming-convention": [
         "error",

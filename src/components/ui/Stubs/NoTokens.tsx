@@ -1,4 +1,5 @@
-import { Box, Flex, Text, VStack } from "@chakra-ui/react";
+import { appConfig } from "@/configs/app";
+import { Box, Flex, Link, Text, VStack } from "@chakra-ui/react";
 import { MdOutlineSearch } from "react-icons/md";
 
 export const NoTokensStub = () => {
@@ -14,6 +15,12 @@ export const NoTokensStub = () => {
         <Text fontSize="md" color="textSecondary" textAlign="center" maxW="400px">
           We couldn't find any tokens in your wallet for the selected network. Try switching
           networks or make sure you have tokens in your wallet.
+        </Text>
+        <Text fontSize="md" color="textSecondary" textAlign="center" maxW="400px">
+          If you think we're wrong, contact{" "}
+          <Link color="accentMain" href={appConfig.supportLink}>
+            our support
+          </Link>
         </Text>
       </VStack>
     </Flex>

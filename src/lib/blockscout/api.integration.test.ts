@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { fetchTokens } from "./api";
+import { fetchTokens } from "@/lib/blockscout/api";
 
 describe("Blockscout API Integration", () => {
   const testAddress = "0x813399e5b08Bb50b038AA7dF6347b6AF2D161828";

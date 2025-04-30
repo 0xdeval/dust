@@ -1,5 +1,5 @@
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
-import { StatusSpinner } from "@/components/ui/Spinner";
+import { ImageWithFallback } from "@/ui/ImageWithFallback";
+import { StatusSpinner } from "@/ui/Spinner";
 import { truncateText } from "@/utils/utils";
 import type { CardRootProps } from "@chakra-ui/react";
 import { Card, Text, Flex, Box } from "@chakra-ui/react";

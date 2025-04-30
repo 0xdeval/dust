@@ -25,31 +25,15 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
 
   const prevTokensRef = useRef<Array<string>>([]);
   const isCheckingRef = useRef(false);
+  const cacheKeyRef = useRef<string>("");
 
   const { selectedNetwork, receivedToken } = useAppStateContext();
   const { address } = useAccount();
 
-  console.log(
-    "Hook render - state:",
-    state,
-    "tokens length:",
-    tokens.length,
-    "receivedToken:",
-    receivedToken
-  );
-
   const checkTokens = useCallback(
     async (appName: SubgraphAppName = "uniswap") => {
-      console.log("checkTokens called - tokens length:", tokens.length);
-
-      if (!receivedToken) {
-        console.log("No received token set");
-        setState((prev) => ({ ...prev, isPending: false, tokensToBurn: [], tokensToSell: [] }));
-        return;
-      }
-
-      if (tokens.length === 0) {
-        console.log("No tokens to check");
+      if (!receivedToken || tokens.length === 0) {
+        console.log("No tokens or received token, resetting state");
         setState((prev) => ({ ...prev, isPending: false, tokensToBurn: [], tokensToSell: [] }));
         return;
       }
@@ -59,9 +43,23 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
         return;
       }
 
+      // Cache for subgraph to not check the same tokens twice
+      const currentCacheKey = `${selectedNetwork.id}-${address}-${tokens.length}`;
+      if (currentCacheKey === cacheKeyRef.current) {
+        console.log("Already checked tokens, skipping");
+        return;
+      }
+
       console.log("Starting token check");
       isCheckingRef.current = true;
-      setState((prev) => ({ ...prev, isPending: true, error: null }));
+      cacheKeyRef.current = currentCacheKey;
+      setState((prev) => ({
+        ...prev,
+        isPending: true,
+        error: null,
+        tokensToBurn: [],
+        tokensToSell: [],
+      }));
 
       try {
         const tokenAddresses = Array.from(
@@ -82,20 +80,45 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
             isPending: false,
           }));
         } else {
-          console.log("Fetching new results");
-          results = await checkTokensSellability(
+          // Incremental update logic
+          let batchSellable: Array<string> = [];
+          let batchBurnable: Array<string> = [];
+          await checkTokensSellability(
             tokenAddresses,
             receivedToken as string,
             appName,
-            selectedNetwork.id
+            selectedNetwork.id,
+            (pools, chunkTokens) => {
+              // For each chunk, determine which tokens are sellable
+              const sellable = new Set<string>();
+              for (const pool of pools) {
+                const token0 = pool.token0.id.toLowerCase();
+                const token1 = pool.token1.id.toLowerCase();
+                const dynamicToken = [token0, token1].find(
+                  (t) => t !== receivedToken.toLowerCase()
+                );
+                if (dynamicToken) {
+                  sellable.add(dynamicToken);
+                }
+              }
+              const chunkSellable = chunkTokens.filter((t) => sellable.has(t.toLowerCase()));
+              const chunkBurnable = chunkTokens.filter((t) => !sellable.has(t.toLowerCase()));
+              batchSellable = [...batchSellable, ...chunkSellable];
+              batchBurnable = [...batchBurnable, ...chunkBurnable];
+              setState((prev) => ({
+                ...prev,
+                tokensToSell: convertAddressesToTokens(batchSellable, tokens),
+                tokensToBurn: convertAddressesToTokens(batchBurnable, tokens),
+                isPending: true, // still pending until all batches are done
+              }));
+            }
           );
-          setCachedResult(selectedNetwork.id, address as string, results);
-          setState((prev) => ({
-            ...prev,
-            tokensToBurn: convertAddressesToTokens(results.burnable, tokens),
-            tokensToSell: convertAddressesToTokens(results.sellable, tokens),
-            isPending: false,
-          }));
+          setCachedResult(selectedNetwork.id, address as string, {
+            sellable: batchSellable,
+            burnable: batchBurnable,
+          });
+          // After all batches, set isPending to false
+          setState((prev) => ({ ...prev, isPending: false }));
         }
       } catch (err) {
         console.error("Error checking tokens:", err);
@@ -119,15 +142,6 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
     const hasTokensChanged =
       currentTokenAddresses.length !== prevTokenAddresses.length ||
       !currentTokenAddresses.every((addr, i) => addr === prevTokenAddresses[i]);
-
-    console.log(
-      "useEffect - hasTokensChanged:",
-      hasTokensChanged,
-      "tokens length:",
-      tokens.length,
-      "receivedToken:",
-      receivedToken
-    );
 
     if (hasTokensChanged && tokens.length > 0 && receivedToken) {
       console.log("Triggering new token check");

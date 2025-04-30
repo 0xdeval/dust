@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useApiQuery from "./api/useApiQuery";
+import useApiQuery from "@/hooks/api/useApiQuery";
 import type {
   OdosInputToken,
   OdosQuoteRequest,

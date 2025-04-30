@@ -1,19 +1,5 @@
 import type { TokenToReceive } from "@/types/tokens";
 
-export const EIP_1967_IMPLEMENTATION_SLOT =
-  "0x360894A13BA1A3210667C828492DB98DCA3E2076CC3735A920A3CA505D382BBC";
-export const CIRCLE_FIAT_TOKEN_PROXY_SLOT =
-  "0x0a3b0a7f9315275684b055e01d3d4442db366edfc672db893f45f246f09a3c99";
-export const DAI_PROXY_SLOT = "0x8c5f73ad52bcd3d46d0e52a85a3aa59d49b4ad35782abf42f6fbc96e0be91214";
-export const BEACON_PROXY_SLOT =
-  "0xa3f0ad74e5426a0dbe3ffe2e3f4e5f0b2a65391bd498b3f3f2e3b9c4e3e8a127";
-
-export const REQUIRED_METHOD_SELECTORS: Record<string, string> = {
-  "allowance(address,address)": "0xdd62ed3e",
-  "approve(address,uint256)": "0x095ea7b3",
-  "transferFrom(address,address,uint256)": "0x23b872dd",
-};
-
 export const CHAINSSCOUT_URL = "https://chains.blockscout.com/api/chains";
 
 export const AGGREGATOR_CONTRACT_ADDRESS: Record<string, `0x${string}`> = {
@@ -160,6 +146,8 @@ export const SUBGRAPH_BASE_URL = "https://gateway.thegraph.com";
 
 export const CACHE_KEY_PREFIX = "token_sellability_";
 export const CACHE_EXPIRY = 24 * 60 * 60 * 1000;
+
+export const TOKENS_FETCHING_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export const MAX_RETRIES = 3;
 export const INITIAL_RETRY_DELAY = 1000; // 1 second

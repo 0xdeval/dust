@@ -1,8 +1,8 @@
 import { useAppStateContext } from "@/context/AppStateContext";
-import { ContentContainer } from "../../Content/ContentContainer";
-import { ContentHeadline } from "../../Content/ContentHeadline";
+import { ContentContainer } from "@/layouts/Content/ContentContainer";
+import { ContentHeadline } from "@/layouts/Content/ContentHeadline";
 import { useCallback, useMemo } from "react";
-import { TokensStatusesCardsList } from "../../Tokens/TokensStatusesList";
+import { TokensStatusesCardsList } from "@/layouts/Tokens/TokensStatusesList";
 import { mapTokensWithApprovalStatus } from "@/utils/utils";
 
 export const TokensApprovals = () => {

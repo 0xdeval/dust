@@ -1,14 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAccount } from "wagmi";
 import { fetchTokens } from "@/lib/blockscout/api";
 import type { Token } from "@/types/tokens";
 import { useAppStateContext } from "@/context/AppStateContext";
+import { TOKENS_FETCHING_CACHE_DURATION } from "@/utils/constants";
+
+interface CacheEntry {
+  tokens: Array<Token>;
+  timestamp: number;
+}
 
 export function useTokens() {
   const { address } = useAccount();
   const { selectedNetwork } = useAppStateContext();
   const [tokens, setTokens] = useState<Array<Token>>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const cacheRef = useRef<Map<string, CacheEntry>>(new Map());
 
   console.log("Wallet info: ", address, selectedNetwork);
   useEffect(() => {
@@ -19,16 +27,30 @@ export function useTokens() {
         return;
       }
 
+      const cacheKey = `${selectedNetwork.id}-${address}`;
+      const cachedData = cacheRef.current.get(cacheKey);
+
+      if (cachedData && Date.now() - cachedData.timestamp < TOKENS_FETCHING_CACHE_DURATION) {
+        setTokens(cachedData.tokens);
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
-      setTokens([]);
+      setError(null);
 
       console.log("fetching tokens");
       try {
         const fetchedTokens = await fetchTokens(address as string, selectedNetwork);
         console.log("fetchedTokens", fetchedTokens);
         setTokens(fetchedTokens);
+        cacheRef.current.set(cacheKey, {
+          tokens: fetchedTokens,
+          timestamp: Date.now(),
+        });
       } catch (error) {
         console.error("Error fetching tokens:", error);
+        setError(error instanceof Error ? error : new Error("Failed to fetch tokens"));
         setTokens([]);
       } finally {
         setIsLoading(false);
@@ -38,5 +60,5 @@ export function useTokens() {
     fetchUserTokens();
   }, [address, selectedNetwork]);
 
-  return { tokens, isLoading };
+  return { tokens, isLoading, error };
 }

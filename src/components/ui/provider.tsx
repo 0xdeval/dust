@@ -1,7 +1,7 @@
 "use client";
 
 import { ChakraProvider } from "@chakra-ui/react";
-import { type ColorModeProviderProps } from "./ColorMode";
+import { type ColorModeProviderProps } from "@/ui/ColorMode";
 import { ThemeProvider } from "next-themes";
 import { system } from "@/configs/theme";
 

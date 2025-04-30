@@ -1,4 +1,4 @@
-import { toaster } from "@/components/ui/Toaster";
+import { toaster } from "@/ui/Toaster";
 import { erc20Abi } from "@/utils/abis/erc-20";
 
 import type { SelectedToken } from "@/types/tokens";
@@ -15,8 +15,6 @@ export const approveTokensList = async (
 
   for (const token of tokensToApprove) {
     try {
-      // const balance = stringToBigInt(token.balance, token.decimals);
-
       if (token.rawBalance === BigInt(0)) {
         toaster.create({
           title: "Skip",

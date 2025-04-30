@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Web3ContextProvider from "@/context/WagmiContext";
 import { headers } from "next/headers";
-import { CustomChakraProvider } from "@/components/ui/Provider";
-import { Header } from "@/components/layouts/Header/Header";
-import { NotificationToaster } from "@/components/ui/Toaster";
-import { RootContainer } from "@/components/layouts/Container/RootContainer";
+import { CustomChakraProvider } from "@/ui/Provider";
+import { Header } from "@/layouts/Header/Header";
+import { NotificationToaster } from "@/ui/Toaster";
+import { RootContainer } from "@/layouts/Container/RootContainer";
 import { AppStateProvider } from "@/context/AppStateContext";
 import React from "react";
 

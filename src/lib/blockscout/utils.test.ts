@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatBalance } from "./utils";
+import { formatBalance } from "@/lib/blockscout/utils";
 
 describe("formatBalance", () => {
   it("formats whole numbers correctly", () => {

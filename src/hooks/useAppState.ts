@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 import { getCopies, getDefaultTokenToReceive } from "@/utils/utils";
 import type { SelectedToken } from "@/types/tokens";
 import type { SupportedChain } from "@/types/networks";
-import { networksConfig } from "@/configs/networks";
+import { appConfig } from "@/configs/app";
 
 export const useAppState = () => {
   const { isConnected } = useAccount();
@@ -16,7 +16,7 @@ export const useAppState = () => {
   const [selectedTokens, setSelectedTokens] = useState<Array<SelectedToken>>([]);
 
   const [approvedTokens, setApprovedTokens] = useState<Array<SelectedToken>>([]);
-  const [selectedNetwork, setSelectedNetwork] = useState<SupportedChain>(networksConfig[0]);
+  const [selectedNetwork, setSelectedNetwork] = useState<SupportedChain>(appConfig.networks[0]);
 
   const [originalNetwork, setOriginalNetwork] = useState<SupportedChain>(selectedNetwork);
 

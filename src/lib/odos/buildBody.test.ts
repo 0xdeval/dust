@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildQuoteRequest, buildExecuteRequest } from "./buildBody";
+import { buildQuoteRequest, buildExecuteRequest } from "@/lib/odos/buildBody";
 import type { OdosInputToken, OdosOutputToken } from "@/types/api/odos";
 
 describe("buildQuoteRequest", () => {

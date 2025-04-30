@@ -1,41 +1,26 @@
 import type { Token } from "@/types/tokens";
 import type { SupportedChain } from "@/types/networks";
-import { formatBalance } from "./utils";
-
-interface BlockscoutResponse {
-  items: Array<BlockscoutTokenItem>;
-}
-
-interface BlockscoutTokenItem {
-  token: {
-    address: string;
-    circulating_market_cap: string | null;
-    decimals: string;
-    exchange_rate: string | null;
-    holders: string;
-    icon_url: string | null;
-    name: string;
-    symbol: string;
-    total_supply: string;
-    type: string;
-    volume_24h: string | null;
-  };
-  token_id: string | null;
-  token_instance: unknown | null;
-  value: string;
-}
+import { formatBalance } from "@/lib/blockscout/utils";
+import type { BlockscoutResponse } from "@/types/api/blockscout";
+import { appConfig } from "@/configs/app";
+import { TOKENS_MOCK } from "@/utils/mocks/tokens";
 
 export async function fetchTokens(address: string, network: SupportedChain): Promise<Array<Token>> {
   try {
-    const response = await fetch(
-      `${network.apiUrl || network.explorerUrl}/api/v2/addresses/${address}/tokens`
-    );
+    let data: BlockscoutResponse;
+    if (!appConfig.useMocks) {
+      const response = await fetch(
+        `${network.apiUrl || network.explorerUrl}/api/v2/addresses/${address}/tokens`
+      );
 
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status} ${response.statusText}`);
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
+      }
+
+      data = await response.json();
+    } else {
+      data = TOKENS_MOCK;
     }
-
-    const data: BlockscoutResponse = await response.json();
 
     // TODO: Add pagination fetching
     return data.items

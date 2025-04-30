@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
+import { ImageWithFallback } from "@/ui/ImageWithFallback";
 
 type Props = {
   name: string | undefined;

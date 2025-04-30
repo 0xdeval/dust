@@ -1,13 +1,13 @@
 import { usePrepareTokensSell } from "@/hooks/usePrepareTokensSell";
-import { ContentHeadline } from "../../Content/ContentHeadline";
-import { ContentContainer } from "../../Content/ContentContainer";
+import { ContentHeadline } from "@/layouts/Content/ContentHeadline";
+import { ContentContainer } from "@/layouts/Content/ContentContainer";
 import { useAppStateContext } from "@/context/AppStateContext";
-import { StatusSpinner } from "@/components/ui/Spinner";
+import { StatusSpinner } from "@/ui/Spinner";
 import { useCallback, useEffect, useMemo } from "react";
 import { config } from "@/configs/wagmi";
 import { useSendTransaction } from "wagmi";
 import { getTxnStatusCopies, txnErrorToHumanReadable } from "@/utils/utils";
-import { DefaultPopup } from "../../Popup/DefaultPopup";
+import { DefaultPopup } from "@/layouts/Popup/DefaultPopup";
 
 export const TokensSell = () => {
   const { state, updateState } = useAppStateContext();
@@ -75,15 +75,6 @@ export const TokensSell = () => {
   const handelSecondaryButtonClick = useCallback(() => {
     updateState("APPROVE_TOKENS");
   }, [updateState]);
-
-  console.log(
-    "status for a spinner:",
-    isTransactionFailed,
-    quoteError,
-    executionError,
-    unsellableTokens,
-    isTransactionFailed || Boolean(quoteError) || Boolean(executionError) ? "error" : "success"
-  );
 
   return (
     <>

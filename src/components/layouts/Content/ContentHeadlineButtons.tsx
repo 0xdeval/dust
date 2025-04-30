@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import type { FlexProps } from "@chakra-ui/react";
 import { Flex } from "@chakra-ui/react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/ui/Button";
 
 interface ContentHeadlineButtonsProps extends FlexProps {
   buttonLabel?: string;

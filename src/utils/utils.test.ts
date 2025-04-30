@@ -4,11 +4,10 @@ import {
   getCopies,
   getTxnStatusCopies,
   mapTokensWithApprovalStatus,
-  getNetworkInfo,
   txnErrorToHumanReadable,
   truncateText,
-  networkInfoCache,
-} from "./utils";
+} from "@/utils/utils";
+import { networkInfoCache, getNetworkInfo } from "@/utils/network";
 import type { SelectedToken } from "@/types/tokens";
 import dotenv from "dotenv";
 

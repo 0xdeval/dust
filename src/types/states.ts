@@ -1,4 +1,4 @@
-import type { SelectedToken } from "./tokens";
+import type { SelectedToken } from "@/types/tokens";
 
 export type Phase =
   | "CONNECT_WALLET"

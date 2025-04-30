@@ -1,10 +1,10 @@
 "use client";
 
 import { useAppStateContext } from "@/context/AppStateContext";
-import { WalletConnection } from "@/components/layouts/Features/WalletConnection/WalletConnection";
-import { TokensSelection } from "@/components/layouts/Features/TokensSelect/TokensSelection";
-import { TokensApprovals } from "@/components/layouts/Features/TokensApprovals/TokensApprovals";
-import { TokensSell } from "@/components/layouts/Features/TokensSell/TokensSell";
+import { WalletConnection } from "@/layouts/Features/WalletConnection/WalletConnection";
+import { TokensSelection } from "@/layouts/Features/TokensSelect/TokensSelection";
+import { TokensApprovals } from "@/layouts/Features/TokensApprovals/TokensApprovals";
+import { TokensSell } from "@/layouts/Features/TokensSell/TokensSell";
 import { useEffect } from "react";
 
 export default function Home() {

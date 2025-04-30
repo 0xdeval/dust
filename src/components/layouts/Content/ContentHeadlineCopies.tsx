@@ -1,20 +1,21 @@
 import type { FlexProps } from "@chakra-ui/react";
 import { Flex, Heading, Text } from "@chakra-ui/react";
+import type { ReactNode } from "react";
 import { forwardRef } from "react";
 
 interface ContentHeadlineCopiesProps extends FlexProps {
-  title: string;
-  subtitle: string;
+  headlineTitle: ReactNode;
+  headlineSubtitle: ReactNode;
 }
 
 export const ContentHeadlineCopies = forwardRef<HTMLDivElement, ContentHeadlineCopiesProps>(
-  ({ title, subtitle, ...props }, ref) => {
+  ({ headlineTitle, headlineSubtitle, ...props }, ref) => {
     return (
       <Flex ref={ref} flexDirection="column" {...props}>
         <Heading as="h1" size="4xl" fontWeight="bold">
-          {title}
+          {headlineTitle}
         </Heading>
-        <Text color="textSecondary">{subtitle}</Text>
+        <Text color="textSecondary">{headlineSubtitle}</Text>
       </Flex>
     );
   }

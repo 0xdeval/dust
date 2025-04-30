@@ -1,13 +1,14 @@
 import type { FlexProps } from "@chakra-ui/react";
 import { Flex } from "@chakra-ui/react";
+import type { ReactNode } from "react";
 import { forwardRef, useMemo } from "react";
-import { ContentHeadlineCopies } from "./ContentHeadlineCopies";
-import { ContentHeadlineButtons } from "./ContentHeadlineButtons";
+import { ContentHeadlineCopies } from "@/layouts/Content/ContentHeadlineCopies";
+import { ContentHeadlineButtons } from "@/layouts/Content/ContentHeadlineButtons";
 import { useAppStateContext } from "@/context/AppStateContext";
 
 interface ContentHeadlineProps extends FlexProps {
   title: string;
-  subtitle: string;
+  subtitle: string | ReactNode;
   buttonLabel?: string;
   buttonAction?: () => void;
   isButtonDisabled?: boolean;
@@ -53,8 +54,8 @@ export const ContentHeadline = forwardRef<HTMLDivElement, ContentHeadlineProps>(
         {...props}
       >
         <ContentHeadlineCopies
-          title={title}
-          subtitle={subtitle}
+          headlineTitle={title}
+          headlineSubtitle={subtitle}
           justifyContent={copiesJustifyContent}
           alignItems={copiesItemsAlign}
           gap={2}

@@ -1,8 +1,6 @@
+import { appConfig } from "@/configs/app";
 import type { GraphQLResponse } from "@/types/subgraph";
 import { INITIAL_RETRY_DELAY, MAX_RETRIES, SUBGRAPH_BASE_URL } from "@/utils/constants";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -27,7 +25,7 @@ export async function executeSubgraphQuery<T>(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_THEGRAPH_API_KEY}`,
+          Authorization: `Bearer ${appConfig.graphApiKey}`,
         },
         body: JSON.stringify({
           query,
@@ -72,22 +70,3 @@ export async function executeSubgraphQuery<T>(
 
   throw lastError || new Error("Failed to execute subgraph query after retries");
 }
-
-// Example usage:
-/*
-const query = `
-  query GetTokens($first: Int!) {
-    tokens(first: $first) {
-      id
-      symbol
-      name
-    }
-  }
-`;
-
-const result = await executeSubgraphQuery<{ tokens: Array<{ id: string; symbol: string; name: string }> }>(
-  8453, // chainId
-  query,
-  { first: 10 }
-);
-*/

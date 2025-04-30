@@ -645,6 +645,12 @@ export const colors = defineSemanticTokens.colors({
       _dark: "{colors.gray.600}",
     },
   },
+  accentMain: {
+    value: {
+      _light: "{colors.orange.500}",
+      _dark: "{colors.orange.500}",
+    },
+  },
   accentBorder: {
     value: {
       _light: "{colors.orange.500}",

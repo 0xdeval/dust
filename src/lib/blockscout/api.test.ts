@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { fetchTokens } from "./api";
+import { fetchTokens } from "@/lib/blockscout/api";
 import type { SupportedChain } from "@/types/networks";
 
 describe("fetchTokens", () => {

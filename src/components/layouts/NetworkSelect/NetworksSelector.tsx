@@ -1,4 +1,3 @@
-import { networksConfig } from "@/configs/networks";
 import type { SelectRootProps } from "@chakra-ui/react";
 import {
   Box,
@@ -12,9 +11,11 @@ import {
 } from "@chakra-ui/react";
 import type { SelectValueChangeDetails } from "@chakra-ui/react";
 import { forwardRef, useCallback } from "react";
-import NetworkLogo from "./NetworkLogo";
+import NetworkLogo from "@/layouts/NetworkSelect/NetworkLogo";
 import type { SupportedChain } from "@/types/networks";
 import type { SelectItem } from "@/types/tokens";
+import { appConfig } from "@/configs/app";
+
 interface NetworksSelectorProps extends Omit<SelectRootProps, "collection"> {
   onSelectNetwork: (value: SupportedChain) => void;
   byDefaultNetwork?: number;
@@ -44,7 +45,7 @@ const SelectTrigger = ({ defaultItem }: { defaultItem: SelectItem }) => {
 
 export const NetworksSelector = forwardRef<HTMLDivElement, NetworksSelectorProps>(
   ({ onSelectNetwork, byDefaultNetwork = 1, isPageLoading, ...props }, ref) => {
-    const networks = networksConfig;
+    const networks = appConfig.networks;
 
     const defaultNetwork = networks.find((n) => n.id === byDefaultNetwork);
 

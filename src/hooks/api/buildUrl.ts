@@ -1,6 +1,6 @@
 import { compile } from "path-to-regexp";
 
-import { RESOURCES } from "./resources";
+import { RESOURCES } from "@/hooks/api/resources";
 import type {
   EndpointConfig,
   Resource,

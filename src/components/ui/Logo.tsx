@@ -1,7 +1,7 @@
 "use client";
 
 import { Image, Box } from "@chakra-ui/react";
-import { useColorMode } from "./ColorMode";
+import { useColorMode } from "@/ui/ColorMode";
 
 interface Props {
   logoSrcDefaultPath: string;

@@ -1,6 +1,6 @@
 import { Flex, Skeleton } from "@chakra-ui/react";
 import type { ApprovingToken } from "@/types/tokens";
-import { TokenStatusCard } from "./TokenStatusCard";
+import { TokenStatusCard } from "@/layouts/Tokens/TokenStatusCard";
 
 interface Props {
   selectedTokens: Array<ApprovingToken>;

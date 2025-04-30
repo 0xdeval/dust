@@ -1,0 +1,7 @@
+export const SELLABILITY_RESPONSE_MOCK = {
+  sellable: [
+    "0x82a992617d8a07e3bd95bd0d56f3524151087552",
+    "0x854270147d8a07e3bd95bd0d56f3524177206411",
+  ],
+  burnable: ["0x88af49447d8a07667815bd0d56f3524155510ab1"],
+};

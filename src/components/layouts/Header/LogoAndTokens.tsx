@@ -1,7 +1,6 @@
 import { Flex } from "@chakra-ui/react";
-
-import { TokenSelector } from "@/components/ui/TokenSelector";
-import { Logo } from "@/components/ui/Logo";
+import { TokenSelector } from "@/ui/TokenSelector";
+import { Logo } from "@/ui/Logo";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { useCallback } from "react";
 

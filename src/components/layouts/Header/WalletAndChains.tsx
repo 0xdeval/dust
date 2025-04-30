@@ -1,18 +1,15 @@
 import { Text } from "@chakra-ui/react";
-
-import { NetworksSelector } from "../NetworkSelect/NetworksSelector";
-
+import { NetworksSelector } from "@/layouts/NetworkSelect/NetworksSelector";
 import { Flex } from "@chakra-ui/react";
 import { AiOutlineDisconnect } from "react-icons/ai";
 import { useAccount, useDisconnect } from "wagmi";
 import { useAppKitNetwork } from "@reown/appkit/react";
-
 import { useAppStateContext } from "@/context/AppStateContext";
 import { modal } from "@/context/WagmiContext";
 import type { SupportedChain } from "@/types/networks";
 import { useCallback } from "react";
-import { toaster } from "@/components/ui/Toaster";
-import { Button } from "@/components/ui/Button";
+import { toaster } from "@/ui/Toaster";
+import { Button } from "@/ui/Button";
 import type { AppKitNetwork } from "@reown/appkit/networks";
 
 interface Props {

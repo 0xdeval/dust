@@ -1,20 +1,21 @@
-import { ContentContainer } from "../../Content/ContentContainer";
-import { TokensList } from "../../Tokens/TokensList";
-import { ContentHeadline } from "../../Content/ContentHeadline";
+import { ContentContainer } from "@/layouts/Content/ContentContainer";
+import { TokensList } from "@/layouts/Tokens/TokensList";
+import { ContentHeadline } from "@/layouts/Content/ContentHeadline";
 import { useTokens } from "@/hooks/useTokens";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import type { SelectedToken, Token } from "@/types/tokens";
 import { approveTokensList } from "@/utils/actions/tokenApprovals";
-import { getAggregatorContractAddress } from "@/utils/utils";
-import { Tabs } from "@/components/ui/Tabs";
+import { getAggregatorContractAddress, getStatusText } from "@/utils/utils";
+import { Tabs } from "@/ui/Tabs";
 import { useTokensCheck } from "@/hooks/useTokensCheck";
-import { NoTokensStub } from "@/components/ui/Stubs/NoTokens";
+import { NoTokensStub } from "@/ui/Stubs/NoTokens";
+import { Flex } from "@chakra-ui/react";
+import { StatusWithText } from "@/layouts/Status/StatusWithText";
 
 export const TokensSelection = () => {
   const { address } = useAccount();
-
   const { selectedNetwork } = useAppStateContext();
   const [isActionButtonDisabled, setIsActionButtonDisabled] = useState(true);
 
@@ -26,14 +27,11 @@ export const TokensSelection = () => {
     setOperationType,
     operationType,
   } = useAppStateContext();
-  const { tokens, isLoading } = useTokens();
+  const { tokens, isLoading: isFetchingTokens } = useTokens();
 
   const { tokensToBurn, tokensToSell, isPending: isTokensCheckPending } = useTokensCheck(tokens);
 
-  console.log("tokensToSell", tokensToSell);
-  console.log("tokensToBurn", tokensToBurn);
-  console.log("tokens", tokens);
-  console.log("isTokensCheckPending", isTokensCheckPending);
+  const [sessionSelectedTokens, setSessionSelectedTokens] = useState<Array<SelectedToken>>([]);
 
   useEffect(() => {
     const initialSelectedTokens = tokens.map((token) => ({
@@ -43,24 +41,20 @@ export const TokensSelection = () => {
     setSessionSelectedTokens(initialSelectedTokens);
   }, [tokens, selectedNetwork]);
 
-  const [sessionSelectedTokens, setSessionSelectedTokens] = useState<Array<SelectedToken>>([]);
-
   const handleCardSelect = useCallback((token: SelectedToken) => {
-    console.log("token selected", token);
     setSessionSelectedTokens((prev) =>
       prev.map((t) => (t.address === token.address ? { ...t, isSelected: !t.isSelected } : t))
     );
   }, []);
 
+  // Update action button state based on selected token
   useEffect(() => {
     const selectedTokens = sessionSelectedTokens.filter((t) => t.isSelected);
-    console.log("sessionSelectedTokens", selectedTokens.length);
     setIsActionButtonDisabled(selectedTokens.length === 0);
   }, [sessionSelectedTokens]);
 
   const handleActionButtonClick = useCallback(async () => {
     const selectedTokens = sessionSelectedTokens.filter((t) => t.isSelected);
-
     setSelectedTokens(selectedTokens);
     updateState("APPROVE_TOKENS");
     await approveTokensList(
@@ -78,73 +72,97 @@ export const TokensSelection = () => {
     selectedNetwork,
   ]);
 
+  const resetSelectedTokens = useCallback(() => {
+    setSessionSelectedTokens((prev) => prev.map((token) => ({ ...token, isSelected: false })));
+  }, []);
+
   const handleSellClick = useCallback(() => {
     setOperationType("sell");
-  }, [setOperationType]);
+    resetSelectedTokens();
+  }, [setOperationType, resetSelectedTokens]);
 
   const handleBurnClick = useCallback(() => {
     setOperationType("burn");
-  }, [setOperationType]);
+    resetSelectedTokens();
+  }, [setOperationType, resetSelectedTokens]);
 
-  const renderTokensList = (tokens: Array<Token>) => {
-    const tokensWithSelection = tokens.map((token) => ({
-      ...token,
-      isSelected: sessionSelectedTokens.some((t) => t.address === token.address && t.isSelected),
-    }));
+  const renderTokensList = useCallback(
+    (tokens: Array<Token>) => {
+      const currentTabTokens = operationType === "sell" ? tokensToSell : tokensToBurn;
+      const currentTabTokenAddresses = new Set(
+        currentTabTokens.map((t) => t.address.toLowerCase())
+      );
 
-    console.log("state: ", isLoading, isTokensCheckPending);
+      const tokensWithSelection = tokens.map((token) => ({
+        ...token,
+        isSelected:
+          currentTabTokenAddresses.has(token.address.toLowerCase()) &&
+          sessionSelectedTokens.some(
+            (t) => t.address.toLowerCase() === token.address.toLowerCase() && t.isSelected
+          ),
+      }));
 
-    return (
-      <TokensList
-        tokens={tokensWithSelection}
-        isLoading={isLoading || isTokensCheckPending}
-        onCardSelect={handleCardSelect}
-      />
-    );
-  };
+      if (tokensWithSelection.length === 0 && !isFetchingTokens && !isTokensCheckPending) {
+        return <NoTokensStub />;
+      }
+
+      return (
+        <TokensList
+          tokens={tokensWithSelection}
+          isLoading={isFetchingTokens || tokensWithSelection.length === 0}
+          onCardSelect={handleCardSelect}
+        />
+      );
+    },
+    [
+      sessionSelectedTokens,
+      isFetchingTokens,
+      handleCardSelect,
+      operationType,
+      tokensToSell,
+      tokensToBurn,
+      isTokensCheckPending,
+    ]
+  );
 
   return (
     <ContentContainer isLoading={!state}>
       {state && (
         <>
-          {!isTokensCheckPending &&
-          !isLoading &&
-          tokens.length === 0 &&
-          tokensToSell.length === 0 &&
-          tokensToBurn.length === 0 ? (
-            <NoTokensStub />
-          ) : (
-            <>
-              <ContentHeadline
-                title={state?.contentHeadline}
-                subtitle={state?.contentSubtitle}
-                buttonLabel={operationType === "sell" ? state?.contentButtonLabel : "Soon..."}
-                buttonAction={operationType === "sell" ? handleActionButtonClick : undefined}
-                isButtonDisabled={operationType === "sell" ? isActionButtonDisabled : true}
+          <ContentHeadline
+            title={state?.contentHeadline}
+            subtitle={state?.contentSubtitle}
+            buttonLabel={state?.contentButtonLabel}
+            buttonAction={handleActionButtonClick}
+            isButtonDisabled={isActionButtonDisabled}
+          />
+          <Tabs defaultValue={operationType} variant="enclosed">
+            <Flex flexDir="row" justifyContent="space-between" alignItems="center">
+              <Tabs.List>
+                <Tabs.Trigger
+                  value="sell"
+                  disabled={tokensToSell.length === 0}
+                  onClick={handleSellClick}
+                >
+                  Sellable tokens
+                </Tabs.Trigger>
+                <Tabs.Trigger
+                  value="burn"
+                  disabled={tokensToBurn.length === 0}
+                  onClick={handleBurnClick}
+                >
+                  Burnable tokens
+                </Tabs.Trigger>
+              </Tabs.List>
+              <StatusWithText
+                isLoading={isTokensCheckPending}
+                text={getStatusText(isFetchingTokens, isTokensCheckPending)}
               />
-
-              <Tabs defaultValue="sellable" variant="enclosed">
-                <Tabs.List>
-                  <Tabs.Trigger
-                    value="sellable"
-                    disabled={tokensToSell.length === 0}
-                    onClick={handleSellClick}
-                  >
-                    Sellable tokens
-                  </Tabs.Trigger>
-                  <Tabs.Trigger
-                    value="burnable"
-                    disabled={tokensToBurn.length === 0}
-                    onClick={handleBurnClick}
-                  >
-                    Burnable tokens
-                  </Tabs.Trigger>
-                </Tabs.List>
-                <Tabs.Content value="sellable">{renderTokensList(tokensToSell)}</Tabs.Content>
-                <Tabs.Content value="burnable">{renderTokensList(tokensToBurn)}</Tabs.Content>
-              </Tabs>
-            </>
-          )}
+            </Flex>
+            <Tabs.Content value={operationType}>
+              {renderTokensList(operationType === "sell" ? tokensToSell : tokensToBurn)}
+            </Tabs.Content>
+          </Tabs>
         </>
       )}
     </ContentContainer>

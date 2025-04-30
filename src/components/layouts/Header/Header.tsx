@@ -3,8 +3,8 @@
 import { Flex } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
-import { WalletAndChainsActions } from "./WalletAndChains";
-import { LogoAndTokens } from "./LogoAndTokens";
+import { WalletAndChainsActions } from "@/layouts/Header/WalletAndChains";
+import { LogoAndTokens } from "@/layouts/Header/LogoAndTokens";
 
 export function Header() {
   const [isPageLoading, setIsPageLoading] = useState(true);

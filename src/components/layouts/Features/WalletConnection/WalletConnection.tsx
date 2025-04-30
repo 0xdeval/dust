@@ -1,10 +1,9 @@
-import { ContentContainer } from "../../Content/ContentContainer";
-import { ContentHeadline } from "../../Content/ContentHeadline";
+import { ContentContainer } from "@/layouts/Content/ContentContainer";
+import { ContentHeadline } from "@/layouts/Content/ContentHeadline";
 import { modal } from "@/context/WagmiContext";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { useCallback, useEffect } from "react";
 import { useAccount } from "wagmi";
-
 import { FaWallet } from "react-icons/fa";
 import { Flex } from "@chakra-ui/react";
 

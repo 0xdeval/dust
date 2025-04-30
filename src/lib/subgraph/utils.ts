@@ -5,8 +5,8 @@ import type {
   SubgraphMap,
   TokenPair,
 } from "@/types/subgraph";
-import { UNISWAP_SUBGRAPH_CONFIGS } from "./configs/uniswap";
-import { buildUniswapV3Query } from "./queries/uniswap";
+import { UNISWAP_SUBGRAPH_CONFIGS } from "@/lib/subgraph/configs/uniswap";
+import { buildUniswapV3Query } from "@/lib/subgraph/queries/uniswap";
 
 export const subgraphsMap: SubgraphMap = {
   uniswap: {

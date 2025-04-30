@@ -1,8 +1,8 @@
 import { Flex } from "@chakra-ui/react";
 import type { SelectedToken } from "@/types/tokens";
-import { TokenCard } from "./TokenCard";
-import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
-import { EmptyTokenCard } from "@/components/ui/Skeletons/EmptyTokenCard";
+import { TokenCard } from "@/layouts/Tokens/TokenCard";
+import { ImageWithFallback } from "@/ui/ImageWithFallback";
+import { EmptyTokenCard } from "@/ui/Skeletons/EmptyTokenCard";
 
 interface Props {
   tokens: Array<SelectedToken>;
