@@ -3,14 +3,23 @@ import { ContentHeadline } from "@/layouts/Content/ContentHeadline";
 import { ContentContainer } from "@/layouts/Content/ContentContainer";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { StatusSpinner } from "@/ui/Spinner";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { config } from "@/configs/wagmi";
 import { useSendTransaction } from "wagmi";
-import { getTxnStatusCopies, txnErrorToHumanReadable } from "@/utils/utils";
+import {
+  getTxnStatusCopies,
+  mapAddressToTokenName,
+  prepareTokensSellingIssueCopies,
+  txnErrorToHumanReadable,
+} from "@/utils/utils";
 import { DefaultPopup } from "@/layouts/Popup/DefaultPopup";
+import type { OdosTokensSellingStatus } from "@/types/tokens";
 
 export const TokensSell = () => {
-  const { state, updateState } = useAppStateContext();
+  const [odosTokensSellingStatus, setOdosTokensSellingStatus] =
+    useState<OdosTokensSellingStatus | null>(null);
+
+  const { state, updateState, approvedTokens } = useAppStateContext();
   const { status, unsellableTokens, executionData, executionError, quoteError, refetchQuote } =
     usePrepareTokensSell();
 
@@ -51,39 +60,75 @@ export const TokensSell = () => {
   };
 
   const txnStatusCopies = useMemo(() => {
-    if (isTransactionFailed && status === "ERROR") {
-      console.log("transactionError:", transactionError);
+    console.log("txn status: ", isTransactionFailed, isTransactionExecuted, status);
+
+    if (isTransactionFailed) {
+      console.log("Txn execution error:", transactionError);
       return getTxnStatusCopies(true, {
         error: txnErrorToHumanReadable(transactionError?.message),
       });
     }
 
-    if (quoteError && status === "ERROR") {
-      console.log("Quote error:", quoteError);
+    if (status === "ERROR" && executionError) {
+      console.log("Assemble error:", executionError);
       return getTxnStatusCopies(true, {
-        error: txnErrorToHumanReadable(quoteError),
+        error: txnErrorToHumanReadable(executionError),
       });
     }
 
-    if (isTransactionExecuted) {
+    if (quoteError && odosTokensSellingStatus && status === "ERROR") {
+      console.log("Quote error:", quoteError);
+      return getTxnStatusCopies(true, {
+        error: txnErrorToHumanReadable(quoteError),
+        unsellableTokens: odosTokensSellingStatus?.tokensCannotBeSold,
+      });
+    }
+
+    if (isTransactionExecuted && !executionError) {
       return getTxnStatusCopies(false, { hash });
     }
 
     return getTxnStatusCopies(null, { hash });
-  }, [isTransactionFailed, isTransactionExecuted, status, hash, transactionError, quoteError]);
+  }, [
+    isTransactionFailed,
+    isTransactionExecuted,
+    executionError,
+    status,
+    hash,
+    transactionError,
+    quoteError,
+    odosTokensSellingStatus,
+  ]);
 
   const handelSecondaryButtonClick = useCallback(() => {
     updateState("APPROVE_TOKENS");
   }, [updateState]);
 
+  useEffect(() => {
+    if (unsellableTokens.length > 0) {
+      const { tokensCanBeSold, tokensCannotBeSold } = mapAddressToTokenName(
+        unsellableTokens,
+        approvedTokens
+      );
+
+      setOdosTokensSellingStatus({
+        tokensCanBeSold,
+        tokensCannotBeSold,
+      });
+    }
+  }, [unsellableTokens, approvedTokens]);
+
   return (
     <>
       <ContentContainer isLoading={!state}>
-        {quoteError && unsellableTokens.length > 0 && (
+        {odosTokensSellingStatus && (
           <DefaultPopup
             isOpen={true}
             title="Some tokens are not sellable"
-            subtitle="We can't find routes for some tokens, but we can sell the rest. Do you want to proceed?"
+            subtitle={prepareTokensSellingIssueCopies(
+              odosTokensSellingStatus.tokensCanBeSold,
+              odosTokensSellingStatus.tokensCannotBeSold
+            )}
             buttonCta="Sell rest"
             buttonHandler={refetchQuote}
           />

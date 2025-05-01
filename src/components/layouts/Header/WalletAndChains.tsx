@@ -8,7 +8,7 @@ import { useAppStateContext } from "@/context/AppStateContext";
 import { modal } from "@/context/WagmiContext";
 import type { SupportedChain } from "@/types/networks";
 import { useCallback } from "react";
-import { toaster } from "@/ui/Toaster";
+import { toaster } from "@/ui/CustomToaster";
 import { Button } from "@/ui/Button";
 import type { AppKitNetwork } from "@reown/appkit/networks";
 

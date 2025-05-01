@@ -1,7 +1,7 @@
 "use client";
 
 import type { DialogContentProps } from "@chakra-ui/react";
-import { Button, Text, useDisclosure, Dialog } from "@chakra-ui/react";
+import { Button, Text, useDisclosure, Dialog, CloseButton, Portal } from "@chakra-ui/react";
 import { forwardRef, useCallback, useEffect } from "react";
 
 type CustomDialogProps = DialogContentProps & {
@@ -36,19 +36,30 @@ export const DefaultPopup = forwardRef<HTMLDivElement, CustomDialogProps>(
     return (
       <>
         <Dialog.Root open={open} size="lg" placement={placement} motionPreset="slide-in-bottom">
-          <Dialog.Backdrop />
-          <Dialog.Positioner ref={ref} {...popoverProps}>
-            <Dialog.Content>
-              <Dialog.CloseTrigger onClick={onClose} />
-              <Dialog.Body>
-                <Dialog.Title fontWeight="bold">{title}</Dialog.Title>
-                {subtitle && <Text mb={3}>{subtitle}</Text>}
-                <Button colorScheme="blue" onClick={handleButtonClick}>
-                  {buttonCta}
-                </Button>
-              </Dialog.Body>
-            </Dialog.Content>
-          </Dialog.Positioner>
+          <Portal>
+            <Dialog.Backdrop />
+            <Dialog.Positioner ref={ref} {...popoverProps}>
+              <Dialog.Content>
+                <Dialog.Header>
+                  <Dialog.Title>{title}</Dialog.Title>
+                </Dialog.Header>
+                <Dialog.Body>{subtitle && <Text mb={3}>{subtitle}</Text>}</Dialog.Body>
+                <Dialog.Footer>
+                  <Dialog.ActionTrigger asChild>
+                    <Button variant="outline" onClick={onClose}>
+                      Cancel
+                    </Button>
+                  </Dialog.ActionTrigger>
+                  <Button colorScheme="blue" onClick={handleButtonClick}>
+                    {buttonCta}
+                  </Button>
+                </Dialog.Footer>
+                <Dialog.CloseTrigger asChild>
+                  <CloseButton size="sm" onClick={onClose} />
+                </Dialog.CloseTrigger>
+              </Dialog.Content>
+            </Dialog.Positioner>
+          </Portal>
         </Dialog.Root>
       </>
     );

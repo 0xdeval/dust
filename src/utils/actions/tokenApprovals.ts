@@ -1,4 +1,4 @@
-import { toaster } from "@/ui/Toaster";
+import { toaster } from "@/ui/CustomToaster";
 import { erc20Abi } from "@/utils/abis/erc-20";
 
 import type { SelectedToken } from "@/types/tokens";

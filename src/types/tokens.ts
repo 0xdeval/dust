@@ -31,3 +31,8 @@ export interface SelectItem {
   value: string;
   icon: string | undefined;
 }
+
+export interface OdosTokensSellingStatus {
+  tokensCanBeSold: Array<SelectedToken>;
+  tokensCannotBeSold: Array<SelectedToken>;
+}

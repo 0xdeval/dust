@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import { useEffect, useState } from "react";
 import useApiQuery from "@/hooks/api/useApiQuery";
 import type {
@@ -48,7 +50,7 @@ export const usePrepareTokensSell = () => {
         )
         .map((token) => ({
           tokenAddress: token.address,
-          amount: token.rawBalance.toString(), // stringToBigInt(token.balance, token.decimals)
+          amount: token.rawBalance.toString(),
         })) as Array<OdosInputToken>;
 
       console.log("inputTokens in quote prep: ", inputTokens);
@@ -81,15 +83,7 @@ export const usePrepareTokensSell = () => {
     }
 
     setToRefetchQuote(false);
-  }, [
-    unsellableTokens,
-    approvedTokens,
-    receivedToken,
-    isReadyToSell,
-    address,
-    toRefetchQuote,
-    selectedNetwork,
-  ]);
+  }, [approvedTokens, receivedToken, isReadyToSell, address, toRefetchQuote, selectedNetwork]);
 
   const refetchQuote = () => {
     setToRefetchQuote(true);
@@ -119,6 +113,7 @@ export const usePrepareTokensSell = () => {
       enabled: Boolean(quoteRequest),
       queryKey: ["odos", "quote", quoteRequest],
       retry: 3,
+      refetchOnWindowFocus: false,
     },
     logError: true,
   });
@@ -184,16 +179,19 @@ export const usePrepareTokensSell = () => {
       enabled: Boolean(executionRequest),
       queryKey: ["odos", "execute", executionRequest],
       retry: 3,
+      refetchOnWindowFocus: false,
     },
     logError: true,
   });
 
   useEffect(() => {
-    if (odosExecutionRequest?.data && !isExecutionLoading) {
+    console.log("executionError: ", executionError, odosExecutionRequest?.data, isExecutionLoading);
+    if (odosExecutionRequest?.data && !isExecutionLoading && !executionError) {
       setExecutionData(odosExecutionRequest.data as OdosExecuteResponse);
       setStatus("SUCCESS_EXECUTE");
-    } else {
+    } else if (executionError) {
       setCurrentExecutionRequestError("An error occurred during an execution!");
+      setStatus("ERROR");
     }
   }, [executionRequest, isExecutionLoading, odosExecutionRequest, executionError]);
 

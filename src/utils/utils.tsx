@@ -53,39 +53,71 @@ export const getCopies = (phase: Phase): CopiesState => {
   }
 };
 
-export const getTxnStatusCopies = (
-  isError: boolean | null,
-  props?: { [key: string]: string | `0x${string}` | undefined }
-) => {
-  switch (isError) {
-    case true:
+interface TxnStatusProps {
+  error?: string;
+  hash?: string;
+  unsellableTokens?: Array<SelectedToken>;
+}
+
+export const getTxnStatusCopies = (isError: boolean | null, props?: TxnStatusProps) => {
+  console.log(
+    props?.unsellableTokens,
+    Array.isArray(props?.unsellableTokens),
+    props?.unsellableTokens
+  );
+
+  if (isError) {
+    if (
+      props?.unsellableTokens &&
+      Array.isArray(props.unsellableTokens) &&
+      props.unsellableTokens.length > 0
+    ) {
       return {
-        contentHeadline: "TRADE FAILED",
-        contentSubtitle: "Your trade has failed. Error: " + props?.error,
-        contentButtonLabel: "Try again",
-      };
-    case false:
-      return {
-        contentHeadline: "TRADE IS COMPLETED",
+        contentHeadline: "ROUTES FOR TOKENS NOT FOUND",
         contentSubtitle:
-          "Your trade has been successfully executed. Transaction hash: " + props?.hash,
-        contentButtonLabel: "Dust again",
+          "Routes for the following tokens: " +
+          props.unsellableTokens.map((token) => token.symbol).join(", ") +
+          " are not found",
+        contentButtonLabel: "Sell rest",
       };
+    }
+    return {
+      contentHeadline: "TRADE FAILED",
+      contentSubtitle: "Something went wrong." + (props?.error ? ` Error: ${props.error}` : ""),
+      contentButtonLabel: "Try again",
+    };
   }
+
+  if (!isError) {
+    return {
+      contentHeadline: "TRADE IS COMPLETED",
+      contentSubtitle:
+        "Your trade has been successfully executed." +
+        (props?.hash ? ` Transaction hash: ${props.hash}` : ""),
+      contentButtonLabel: "Dust again",
+    };
+  }
+
   return {
-    contentHeadline: "ERROR OCCURED",
+    contentHeadline: "ERROR OCCURRED",
     contentSubtitle: (
-      <>
-        <Text>
-          An error occurred while executing your trade. Please, try again or contact{" "}
-          <Link color="accentMain" href={appConfig.supportLink}>
-            our support
-          </Link>
-        </Text>
-      </>
+      <Text>
+        An error occurred while executing your trade. Please, try again or contact{" "}
+        <Link color="accentMain" href={appConfig.supportLink}>
+          our support
+        </Link>
+      </Text>
     ),
     contentButtonLabel: "Try again",
   };
+};
+
+export const prepareTokensSellingIssueCopies = (
+  tokensCanBeSold: Array<SelectedToken>,
+  tokensCannotBeSold: Array<SelectedToken>
+) => {
+  return `We can't find routes for the following tokens: ${tokensCannotBeSold.map((token) => token.symbol).join(", ")}. 
+  Do you want to sell the rest: ${tokensCanBeSold.map((token) => token.symbol).join(", ")}?`;
 };
 
 export const mapTokensWithApprovalStatus = (
@@ -109,6 +141,7 @@ export const txnErrorToHumanReadable = (error: string | undefined) => {
   if (error?.includes("User rejected the request")) {
     return "User rejected the request in his wallet. Try again";
   }
+
   return error;
 };
 
@@ -141,4 +174,22 @@ export const getStatusText = (isFetchingTokens: boolean, isSubgraphLoading: bool
   }
 
   return "Tokens loaded";
+};
+
+export const mapAddressToTokenName = (
+  unsellableTokenAddresses: Array<string>,
+  tokens: Array<SelectedToken>
+): { tokensCanBeSold: Array<SelectedToken>; tokensCannotBeSold: Array<SelectedToken> } => {
+  const tokensCanBeSold: Array<SelectedToken> = [];
+  const tokensCannotBeSold: Array<SelectedToken> = [];
+
+  tokens.map((token) => {
+    if (unsellableTokenAddresses.includes(token.address)) {
+      tokensCannotBeSold.push(token);
+    } else {
+      tokensCanBeSold.push(token);
+    }
+  });
+
+  return { tokensCanBeSold, tokensCannotBeSold };
 };
