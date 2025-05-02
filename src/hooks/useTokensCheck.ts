@@ -6,6 +6,7 @@ import { useAppStateContext } from "@/context/AppStateContext";
 import { getCachedResult, setCachedResult } from "@/utils/cache";
 import { convertAddressesToTokens } from "@/utils/tokensCheck";
 import { useAccount } from "wagmi";
+import { getSpamTokens } from "@/utils/actions/checkSpamTokens";
 
 interface UseTokenChecksResult {
   checkTokens: (appName?: SubgraphAppName) => Promise<void>;
@@ -62,11 +63,6 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
       }));
 
       try {
-        const tokenAddresses = Array.from(
-          new Set(tokens.map((token) => token.address as `0x${string}`))
-        );
-
-        // Check cache first
         const cachedResult = getCachedResult(selectedNetwork.id, address as string);
         let results: TokenSellabilityResult;
 
@@ -80,9 +76,18 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
             isPending: false,
           }));
         } else {
-          // Incremental update logic
+          const spamTokens = getSpamTokens(tokens);
+
+          console.log(`RAW Found ${spamTokens.length} spam tokens by patterns`);
+          const spamAddresses = new Set(spamTokens.map((token) => token.address));
+          const tokenAddresses = tokens
+            .filter((token) => !spamAddresses.has(token.address))
+            .map((token) => token.address as `0x${string}`);
+
+          console.log(`Found ${spamAddresses.size} spam tokens by patterns`);
+
           let batchSellable: Array<string> = [];
-          let batchBurnable: Array<string> = [];
+          let batchBurnable: Array<string> = [...spamAddresses];
           await checkTokensSellability(
             tokenAddresses,
             receivedToken as string,

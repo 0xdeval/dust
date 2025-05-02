@@ -40,6 +40,7 @@ export const TokensList = ({ tokens, isLoading, onCardSelect }: Props) => {
           label={token.name}
           description={token.symbol}
           addon={`${token.balance} ${token.symbol}`}
+          linkInfo={token.address}
         />
       ))}
     </Flex>

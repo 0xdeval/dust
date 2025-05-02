@@ -4,8 +4,9 @@ import type { CopiesState } from "@/types/states";
 import type { ApprovingToken } from "@/types/tokens";
 import type { SelectedToken } from "@/types/tokens";
 import { AGGREGATOR_CONTRACT_ADDRESS, TOKENS_TO_RECEIVE } from "@/utils/constants";
-import { Link, Text } from "@chakra-ui/react";
+import { Text } from "@chakra-ui/react";
 import { appConfig } from "@/configs/app";
+import { CustomLink } from "@/components/ui/CustomLink";
 
 export const stringToBigInt = (amount: string, decimals: number = 18) => {
   const bigIntAmount = parseUnits(amount, decimals);
@@ -103,9 +104,7 @@ export const getTxnStatusCopies = (isError: boolean | null, props?: TxnStatusPro
     contentSubtitle: (
       <Text>
         An error occurred while executing your trade. Please, try again or contact{" "}
-        <Link color="accentMain" href={appConfig.supportLink}>
-          our support
-        </Link>
+        <CustomLink href={appConfig.supportLink}>our support</CustomLink>
       </Text>
     ),
     contentButtonLabel: "Try again",

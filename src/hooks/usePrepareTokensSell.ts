@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import { useEffect, useState } from "react";
 import useApiQuery from "@/hooks/api/useApiQuery";
 import type {
@@ -41,49 +39,53 @@ export const usePrepareTokensSell = () => {
 
   const [status, setStatus] = useState<OdosStatus>("IDLE");
 
-  useEffect(() => {
-    if (isReadyToSell || toRefetchQuote) {
-      console.log("unsellableTokens in quote prep: ", unsellableTokens);
-      const inputTokens = approvedTokens
-        .filter(
-          (token) => unsellableTokens.length === 0 || !unsellableTokens.includes(token.address)
-        )
-        .map((token) => ({
-          tokenAddress: token.address,
-          amount: token.rawBalance.toString(),
-        })) as Array<OdosInputToken>;
+  useEffect(
+    () => {
+      if (isReadyToSell || toRefetchQuote) {
+        console.log("unsellableTokens in quote prep: ", unsellableTokens);
+        const inputTokens = approvedTokens
+          .filter(
+            (token) => unsellableTokens.length === 0 || !unsellableTokens.includes(token.address)
+          )
+          .map((token) => ({
+            tokenAddress: token.address,
+            amount: token.rawBalance.toString(),
+          })) as Array<OdosInputToken>;
 
-      console.log("inputTokens in quote prep: ", inputTokens);
-      const outputTokens = [
-        {
-          tokenAddress: receivedToken,
-          proportion: 1,
-        },
-      ] as Array<OdosOutputToken>;
+        console.log("inputTokens in quote prep: ", inputTokens);
+        const outputTokens = [
+          {
+            tokenAddress: receivedToken,
+            proportion: 1,
+          },
+        ] as Array<OdosOutputToken>;
 
-      const quoteRequest = buildQuoteRequest({
-        inputTokens: inputTokens,
-        outputTokens: outputTokens,
-        userAddress: address as `0x${string}`,
-        chainId: selectedNetwork.id,
-      });
+        const quoteRequest = buildQuoteRequest({
+          inputTokens: inputTokens,
+          outputTokens: outputTokens,
+          userAddress: address as `0x${string}`,
+          chainId: selectedNetwork.id,
+        });
 
-      console.log("quoteRequest in quote prep: ", quoteRequest);
+        console.log("quoteRequest in quote prep: ", quoteRequest);
 
-      if (inputTokens.length === 0) {
-        setStatus("ERROR");
-        setCurrentQuoteRequestError(
-          unsellableTokens &&
-            "It is not possible to find a route for the selected tokens. Please try again with different tokens."
-        );
-      } else {
-        setStatus("LOADING_QUOTE");
-        setQuoteRequest(quoteRequest);
+        if (inputTokens.length === 0) {
+          setStatus("ERROR");
+          setCurrentQuoteRequestError(
+            unsellableTokens &&
+              "It is not possible to find a route for the selected tokens. Please try again with different tokens."
+          );
+        } else {
+          setStatus("LOADING_QUOTE");
+          setQuoteRequest(quoteRequest);
+        }
       }
-    }
 
-    setToRefetchQuote(false);
-  }, [approvedTokens, receivedToken, isReadyToSell, address, toRefetchQuote, selectedNetwork]);
+      setToRefetchQuote(false);
+    },
+    /* eslint-disable react-hooks/exhaustive-deps */
+    [approvedTokens, receivedToken, isReadyToSell, address, toRefetchQuote, selectedNetwork]
+  );
 
   const refetchQuote = () => {
     setToRefetchQuote(true);

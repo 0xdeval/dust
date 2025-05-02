@@ -132,8 +132,8 @@ export const TokensSelection = () => {
           <ContentHeadline
             title={state?.contentHeadline}
             subtitle={state?.contentSubtitle}
-            buttonLabel={state?.contentButtonLabel}
-            buttonAction={handleActionButtonClick}
+            buttonLabel={operationType === "sell" ? state?.contentButtonLabel : "Soon..."}
+            buttonAction={operationType === "sell" ? handleActionButtonClick : undefined}
             isButtonDisabled={isActionButtonDisabled}
           />
           <Tabs defaultValue={operationType} variant="enclosed">

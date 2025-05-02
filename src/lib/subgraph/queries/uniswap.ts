@@ -9,7 +9,12 @@ export function buildUniswapV3Query(pairs: Array<TokenPair>) {
     query BatchPoolCheck(${pairs
       .map((pair, i) => `$token0_${i}: String!, $token1_${i}: String!`)
       .join(", ")}) {
-      pools(where: { or: [${conditions}] }) {
+      pools(where: {
+          and: [
+            { totalValueLockedUSD_gt: 1000 },
+            { or: [${conditions}] }
+          ]
+        }) {
         id
         token0 { id }
         token1 { id }

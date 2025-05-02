@@ -1,6 +1,7 @@
 import { appConfig } from "@/configs/app";
-import { Box, Flex, Link, Text, VStack } from "@chakra-ui/react";
+import { Box, Flex, Text, VStack } from "@chakra-ui/react";
 import { MdOutlineSearch } from "react-icons/md";
+import { CustomLink } from "@/ui/CustomLink";
 
 export const NoTokensStub = () => {
   return (
@@ -18,9 +19,7 @@ export const NoTokensStub = () => {
         </Text>
         <Text fontSize="md" color="textSecondary" textAlign="center" maxW="400px">
           If you think we're wrong, contact{" "}
-          <Link color="accentMain" href={appConfig.supportLink}>
-            our support
-          </Link>
+          <CustomLink href={appConfig.supportLink}>our support</CustomLink>
         </Text>
       </VStack>
     </Flex>
