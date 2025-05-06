@@ -5,7 +5,7 @@ import { WalletConnection } from "@/components/layouts/Steps/WalletConnection/Wa
 import { TokensSelection } from "@/components/layouts/Steps/TokensSelect/TokensSelection";
 import { TokensApprovals } from "@/components/layouts/Steps/TokensApprovals/TokensApprovals";
 import { TokensSell } from "@/components/layouts/Steps/TokensSell/TokensSell";
-import { useCallback } from "react";
+import { useEffect } from "react";
 import { useLogger } from "@/hooks/useLogger";
 
 export default function Home() {
