@@ -13,7 +13,7 @@ export default function Home() {
 
   const { phase, state } = useAppStateContext();
 
-  useCallback(() => {
+  useEffect(() => {
     logger.info("Current app phase:", phase);
     logger.info("Current app state:", state);
   }, [state, phase, logger]);
