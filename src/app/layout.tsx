@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   ],
   metadataBase: new URL("https://dustoff.fun"),
   openGraph: {
-    title: "Dust | Dust Off Your Wallet and Earn from Spam Tokens",
+    title: "Dust | Dust off your wallet and earn from spam tokens",
     description:
       "Use Dust to turn spam tokens, dust, and junk airdrops into profit. Clean your wallet the smart way — at dustoff.fun.",
     url: "https://dustoff.fun",
