@@ -4,7 +4,7 @@ import type {
   OdosInputToken,
   OdosOutputToken,
 } from "@/types/api/odos";
-
+import { appConfig } from "@/configs/app";
 interface BuildQuoteParams {
   inputTokens: Array<OdosInputToken>;
   outputTokens: Array<OdosOutputToken>;
@@ -34,7 +34,7 @@ export function buildQuoteRequest({
     slippageLimitPercent,
     disableRFQs: true,
     compact: true,
-    referralCode: 0,
+    referralCode: appConfig.odosPartnerKey,
   };
 }
 

@@ -10,6 +10,7 @@ interface AppConfigProps {
   supportLink: string;
   graphApiKey: string;
   networks: Array<SupportedChain>;
+  odosPartnerKey: number;
 }
 
 export const appConfig: AppConfigProps = {
@@ -17,5 +18,6 @@ export const appConfig: AppConfigProps = {
   blockscoutApiKey: process.env.BLOCKSCOUT_API_KEY || "",
   supportLink: process.env.NEXT_PUBLIC_SUPPORT_LINK || "",
   graphApiKey: process.env.NEXT_PUBLIC_THEGRAPH_API_KEY || "",
+  odosPartnerKey: parseInt(process.env.NEXT_PUBLIC_PARTNER_CODE || "0") || 0,
   networks: await defineNetworksConfig(),
 };
