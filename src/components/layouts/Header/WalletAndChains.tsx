@@ -11,6 +11,7 @@ import { useCallback } from "react";
 import { toaster } from "@/ui/CustomToaster";
 import { Button } from "@/ui/Button";
 import type { AppKitNetwork } from "@reown/appkit/networks";
+import { ColorModeButton } from "@/components/ui/ColorMode";
 
 interface Props {
   isPageLoading: boolean;
@@ -55,20 +56,19 @@ export const WalletAndChainsActions = ({ isPageLoading }: Props) => {
   }, [isConnected, disconnect]);
 
   return (
-    <Flex width="100%" justifyContent="flex-end" alignItems="flex-start" gap="10px">
-      <NetworksSelector
-        onSelectNetwork={handleSelectNetwork}
-        size={{ base: "xs", md: "sm" }}
-        width="100%"
-        alignItems="flex-end"
-        isPageLoading={isPageLoading}
-      />
+    <Flex
+      flexDirection={{ base: "column", md: "row" }}
+      width="100%"
+      justifyContent={{ base: "flex-start", md: "flex-end" }}
+      alignItems={{ base: "flex-end", md: "flex-start" }}
+      gap="10px"
+    >
       <Button
         variant={isConnected ? "outline" : "solid"}
         bg={isConnected ? "transparent" : "actionButtonSolid"}
         _hover={{ bg: "actionButtonSolidHover", color: "gray.900" }}
         borderColor={isConnected ? "accentBorder" : "transparent"}
-        size={{ base: "xs", md: "sm" }}
+        size="sm"
         onClick={handleButtonAction}
         rightIcon={isConnected ? <AiOutlineDisconnect /> : undefined}
         loading={isPageLoading}
@@ -81,6 +81,16 @@ export const WalletAndChainsActions = ({ isPageLoading }: Props) => {
           </Text>
         )}
       </Button>
+      <Flex gap={2}>
+        <NetworksSelector
+          onSelectNetwork={handleSelectNetwork}
+          size="sm"
+          width="100%"
+          alignItems="flex-end"
+          isPageLoading={isPageLoading}
+        />
+        <ColorModeButton size="sm" />
+      </Flex>
     </Flex>
   );
 };

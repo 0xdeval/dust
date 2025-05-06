@@ -7,10 +7,12 @@ interface ContentHeadlineButtonsProps extends FlexProps {
   buttonLabel?: string;
   buttonAction?: () => void;
   isButtonDisabled?: boolean;
-
+  showSpinner?: boolean;
   secondaryButtonLabel?: string;
   secondaryButtonAction?: () => void;
   isSecondaryButtonDisabled?: boolean;
+  isButtonLoading?: boolean;
+  loadingText?: string;
 }
 
 export const ContentHeadlineButtons = forwardRef<HTMLDivElement, ContentHeadlineButtonsProps>(
@@ -19,9 +21,11 @@ export const ContentHeadlineButtons = forwardRef<HTMLDivElement, ContentHeadline
       buttonLabel,
       buttonAction,
       isButtonDisabled,
+      showSpinner,
       secondaryButtonLabel,
       secondaryButtonAction,
       isSecondaryButtonDisabled,
+      loadingText,
       ...flexProps
     },
     ref
@@ -34,6 +38,8 @@ export const ContentHeadlineButtons = forwardRef<HTMLDivElement, ContentHeadline
           _hover={{ bg: "actionButtonSolidHover" }}
           onClick={buttonAction}
           disabled={isButtonDisabled}
+          showSpinner={showSpinner}
+          loadingText={loadingText}
         >
           {buttonLabel}
         </Button>

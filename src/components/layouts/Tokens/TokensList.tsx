@@ -8,9 +8,10 @@ interface Props {
   tokens: Array<SelectedToken>;
   isLoading: boolean;
   onCardSelect?: (token: SelectedToken) => void;
+  isDisabled?: boolean;
 }
 
-export const TokensList = ({ tokens, isLoading, onCardSelect }: Props) => {
+export const TokensList = ({ tokens, isLoading, onCardSelect, isDisabled }: Props) => {
   if (isLoading) {
     return <EmptyTokenCard count={5} />;
   }
@@ -32,6 +33,7 @@ export const TokensList = ({ tokens, isLoading, onCardSelect }: Props) => {
               h="20px"
             />
           }
+          disabled={isDisabled}
           width="100%"
           p="10px"
           size="lg"

@@ -25,7 +25,7 @@ export const WalletConnection = () => {
     <ContentContainer isLoading={!state}>
       {state && (
         <Flex w="100%" flexDirection="column" justifyContent="center" alignItems="center" gap={4}>
-          <FaWallet size={100} style={{ objectFit: "contain" }} />
+          <FaWallet size={80} style={{ objectFit: "contain" }} />
           <ContentHeadline
             flexDirection="column"
             alignItems="center"

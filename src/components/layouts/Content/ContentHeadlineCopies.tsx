@@ -12,7 +12,7 @@ export const ContentHeadlineCopies = forwardRef<HTMLDivElement, ContentHeadlineC
   ({ headlineTitle, headlineSubtitle, ...props }, ref) => {
     return (
       <Flex ref={ref} flexDirection="column" {...props}>
-        <Heading as="h1" size="4xl" fontWeight="bold">
+        <Heading as="h1" size="2xl" fontWeight="bold">
           {headlineTitle}
         </Heading>
         <Text color="textSecondary">{headlineSubtitle}</Text>

@@ -3,16 +3,16 @@ import { TokensList } from "@/layouts/Tokens/TokensList";
 import { ContentHeadline } from "@/layouts/Content/ContentHeadline";
 import { useTokens } from "@/hooks/useTokens";
 import { useAppStateContext } from "@/context/AppStateContext";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useAccount } from "wagmi";
-import type { SelectedToken, Token } from "@/types/tokens";
 import { approveTokensList } from "@/utils/actions/tokenApprovals";
-import { getAggregatorContractAddress, getStatusText } from "@/utils/utils";
-import { Tabs } from "@/ui/Tabs";
+import { getAggregatorContractAddress, prepareTokensSellingIssueCopies } from "@/utils/utils";
 import { useTokensCheck } from "@/hooks/useTokensCheck";
 import { NoTokensStub } from "@/ui/Stubs/NoTokens";
-import { Flex } from "@chakra-ui/react";
-import { StatusWithText } from "@/layouts/Status/StatusWithText";
+import { DefaultPopup } from "@/layouts/Popup/DefaultPopup";
+import { useOdosQuote } from "@/hooks/useOdosQuote";
+import type { SelectedToken, Token } from "@/types/tokens";
+import { ContentTabs } from "@/layouts/Content/ContentTabs/ContentTabs";
 
 export const TokensSelection = () => {
   const { address } = useAccount();
@@ -28,10 +28,17 @@ export const TokensSelection = () => {
     operationType,
   } = useAppStateContext();
   const { tokens, isLoading: isFetchingTokens } = useTokens();
-
   const { tokensToBurn, tokensToSell, isPending: isTokensCheckPending } = useTokensCheck(tokens);
-
   const [sessionSelectedTokens, setSessionSelectedTokens] = useState<Array<SelectedToken>>([]);
+
+  const {
+    quote,
+    unsellableTokens,
+    sellableTokens,
+    setTokensToCheck,
+    setToCheckQuote,
+    isQuoteLoading,
+  } = useOdosQuote();
 
   useEffect(() => {
     const initialSelectedTokens = tokens.map((token) => ({
@@ -47,48 +54,70 @@ export const TokensSelection = () => {
     );
   }, []);
 
-  // Update action button state based on selected token
+  const selectedTokens = useMemo(
+    () => sessionSelectedTokens.filter((t) => t.isSelected),
+    [sessionSelectedTokens]
+  );
+
   useEffect(() => {
-    const selectedTokens = sessionSelectedTokens.filter((t) => t.isSelected);
     setIsActionButtonDisabled(selectedTokens.length === 0);
-  }, [sessionSelectedTokens]);
+  }, [selectedTokens]);
 
   const handleActionButtonClick = useCallback(async () => {
-    const selectedTokens = sessionSelectedTokens.filter((t) => t.isSelected);
-    setSelectedTokens(selectedTokens);
+    setTokensToCheck(selectedTokens);
+    setToCheckQuote(true);
+  }, [selectedTokens, setTokensToCheck, setToCheckQuote]);
+
+  const tokensToApprove = useMemo(
+    () => selectedTokens.filter((t) => !unsellableTokens.some((u) => u.address === t.address)),
+    [selectedTokens, unsellableTokens]
+  );
+
+  const approveTokensHandler = useCallback(async () => {
+    setSelectedTokens(tokensToApprove);
     updateState("APPROVE_TOKENS");
     await approveTokensList(
       setApprovedTokens,
-      selectedTokens,
+      tokensToApprove,
       address as `0x${string}`,
       getAggregatorContractAddress(selectedNetwork.id)
     );
   }, [
     setApprovedTokens,
-    setSelectedTokens,
+    tokensToApprove,
     address,
-    sessionSelectedTokens,
-    updateState,
     selectedNetwork,
+    setSelectedTokens,
+    updateState,
   ]);
+
+  useEffect(() => {
+    if (quote) {
+      approveTokensHandler();
+    }
+  }, [quote, approveTokensHandler]);
 
   const resetSelectedTokens = useCallback(() => {
     setSessionSelectedTokens((prev) => prev.map((token) => ({ ...token, isSelected: false })));
   }, []);
 
-  const handleSellClick = useCallback(() => {
+  const handleSellClickTab = useCallback(() => {
     setOperationType("sell");
     resetSelectedTokens();
   }, [setOperationType, resetSelectedTokens]);
 
-  const handleBurnClick = useCallback(() => {
+  const handleBurnClickTab = useCallback(() => {
     setOperationType("burn");
     resetSelectedTokens();
   }, [setOperationType, resetSelectedTokens]);
 
+  const currentTabTokens = useMemo(
+    () => (operationType === "sell" ? tokensToSell : tokensToBurn),
+    [operationType, tokensToSell, tokensToBurn]
+  );
+
   const renderTokensList = useCallback(
     (tokens: Array<Token>) => {
-      const currentTabTokens = operationType === "sell" ? tokensToSell : tokensToBurn;
       const currentTabTokenAddresses = new Set(
         currentTabTokens.map((t) => t.address.toLowerCase())
       );
@@ -111,6 +140,7 @@ export const TokensSelection = () => {
           tokens={tokensWithSelection}
           isLoading={isFetchingTokens || tokensWithSelection.length === 0}
           onCardSelect={handleCardSelect}
+          isDisabled={isQuoteLoading}
         />
       );
     },
@@ -118,51 +148,58 @@ export const TokensSelection = () => {
       sessionSelectedTokens,
       isFetchingTokens,
       handleCardSelect,
-      operationType,
-      tokensToSell,
-      tokensToBurn,
+      currentTabTokens,
       isTokensCheckPending,
+      isQuoteLoading,
     ]
   );
+
+  const popupContent = useMemo(() => {
+    if (!quote && unsellableTokens.length > 0) {
+      return (
+        <DefaultPopup
+          isOpen={true}
+          title="Some tokens are not sellable"
+          subtitle={prepareTokensSellingIssueCopies(sellableTokens, unsellableTokens)}
+          buttonCta="Sell rest"
+          buttonHandler={approveTokensHandler}
+        />
+      );
+    }
+    return null;
+  }, [quote, unsellableTokens, sellableTokens, approveTokensHandler]);
 
   return (
     <ContentContainer isLoading={!state}>
       {state && (
         <>
+          {popupContent}
           <ContentHeadline
             title={state?.contentHeadline}
             subtitle={state?.contentSubtitle}
             buttonLabel={operationType === "sell" ? state?.contentButtonLabel : "Soon..."}
-            buttonAction={operationType === "sell" ? handleActionButtonClick : undefined}
-            isButtonDisabled={isActionButtonDisabled}
+            buttonAction={
+              operationType === "sell"
+                ? quote
+                  ? approveTokensHandler
+                  : handleActionButtonClick
+                : undefined
+            }
+            isButtonDisabled={isActionButtonDisabled || isQuoteLoading}
+            showSpinner={isQuoteLoading}
+            loadingText={isQuoteLoading ? "Fetching quote..." : undefined}
           />
-          <Tabs defaultValue={operationType} variant="enclosed">
-            <Flex flexDir="row" justifyContent="space-between" alignItems="center">
-              <Tabs.List>
-                <Tabs.Trigger
-                  value="sell"
-                  disabled={tokensToSell.length === 0}
-                  onClick={handleSellClick}
-                >
-                  Sellable tokens
-                </Tabs.Trigger>
-                <Tabs.Trigger
-                  value="burn"
-                  disabled={tokensToBurn.length === 0}
-                  onClick={handleBurnClick}
-                >
-                  Burnable tokens
-                </Tabs.Trigger>
-              </Tabs.List>
-              <StatusWithText
-                isLoading={isTokensCheckPending}
-                text={getStatusText(isFetchingTokens, isTokensCheckPending)}
-              />
-            </Flex>
-            <Tabs.Content value={operationType}>
-              {renderTokensList(operationType === "sell" ? tokensToSell : tokensToBurn)}
-            </Tabs.Content>
-          </Tabs>
+          <ContentTabs
+            operationType={operationType}
+            tokensToSell={tokensToSell}
+            tokensToBurn={tokensToBurn}
+            isQuoteLoading={isQuoteLoading}
+            isTokensCheckPending={isTokensCheckPending}
+            isFetchingTokens={isFetchingTokens}
+            handleSellClickTab={handleSellClickTab}
+            handleBurnClickTab={handleBurnClickTab}
+            renderTokensList={renderTokensList}
+          />
         </>
       )}
     </ContentContainer>

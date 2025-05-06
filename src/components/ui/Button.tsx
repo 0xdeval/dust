@@ -11,6 +11,7 @@ import * as React from "react";
 
 interface ButtonLoadingProps {
   loading?: boolean;
+  showSpinner?: boolean;
   loadingText?: React.ReactNode;
   rightIcon?: React.ReactNode | undefined;
 }
@@ -18,7 +19,15 @@ interface ButtonLoadingProps {
 interface ButtonProps extends ChakraButtonProps, ButtonLoadingProps {}
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function Button(props, ref) {
-  const { disabled, loadingText, children, rightIcon, loading = false, ...rest } = props;
+  const {
+    disabled,
+    loadingText,
+    children,
+    rightIcon,
+    loading = false,
+    showSpinner = false,
+    ...rest
+  } = props;
   return (
     <Skeleton loading={loading}>
       <ChakraButton disabled={loading || disabled} ref={ref} {...rest}>
@@ -29,7 +38,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(function 
             </AbsoluteCenter>
             <Span opacity={0}>{children}</Span>
           </>
-        ) : loading && loadingText ? (
+        ) : showSpinner ? (
           <>
             <Spinner size="inherit" color="inherit" />
             {loadingText}

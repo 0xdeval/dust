@@ -2,7 +2,7 @@ import { ImageWithFallback } from "@/ui/ImageWithFallback";
 import { StatusSpinner } from "@/ui/Spinner";
 import { truncateText } from "@/utils/utils";
 import type { CardRootProps } from "@chakra-ui/react";
-import { Card, Text, Flex, Box } from "@chakra-ui/react";
+import { Card, Text, Flex, Box, useBreakpointValue } from "@chakra-ui/react";
 import * as React from "react";
 
 interface TokenStatusCardProps extends CardRootProps {
@@ -32,6 +32,10 @@ export const TokenStatusCard = React.forwardRef<HTMLDivElement, TokenStatusCardP
       ...rest
     } = props;
 
+    const isMobile = useBreakpointValue({ base: true, md: false });
+
+    const truncateSize = isMobile ? 20 : 35;
+
     return (
       <>
         <Card.Root ref={ref} variant="outline" {...rest}>
@@ -55,14 +59,16 @@ export const TokenStatusCard = React.forwardRef<HTMLDivElement, TokenStatusCardP
                   >
                     <Text fontWeight="bold">
                       {typeof label === "string"
-                        ? truncateText(label)
+                        ? truncateText(label, truncateSize)
                         : typeof symbol === "string"
-                          ? truncateText(symbol)
+                          ? truncateText(symbol, truncateSize)
                           : symbol}
                     </Text>
                     {description && (
                       <Text fontSize="sm" color="gray.500">
-                        {typeof description === "string" ? truncateText(description) : description}
+                        {typeof description === "string"
+                          ? truncateText(description, truncateSize)
+                          : description}
                       </Text>
                     )}
                   </Flex>
