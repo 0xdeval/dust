@@ -1,7 +1,12 @@
 import { CustomLink } from "@/ui/CustomLink";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { truncateText } from "@/utils/utils";
-import { Box, CheckboxCard as ChakraCheckboxCard, Flex } from "@chakra-ui/react";
+import {
+  Box,
+  CheckboxCard as ChakraCheckboxCard,
+  Flex,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import * as React from "react";
 
 export interface TokenCardProps extends ChakraCheckboxCard.RootProps {
@@ -13,11 +18,16 @@ export interface TokenCardProps extends ChakraCheckboxCard.RootProps {
   indicatorPlacement?: "start" | "end" | "inside";
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   linkInfo?: string;
+  isDisabled?: boolean;
 }
 
 export const TokenCard = React.forwardRef<HTMLInputElement, TokenCardProps>(
   function TokenCard(props, ref) {
     const { selectedNetwork } = useAppStateContext();
+
+    const isMobile = useBreakpointValue({ base: true, md: false });
+
+    const truncateSize = isMobile ? 20 : 35;
 
     const {
       inputProps,
@@ -47,13 +57,13 @@ export const TokenCard = React.forwardRef<HTMLInputElement, TokenCardProps>(
                   {label && (
                     <ChakraCheckboxCard.Label>
                       <CustomLink href={`${selectedNetwork.explorerUrl}/token/${linkInfo}`}>
-                        {truncateText(label as string)}
+                        {truncateText(label as string, truncateSize)}
                       </CustomLink>
                     </ChakraCheckboxCard.Label>
                   )}
                   {description && (
                     <ChakraCheckboxCard.Description>
-                      {truncateText(description as string)}
+                      {truncateText(description as string, truncateSize)}
                     </ChakraCheckboxCard.Description>
                   )}
                 </Flex>

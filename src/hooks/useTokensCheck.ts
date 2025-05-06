@@ -44,7 +44,6 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
         return;
       }
 
-      // Cache for subgraph to not check the same tokens twice
       const currentCacheKey = `${selectedNetwork.id}-${address}-${tokens.length}`;
       if (currentCacheKey === cacheKeyRef.current) {
         console.log("Already checked tokens, skipping");
@@ -94,7 +93,6 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
             appName,
             selectedNetwork.id,
             (pools, chunkTokens) => {
-              // For each chunk, determine which tokens are sellable
               const sellable = new Set<string>();
               for (const pool of pools) {
                 const token0 = pool.token0.id.toLowerCase();
@@ -114,7 +112,7 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
                 ...prev,
                 tokensToSell: convertAddressesToTokens(batchSellable, tokens),
                 tokensToBurn: convertAddressesToTokens(batchBurnable, tokens),
-                isPending: true, // still pending until all batches are done
+                isPending: true,
               }));
             }
           );
@@ -122,7 +120,7 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
             sellable: batchSellable,
             burnable: batchBurnable,
           });
-          // After all batches, set isPending to false
+
           setState((prev) => ({ ...prev, isPending: false }));
         }
       } catch (err) {

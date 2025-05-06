@@ -28,7 +28,7 @@ export function buildQuoteRequest({
     })),
     outputTokens: outputTokens.map((token, index, array) => ({
       tokenAddress: token.tokenAddress,
-      proportion: 1 / array.length, // Evenly distribute proportions
+      proportion: 1 / array.length,
     })),
     userAddr: userAddress,
     slippageLimitPercent,

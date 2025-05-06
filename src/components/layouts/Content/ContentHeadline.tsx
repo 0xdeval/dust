@@ -12,12 +12,14 @@ interface ContentHeadlineProps extends FlexProps {
   buttonLabel?: string;
   buttonAction?: () => void;
   isButtonDisabled?: boolean;
+  showSpinner?: boolean;
   secondaryButtonLabel?: string;
   secondaryButtonAction?: () => void;
   isSecondaryButtonDisabled?: boolean;
   hasActionButton?: boolean;
   copiesItemsAlign?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around";
   copiesJustifyContent?: "flex-start" | "flex-end" | "center" | "space-between" | "space-around";
+  loadingText?: string;
 }
 
 export const ContentHeadline = forwardRef<HTMLDivElement, ContentHeadlineProps>(
@@ -28,12 +30,14 @@ export const ContentHeadline = forwardRef<HTMLDivElement, ContentHeadlineProps>(
       buttonLabel,
       buttonAction,
       isButtonDisabled = true,
+      showSpinner = false,
       secondaryButtonLabel,
       secondaryButtonAction,
       isSecondaryButtonDisabled,
       hasActionButton = true,
       copiesItemsAlign = "flex-start",
       copiesJustifyContent = "space-between",
+      loadingText,
       ...props
     },
     ref
@@ -64,6 +68,8 @@ export const ContentHeadline = forwardRef<HTMLDivElement, ContentHeadlineProps>(
           <ContentHeadlineButtons
             buttonLabel={buttonLabel}
             buttonAction={buttonAction}
+            loadingText={loadingText}
+            showSpinner={showSpinner}
             isButtonDisabled={isButtonDisabled}
             secondaryButtonLabel={isSecondaryButtonAvaialble ? secondaryButtonLabel : undefined}
             secondaryButtonAction={isSecondaryButtonAvaialble ? secondaryButtonAction : undefined}

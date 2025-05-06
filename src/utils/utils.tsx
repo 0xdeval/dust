@@ -6,7 +6,8 @@ import type { SelectedToken } from "@/types/tokens";
 import { AGGREGATOR_CONTRACT_ADDRESS, TOKENS_TO_RECEIVE } from "@/utils/constants";
 import { Text } from "@chakra-ui/react";
 import { appConfig } from "@/configs/app";
-import { CustomLink } from "@/components/ui/CustomLink";
+import { CustomLink } from "@/ui/CustomLink";
+import type { SupportedChain } from "@/types/networks";
 
 export const stringToBigInt = (amount: string, decimals: number = 18) => {
   const bigIntAmount = parseUnits(amount, decimals);
@@ -58,15 +59,10 @@ interface TxnStatusProps {
   error?: string;
   hash?: string;
   unsellableTokens?: Array<SelectedToken>;
+  selectedNetwork?: SupportedChain;
 }
 
 export const getTxnStatusCopies = (isError: boolean | null, props?: TxnStatusProps) => {
-  console.log(
-    props?.unsellableTokens,
-    Array.isArray(props?.unsellableTokens),
-    props?.unsellableTokens
-  );
-
   if (isError) {
     if (
       props?.unsellableTokens &&
@@ -84,7 +80,12 @@ export const getTxnStatusCopies = (isError: boolean | null, props?: TxnStatusPro
     }
     return {
       contentHeadline: "TRADE FAILED",
-      contentSubtitle: "Something went wrong." + (props?.error ? ` Error: ${props.error}` : ""),
+      contentSubtitle:
+        "Something went wrong." +
+        (props?.error ? ` Error: ${props.error}` : "") +
+        "Please, " +
+        <CustomLink href={appConfig.supportLink}>contact our support</CustomLink> +
+        " if the problem persists",
       contentButtonLabel: "Try again",
     };
   }
@@ -94,7 +95,9 @@ export const getTxnStatusCopies = (isError: boolean | null, props?: TxnStatusPro
       contentHeadline: "TRADE IS COMPLETED",
       contentSubtitle:
         "Your trade has been successfully executed." +
-        (props?.hash ? ` Transaction hash: ${props.hash}` : ""),
+        (props?.hash
+          ? ` ${(<CustomLink href={`${props?.selectedNetwork?.explorerUrl}/tx/${props.hash}`}>Check details on Blockscout</CustomLink>)}`
+          : ""),
       contentButtonLabel: "Dust again",
     };
   }
@@ -173,22 +176,4 @@ export const getStatusText = (isFetchingTokens: boolean, isSubgraphLoading: bool
   }
 
   return "Tokens loaded";
-};
-
-export const mapAddressToTokenName = (
-  unsellableTokenAddresses: Array<string>,
-  tokens: Array<SelectedToken>
-): { tokensCanBeSold: Array<SelectedToken>; tokensCannotBeSold: Array<SelectedToken> } => {
-  const tokensCanBeSold: Array<SelectedToken> = [];
-  const tokensCannotBeSold: Array<SelectedToken> = [];
-
-  tokens.map((token) => {
-    if (unsellableTokenAddresses.includes(token.address)) {
-      tokensCannotBeSold.push(token);
-    } else {
-      tokensCanBeSold.push(token);
-    }
-  });
-
-  return { tokensCanBeSold, tokensCannotBeSold };
 };

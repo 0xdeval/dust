@@ -1,27 +1,41 @@
-import { usePrepareTokensSell } from "@/hooks/usePrepareTokensSell";
 import { ContentHeadline } from "@/layouts/Content/ContentHeadline";
 import { ContentContainer } from "@/layouts/Content/ContentContainer";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { StatusSpinner } from "@/ui/Spinner";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { config } from "@/configs/wagmi";
 import { useSendTransaction } from "wagmi";
 import {
   getTxnStatusCopies,
-  mapAddressToTokenName,
   prepareTokensSellingIssueCopies,
   txnErrorToHumanReadable,
 } from "@/utils/utils";
 import { DefaultPopup } from "@/layouts/Popup/DefaultPopup";
-import type { OdosTokensSellingStatus } from "@/types/tokens";
+import { useOdosQuote } from "@/hooks/useOdosQuote";
+import { useOdosExecute } from "@/hooks/useOdosExecute";
 
 export const TokensSell = () => {
-  const [odosTokensSellingStatus, setOdosTokensSellingStatus] =
-    useState<OdosTokensSellingStatus | null>(null);
+  const { state, updateState, approvedTokens, selectedNetwork } = useAppStateContext();
 
-  const { state, updateState, approvedTokens } = useAppStateContext();
-  const { status, unsellableTokens, executionData, executionError, quoteError, refetchQuote } =
-    usePrepareTokensSell();
+  const {
+    quote,
+    unsellableTokens,
+    sellableTokens,
+    setTokensToCheck,
+    setToCheckQuote,
+    quoteStatus,
+    quoteError,
+    isQuoteLoading,
+  } = useOdosQuote();
+
+  const {
+    executionData,
+    isExecutionLoading,
+    executionError,
+    executionStatus,
+    simulationError,
+    setQuoteData,
+  } = useOdosExecute();
 
   const {
     data: hash,
@@ -33,141 +47,191 @@ export const TokensSell = () => {
   } = useSendTransaction({ config });
 
   const isOperationPending = useMemo(
-    () => status === "LOADING_EXECUTE" || status === "LOADING_QUOTE" || isTransactionPending,
-    [status, isTransactionPending]
+    () => isQuoteLoading || isExecutionLoading || isTransactionPending,
+    [isQuoteLoading, isExecutionLoading, isTransactionPending]
   );
 
-  const sendSwapTransaction = useCallback(() => {
-    if (executionData) {
-      const tx = {
-        to: executionData.transaction.to as `0x${string}`,
-        data: executionData.transaction.data as `0x${string}`,
-        value: BigInt(executionData.transaction.value || 0),
-        gasLimit: BigInt(executionData.transaction.gas || 0),
-        chainId: executionData.transaction.chainId,
-      };
+  const transactionData = useMemo(() => {
+    if (!executionData) return null;
 
-      sendTransaction(tx);
+    return {
+      to: executionData.transaction.to as `0x${string}`,
+      data: executionData.transaction.data as `0x${string}`,
+      value: BigInt(executionData.transaction.value || 0),
+      gasLimit: BigInt(executionData.transaction.gas || 0),
+      chainId: executionData.transaction.chainId,
+    };
+  }, [executionData]);
+
+  const sendSwapTransaction = useCallback(() => {
+    if (transactionData) {
+      sendTransaction(transactionData);
     }
-  }, [executionData, sendTransaction]);
+  }, [transactionData, sendTransaction]);
 
   useEffect(() => {
-    if (executionData && !isTransactionFailed && !isTransactionExecuted) sendSwapTransaction();
-  }, [executionData, sendSwapTransaction, isTransactionFailed, isTransactionExecuted]);
+    if (approvedTokens?.length) {
+      setTokensToCheck(approvedTokens);
+      setToCheckQuote(true);
+    }
+  }, [approvedTokens, setTokensToCheck, setToCheckQuote]);
 
-  const startFromScratch = () => {
+  useEffect(() => {
+    if (quoteStatus === "SUCCESS_QUOTE" && quote) {
+      setQuoteData(quote);
+    }
+  }, [quote, quoteStatus, setQuoteData]);
+
+  useEffect(() => {
+    if (
+      executionStatus === "SUCCESS_EXECUTE" &&
+      executionData &&
+      !isTransactionFailed &&
+      !isTransactionExecuted
+    ) {
+      sendSwapTransaction();
+    }
+  }, [
+    executionStatus,
+    executionData,
+    isTransactionFailed,
+    isTransactionExecuted,
+    sendSwapTransaction,
+  ]);
+
+  const startFromScratch = useCallback(() => {
     updateState("SELECT_TOKENS");
-  };
+  }, [updateState]);
+
+  const handleSecondaryButtonClick = useCallback(() => {
+    updateState("APPROVE_TOKENS");
+  }, [updateState]);
+
+  const refetchOdosQuote = useCallback(() => {
+    if (sellableTokens?.length) {
+      setTokensToCheck(sellableTokens);
+      setToCheckQuote(true);
+    }
+  }, [setTokensToCheck, setToCheckQuote, sellableTokens]);
 
   const txnStatusCopies = useMemo(() => {
-    console.log("txn status: ", isTransactionFailed, isTransactionExecuted, status);
-
-    if (isTransactionFailed) {
-      console.log("Txn execution error:", transactionError);
+    if (isTransactionFailed && transactionError) {
       return getTxnStatusCopies(true, {
-        error: txnErrorToHumanReadable(transactionError?.message),
+        error: txnErrorToHumanReadable(transactionError.message),
       });
     }
 
-    if (status === "ERROR" && executionError) {
-      console.log("Assemble error:", executionError);
+    if (executionStatus === "ERROR") {
+      if (simulationError) {
+        return getTxnStatusCopies(true, {
+          error: txnErrorToHumanReadable(simulationError),
+        });
+      }
+
       return getTxnStatusCopies(true, {
-        error: txnErrorToHumanReadable(executionError),
+        error: txnErrorToHumanReadable(executionError?.detail),
       });
     }
 
-    if (quoteError && odosTokensSellingStatus && status === "ERROR") {
-      console.log("Quote error:", quoteError);
+    if (quoteStatus === "ERROR") {
       return getTxnStatusCopies(true, {
-        error: txnErrorToHumanReadable(quoteError),
-        unsellableTokens: odosTokensSellingStatus?.tokensCannotBeSold,
+        error: txnErrorToHumanReadable(quoteError?.detail),
+        unsellableTokens,
       });
     }
 
-    if (isTransactionExecuted && !executionError) {
+    if (isTransactionExecuted && !executionError && !simulationError) {
       return getTxnStatusCopies(false, { hash });
     }
 
-    return getTxnStatusCopies(null, { hash });
+    return getTxnStatusCopies(null, { hash, selectedNetwork });
   }, [
     isTransactionFailed,
     isTransactionExecuted,
     executionError,
-    status,
+    simulationError,
     hash,
     transactionError,
     quoteError,
-    odosTokensSellingStatus,
+    quoteStatus,
+    executionStatus,
+    unsellableTokens,
+    selectedNetwork,
   ]);
 
-  const handelSecondaryButtonClick = useCallback(() => {
-    updateState("APPROVE_TOKENS");
-  }, [updateState]);
+  const headlineProps = useMemo(
+    () => ({
+      title: isOperationPending
+        ? state?.contentHeadline || ""
+        : txnStatusCopies?.contentHeadline || "",
+      subtitle: isOperationPending
+        ? state?.contentSubtitle || ""
+        : txnStatusCopies?.contentSubtitle || "",
+      hasActionButton: isTransactionFailed || !isOperationPending,
+      buttonLabel: !isOperationPending ? txnStatusCopies?.contentButtonLabel || "" : undefined,
+      buttonAction: isTransactionFailed
+        ? sendSwapTransaction
+        : !isOperationPending
+          ? startFromScratch
+          : undefined,
+      isButtonDisabled: isOperationPending,
+      secondaryButtonLabel: "Back",
+      secondaryButtonAction: handleSecondaryButtonClick,
+      isSecondaryButtonDisabled: false,
+    }),
+    [
+      isOperationPending,
+      state?.contentHeadline,
+      state?.contentSubtitle,
+      txnStatusCopies,
+      isTransactionFailed,
+      sendSwapTransaction,
+      startFromScratch,
+      handleSecondaryButtonClick,
+    ]
+  );
 
-  useEffect(() => {
-    if (unsellableTokens.length > 0) {
-      const { tokensCanBeSold, tokensCannotBeSold } = mapAddressToTokenName(
-        unsellableTokens,
-        approvedTokens
+  const popupContent = useMemo(() => {
+    if (unsellableTokens?.length > 0) {
+      return (
+        <DefaultPopup
+          isOpen={true}
+          title="Some tokens are not sellable"
+          subtitle={prepareTokensSellingIssueCopies(sellableTokens, unsellableTokens)}
+          buttonCta="Sell rest"
+          buttonHandler={refetchOdosQuote}
+        />
       );
-
-      setOdosTokensSellingStatus({
-        tokensCanBeSold,
-        tokensCannotBeSold,
-      });
     }
-  }, [unsellableTokens, approvedTokens]);
+    return null;
+  }, [unsellableTokens, sellableTokens, refetchOdosQuote]);
+
+  if (!state) {
+    return (
+      <ContentContainer isLoading={true}>
+        <div />
+      </ContentContainer>
+    );
+  }
 
   return (
-    <>
-      <ContentContainer isLoading={!state}>
-        {odosTokensSellingStatus && (
-          <DefaultPopup
-            isOpen={true}
-            title="Some tokens are not sellable"
-            subtitle={prepareTokensSellingIssueCopies(
-              odosTokensSellingStatus.tokensCanBeSold,
-              odosTokensSellingStatus.tokensCannotBeSold
-            )}
-            buttonCta="Sell rest"
-            buttonHandler={refetchQuote}
-          />
-        )}
-        {state && (
-          <>
-            <StatusSpinner
-              isLoading={isOperationPending}
-              size="xl"
-              boxSize="100px"
-              borderWidth="5px"
-              status={
-                isTransactionFailed || Boolean(quoteError) || Boolean(executionError)
-                  ? "error"
-                  : "success"
-              }
-            />
-            <ContentHeadline
-              title={isOperationPending ? state.contentHeadline : txnStatusCopies?.contentHeadline}
-              subtitle={
-                isOperationPending ? state.contentSubtitle : txnStatusCopies?.contentSubtitle
-              }
-              hasActionButton={isTransactionFailed || !isOperationPending ? true : false}
-              buttonLabel={!isOperationPending ? txnStatusCopies?.contentButtonLabel : undefined}
-              buttonAction={
-                isTransactionFailed
-                  ? sendSwapTransaction
-                  : !isOperationPending
-                    ? startFromScratch
-                    : undefined
-              }
-              isButtonDisabled={isOperationPending}
-              secondaryButtonLabel="Back"
-              secondaryButtonAction={handelSecondaryButtonClick}
-              isSecondaryButtonDisabled={false}
-            />
-          </>
-        )}
-      </ContentContainer>
-    </>
+    <ContentContainer isLoading={false}>
+      {popupContent}
+      <StatusSpinner
+        isLoading={isOperationPending}
+        size="xl"
+        boxSize="100px"
+        borderWidth="5px"
+        status={
+          isTransactionFailed ||
+          Boolean(quoteError) ||
+          Boolean(executionError) ||
+          Boolean(simulationError)
+            ? "error"
+            : "success"
+        }
+      />
+      <ContentHeadline {...headlineProps} />
+    </ContentContainer>
   );
 };
