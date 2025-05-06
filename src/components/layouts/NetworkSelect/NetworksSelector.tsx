@@ -65,9 +65,6 @@ export const NetworksSelector = forwardRef<HTMLDivElement, NetworksSelectorProps
       (details: SelectValueChangeDetails<SelectItem>) => {
         const selectedId = Number(details.value[0]);
         const network = networks.find((n) => n.id === selectedId);
-
-        console.log("selectedId: ", selectedId);
-        console.log("network: ", network);
         if (network) {
           onSelectNetwork(network);
         }

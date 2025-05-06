@@ -141,7 +141,7 @@ export const TokensSell = () => {
     }
 
     if (isTransactionExecuted && !executionError && !simulationError) {
-      return getTxnStatusCopies(false, { hash });
+      return getTxnStatusCopies(false, { hash, selectedNetwork });
     }
 
     return getTxnStatusCopies(null, { hash, selectedNetwork });

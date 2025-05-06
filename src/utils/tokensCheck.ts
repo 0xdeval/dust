@@ -4,9 +4,6 @@ export const convertAddressesToTokens = (
   addresses: Array<string>,
   originalTokens: Array<Token>
 ): Array<Token> => {
-  console.log("Converting addresses:", addresses);
-  console.log("Original tokens:", originalTokens);
-
   return addresses
     .map((address) => {
       const token = originalTokens.find((t) => {

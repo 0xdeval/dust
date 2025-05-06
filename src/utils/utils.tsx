@@ -93,11 +93,16 @@ export const getTxnStatusCopies = (isError: boolean | null, props?: TxnStatusPro
   if (!isError) {
     return {
       contentHeadline: "TRADE IS COMPLETED",
-      contentSubtitle:
-        "Your trade has been successfully executed." +
-        (props?.hash
-          ? ` ${(<CustomLink href={`${props?.selectedNetwork?.explorerUrl}/tx/${props.hash}`}>Check details on Blockscout</CustomLink>)}`
-          : ""),
+      contentSubtitle: (
+        <>
+          Your trade has been successfully executed
+          {props?.hash && (
+            <CustomLink href={`${props?.selectedNetwork?.explorerUrl}/tx/${props?.hash}`}>
+              Check details on Blockscout
+            </CustomLink>
+          )}
+        </>
+      ),
       contentButtonLabel: "Dust again",
     };
   }

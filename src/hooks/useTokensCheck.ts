@@ -7,6 +7,7 @@ import { getCachedResult, setCachedResult } from "@/utils/cache";
 import { convertAddressesToTokens } from "@/utils/tokensCheck";
 import { useAccount } from "wagmi";
 import { getSpamTokens } from "@/utils/actions/checkSpamTokens";
+import { useLogger } from "./useLogger";
 
 interface UseTokenChecksResult {
   checkTokens: (appName?: SubgraphAppName) => Promise<void>;
@@ -17,6 +18,8 @@ interface UseTokenChecksResult {
 }
 
 export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
+  const logger = useLogger("useTokensCheck.ts");
+
   const [state, setState] = useState({
     isPending: false,
     error: null as Error | null,
@@ -34,23 +37,22 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
   const checkTokens = useCallback(
     async (appName: SubgraphAppName = "uniswap") => {
       if (!receivedToken || tokens.length === 0) {
-        console.log("No tokens or received token, resetting state");
+        logger.info("No tokens or received token, resetting state");
         setState((prev) => ({ ...prev, isPending: false, tokensToBurn: [], tokensToSell: [] }));
         return;
       }
 
       if (isCheckingRef.current) {
-        console.log("Already checking tokens, skipping");
+        logger.info("Already checking tokens, skipping");
         return;
       }
 
       const currentCacheKey = `${selectedNetwork.id}-${address}-${tokens.length}`;
       if (currentCacheKey === cacheKeyRef.current) {
-        console.log("Already checked tokens, skipping");
+        logger.info("Already checked tokens, skipping");
         return;
       }
 
-      console.log("Starting token check");
       isCheckingRef.current = true;
       cacheKeyRef.current = currentCacheKey;
       setState((prev) => ({
@@ -66,7 +68,7 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
         let results: TokenSellabilityResult;
 
         if (cachedResult) {
-          console.log("Using cached result");
+          logger.info("Using cached result for a tokens data");
           results = cachedResult;
           setState((prev) => ({
             ...prev,
@@ -77,13 +79,12 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
         } else {
           const spamTokens = getSpamTokens(tokens);
 
-          console.log(`RAW Found ${spamTokens.length} spam tokens by patterns`);
           const spamAddresses = new Set(spamTokens.map((token) => token.address));
           const tokenAddresses = tokens
             .filter((token) => !spamAddresses.has(token.address))
             .map((token) => token.address as `0x${string}`);
 
-          console.log(`Found ${spamAddresses.size} spam tokens by patterns`);
+          logger.info(`Found ${spamAddresses.size} spam tokens by patterns`);
 
           let batchSellable: Array<string> = [];
           let batchBurnable: Array<string> = [...spamAddresses];
@@ -124,18 +125,18 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
           setState((prev) => ({ ...prev, isPending: false }));
         }
       } catch (err) {
-        console.error("Error checking tokens:", err);
+        logger.error("Error checking tokens:", err);
         setState((prev) => ({
           ...prev,
           error: err instanceof Error ? err : new Error("Failed to check tokens"),
           isPending: false,
         }));
       } finally {
-        console.log("Finishing token check");
+        logger.info("Finishing token check");
         isCheckingRef.current = false;
       }
     },
-    [tokens, selectedNetwork.id, receivedToken, address]
+    [tokens, selectedNetwork.id, receivedToken, address, logger]
   );
 
   useEffect(() => {
@@ -147,15 +148,14 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
       !currentTokenAddresses.every((addr, i) => addr === prevTokenAddresses[i]);
 
     if (hasTokensChanged && tokens.length > 0 && receivedToken) {
-      console.log("Triggering new token check");
       setState((prev) => ({ ...prev, isPending: true, tokensToBurn: [], tokensToSell: [] }));
       prevTokensRef.current = currentTokenAddresses;
       checkTokens();
     } else if (!receivedToken || tokens.length === 0) {
-      console.log("No tokens or received token, resetting state");
+      logger.info("No tokens found for a wallet or received token, resetting state");
       setState((prev) => ({ ...prev, isPending: false, tokensToBurn: [], tokensToSell: [] }));
     }
-  }, [tokens, selectedNetwork.id, receivedToken, checkTokens]);
+  }, [tokens, selectedNetwork.id, receivedToken, checkTokens, logger]);
 
   return {
     checkTokens,

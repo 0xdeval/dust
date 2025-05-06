@@ -13,6 +13,8 @@ import { DefaultPopup } from "@/layouts/Popup/DefaultPopup";
 import { useOdosQuote } from "@/hooks/useOdosQuote";
 import type { SelectedToken, Token } from "@/types/tokens";
 import { ContentTabs } from "@/layouts/Content/ContentTabs/ContentTabs";
+import { Banner } from "@/components/ui/Banner";
+import { Flex } from "@chakra-ui/react";
 
 export const TokensSelection = () => {
   const { address } = useAccount();
@@ -31,6 +33,9 @@ export const TokensSelection = () => {
   const { tokensToBurn, tokensToSell, isPending: isTokensCheckPending } = useTokensCheck(tokens);
   const [sessionSelectedTokens, setSessionSelectedTokens] = useState<Array<SelectedToken>>([]);
 
+  const selectedCount = sessionSelectedTokens.filter((t) => t.isSelected).length;
+  const showLimitBanner = operationType === "sell" && selectedCount >= 6;
+
   const {
     quote,
     unsellableTokens,
@@ -48,11 +53,28 @@ export const TokensSelection = () => {
     setSessionSelectedTokens(initialSelectedTokens);
   }, [tokens, selectedNetwork]);
 
-  const handleCardSelect = useCallback((token: SelectedToken) => {
-    setSessionSelectedTokens((prev) =>
-      prev.map((t) => (t.address === token.address ? { ...t, isSelected: !t.isSelected } : t))
-    );
-  }, []);
+  const handleCardSelect = useCallback(
+    (token: SelectedToken) => {
+      setSessionSelectedTokens((prev) => {
+        const selectedCount = prev.filter((t) => t.isSelected).length;
+        const isCurrentlySelected = prev.find((t) => t.address === token.address)?.isSelected;
+
+        // Allow deselection
+        if (isCurrentlySelected) {
+          return prev.map((t) => (t.address === token.address ? { ...t, isSelected: false } : t));
+        }
+
+        // Prevent selecting more than 6, and highlight the banner
+        if (operationType === "sell" && selectedCount >= 6) {
+          return prev;
+        }
+
+        // Otherwise, select the token
+        return prev.map((t) => (t.address === token.address ? { ...t, isSelected: true } : t));
+      });
+    },
+    [operationType]
+  );
 
   const selectedTokens = useMemo(
     () => sessionSelectedTokens.filter((t) => t.isSelected),
@@ -141,6 +163,7 @@ export const TokensSelection = () => {
           isLoading={isFetchingTokens || tokensWithSelection.length === 0}
           onCardSelect={handleCardSelect}
           isDisabled={isQuoteLoading}
+          disableUnselected={showLimitBanner}
         />
       );
     },
@@ -151,6 +174,7 @@ export const TokensSelection = () => {
       currentTabTokens,
       isTokensCheckPending,
       isQuoteLoading,
+      showLimitBanner,
     ]
   );
 
@@ -189,17 +213,24 @@ export const TokensSelection = () => {
             showSpinner={isQuoteLoading}
             loadingText={isQuoteLoading ? "Fetching quote..." : undefined}
           />
-          <ContentTabs
-            operationType={operationType}
-            tokensToSell={tokensToSell}
-            tokensToBurn={tokensToBurn}
-            isQuoteLoading={isQuoteLoading}
-            isTokensCheckPending={isTokensCheckPending}
-            isFetchingTokens={isFetchingTokens}
-            handleSellClickTab={handleSellClickTab}
-            handleBurnClickTab={handleBurnClickTab}
-            renderTokensList={renderTokensList}
-          />
+          <Flex flexDirection="column" width="100%">
+            {showLimitBanner && (
+              <Banner type="warning" mb={4}>
+                You can select up to 6 tokens to sell at once. Deselect a token to select another
+              </Banner>
+            )}
+            <ContentTabs
+              operationType={operationType}
+              tokensToSell={tokensToSell}
+              tokensToBurn={tokensToBurn}
+              isQuoteLoading={isQuoteLoading}
+              isTokensCheckPending={isTokensCheckPending}
+              isFetchingTokens={isFetchingTokens}
+              handleSellClickTab={handleSellClickTab}
+              handleBurnClickTab={handleBurnClickTab}
+              renderTokensList={renderTokensList}
+            />
+          </Flex>
         </>
       )}
     </ContentContainer>

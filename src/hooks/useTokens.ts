@@ -4,6 +4,7 @@ import { fetchTokens } from "@/lib/blockscout/api";
 import type { Token } from "@/types/tokens";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { TOKENS_FETCHING_CACHE_DURATION } from "@/utils/constants";
+import { useLogger } from "./useLogger";
 
 interface CacheEntry {
   tokens: Array<Token>;
@@ -11,6 +12,8 @@ interface CacheEntry {
 }
 
 export function useTokens() {
+  const logger = useLogger("useTokens.ts");
+
   const { address } = useAccount();
   const { selectedNetwork } = useAppStateContext();
   const [tokens, setTokens] = useState<Array<Token>>([]);
@@ -18,7 +21,6 @@ export function useTokens() {
   const [error, setError] = useState<Error | null>(null);
   const cacheRef = useRef<Map<string, CacheEntry>>(new Map());
 
-  console.log("Wallet info: ", address, selectedNetwork);
   useEffect(() => {
     async function fetchUserTokens() {
       if (!address || !selectedNetwork) {
@@ -39,17 +41,16 @@ export function useTokens() {
       setIsLoading(true);
       setError(null);
 
-      console.log("fetching tokens");
       try {
         const fetchedTokens = await fetchTokens(address as string, selectedNetwork);
-        console.log("fetchedTokens", fetchedTokens);
+        logger.info("Number of fetched tokens:", { fetchedTokensAmount: fetchedTokens.length });
         setTokens(fetchedTokens);
         cacheRef.current.set(cacheKey, {
           tokens: fetchedTokens,
           timestamp: Date.now(),
         });
       } catch (error) {
-        console.error("Error fetching tokens:", error);
+        logger.error("Error fetching tokens:", error);
         setError(error instanceof Error ? error : new Error("Failed to fetch tokens"));
         setTokens([]);
       } finally {
@@ -58,7 +59,7 @@ export function useTokens() {
     }
 
     fetchUserTokens();
-  }, [address, selectedNetwork]);
+  }, [address, selectedNetwork, logger]);
 
   return { tokens, isLoading, error };
 }

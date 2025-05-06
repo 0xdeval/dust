@@ -211,7 +211,6 @@ describe("fetchTokens", () => {
     });
 
     const result = await fetchTokens(mockAddress, mockNetwork);
-    console.log("API Response:", result);
 
     expect(result[0]).toMatchObject({
       address: expect.stringMatching(/^0x/),
