@@ -2,6 +2,7 @@ import { pickBy } from "es-toolkit";
 import { useCallback } from "react";
 import buildUrl from "@/hooks/api/buildUrl";
 import type { ResourceName, ResourceMethod, ResourcePathParams } from "@/types/api/resources";
+import { useLogger } from "../useLogger";
 
 export interface ApiFetchParams<R extends ResourceName> {
   pathParams?: ResourcePathParams<R>;
@@ -21,6 +22,8 @@ export interface ApiResponse<T> {
 }
 
 export default function useApiFetch() {
+  const logger = useLogger("useApiFetch.ts");
+
   return useCallback(
     async <R extends ResourceName, M extends ResourceMethod<R>, T = unknown>(
       resourceName: R,
@@ -44,7 +47,7 @@ export default function useApiFetch() {
 
       if (!response.ok) {
         const error = await response.json();
-        logError && console.log(`ERROR:`, error);
+        logError && logger.error(`Issue with fetching data from ${url}:`, error);
         throw {
           status: response.status,
           message: error.message || response.statusText,
@@ -55,6 +58,6 @@ export default function useApiFetch() {
       const data = await response.json();
       return { data, rawResponse: response };
     },
-    []
+    [logger]
   );
 }

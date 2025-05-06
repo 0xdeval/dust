@@ -27,8 +27,6 @@ export const WalletAndChainsActions = ({ isPageLoading }: Props) => {
 
   const handleSelectNetwork = useCallback(
     (network: SupportedChain) => {
-      console.log("Switching to network: ", network, network.id);
-
       try {
         switchNetwork(network as AppKitNetwork);
         setSelectedNetwork(network);

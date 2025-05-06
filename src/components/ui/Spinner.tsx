@@ -35,7 +35,6 @@ export const StatusSpinner = ({
     }
   }, [isLoading]);
 
-  console.log("status", status);
   return (
     <Box
       position="relative"
