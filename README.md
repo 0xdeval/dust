@@ -8,7 +8,7 @@
 
 **Dust** is a lightweight Next.js-based dApp designed to streamline multi-token sales across EVM-compatible chains. It supports up to six tokens in one transaction, filters burn-only assets, and routes transactions using ODOS and The Graph, with token data fetched via Blockscout APIs.
 
-## Table of Contents
+## Table of contents
 
 - [Features](#features)
 - [Project Structure](#project-structure)
@@ -18,6 +18,7 @@
 - [Contributing](#contributing)
 - [Feedback](#feedback)
 - [License](#license)
+- [Support this project](#support-this-project)
 
 ## Features
 
@@ -118,3 +119,12 @@ Your feedback helps us improve!
 ## License
 
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
+## Support this project
+
+If you find this project useful, consider donating:
+
+- EVM chains: `0xdeval.eth`
+- TON: `UQBbNb-uvZw-kTzwXmflzMOLG8y38y9YtXiiE4MJAKuFxf71`
+- Solana: `6i554tryeKSktWCyKqyRwYnaGcByaNp4zs7pifHoTmj9`
+- Bitcoin: `bc1pc75tm7a5khf5cfnww80grl3lzpqwjcy8v7a65rkzq4aafyvrkw8sxspltj`
