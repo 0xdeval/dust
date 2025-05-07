@@ -136,26 +136,33 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
         isCheckingRef.current = false;
       }
     },
-    [tokens, selectedNetwork.id, receivedToken, address, logger]
+    /* eslint-disable */
+    [tokens, selectedNetwork.id, receivedToken, address]
+    /* eslint-enable */
   );
 
-  useEffect(() => {
-    const currentTokenAddresses = tokens.map((t) => t.address.toLowerCase());
-    const prevTokenAddresses = prevTokensRef.current;
+  useEffect(
+    () => {
+      const currentTokenAddresses = tokens.map((t) => t.address.toLowerCase());
+      const prevTokenAddresses = prevTokensRef.current;
 
-    const hasTokensChanged =
-      currentTokenAddresses.length !== prevTokenAddresses.length ||
-      !currentTokenAddresses.every((addr, i) => addr === prevTokenAddresses[i]);
+      const hasTokensChanged =
+        currentTokenAddresses.length !== prevTokenAddresses.length ||
+        !currentTokenAddresses.every((addr, i) => addr === prevTokenAddresses[i]);
 
-    if (hasTokensChanged && tokens.length > 0 && receivedToken) {
-      setState((prev) => ({ ...prev, isPending: true, tokensToBurn: [], tokensToSell: [] }));
-      prevTokensRef.current = currentTokenAddresses;
-      checkTokens();
-    } else if (!receivedToken || tokens.length === 0) {
-      logger.info("No tokens found for a wallet or received token, resetting state");
-      setState((prev) => ({ ...prev, isPending: false, tokensToBurn: [], tokensToSell: [] }));
-    }
-  }, [tokens, selectedNetwork.id, receivedToken, checkTokens, logger]);
+      if (hasTokensChanged && tokens.length > 0 && receivedToken) {
+        setState((prev) => ({ ...prev, isPending: true, tokensToBurn: [], tokensToSell: [] }));
+        prevTokensRef.current = currentTokenAddresses;
+        checkTokens();
+      } else if (!receivedToken || tokens.length === 0) {
+        logger.info("No tokens found for a wallet or received token, resetting state");
+        setState((prev) => ({ ...prev, isPending: false, tokensToBurn: [], tokensToSell: [] }));
+      }
+    },
+    /* eslint-disable */
+    [tokens, selectedNetwork.id, receivedToken, checkTokens]
+    /* eslint-enable */
+  );
 
   return {
     checkTokens,

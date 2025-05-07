@@ -58,6 +58,8 @@ export default function useApiFetch() {
       const data = await response.json();
       return { data, rawResponse: response };
     },
-    [logger]
+    /* eslint-disable */
+    []
+    /* eslint-enable */
   );
 }

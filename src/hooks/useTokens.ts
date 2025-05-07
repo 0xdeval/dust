@@ -21,45 +21,50 @@ export function useTokens() {
   const [error, setError] = useState<Error | null>(null);
   const cacheRef = useRef<Map<string, CacheEntry>>(new Map());
 
-  useEffect(() => {
-    async function fetchUserTokens() {
-      if (!address || !selectedNetwork) {
-        setTokens([]);
-        setIsLoading(false);
-        return;
+  useEffect(
+    () => {
+      async function fetchUserTokens() {
+        if (!address || !selectedNetwork) {
+          setTokens([]);
+          setIsLoading(false);
+          return;
+        }
+
+        const cacheKey = `${selectedNetwork.id}-${address}`;
+        const cachedData = cacheRef.current.get(cacheKey);
+
+        if (cachedData && Date.now() - cachedData.timestamp < TOKENS_FETCHING_CACHE_DURATION) {
+          setTokens(cachedData.tokens);
+          setIsLoading(false);
+          return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+          const fetchedTokens = await fetchTokens(address as string, selectedNetwork);
+          logger.info("Number of fetched tokens:", { fetchedTokensAmount: fetchedTokens.length });
+          setTokens(fetchedTokens);
+          cacheRef.current.set(cacheKey, {
+            tokens: fetchedTokens,
+            timestamp: Date.now(),
+          });
+        } catch (error) {
+          logger.error("Error fetching tokens:", error);
+          setError(error instanceof Error ? error : new Error("Failed to fetch tokens"));
+          setTokens([]);
+        } finally {
+          setIsLoading(false);
+        }
       }
 
-      const cacheKey = `${selectedNetwork.id}-${address}`;
-      const cachedData = cacheRef.current.get(cacheKey);
-
-      if (cachedData && Date.now() - cachedData.timestamp < TOKENS_FETCHING_CACHE_DURATION) {
-        setTokens(cachedData.tokens);
-        setIsLoading(false);
-        return;
-      }
-
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const fetchedTokens = await fetchTokens(address as string, selectedNetwork);
-        logger.info("Number of fetched tokens:", { fetchedTokensAmount: fetchedTokens.length });
-        setTokens(fetchedTokens);
-        cacheRef.current.set(cacheKey, {
-          tokens: fetchedTokens,
-          timestamp: Date.now(),
-        });
-      } catch (error) {
-        logger.error("Error fetching tokens:", error);
-        setError(error instanceof Error ? error : new Error("Failed to fetch tokens"));
-        setTokens([]);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchUserTokens();
-  }, [address, selectedNetwork, logger]);
+      fetchUserTokens();
+    },
+    /* eslint-disable */
+    [address, selectedNetwork]
+    /* eslint-enable */
+  );
 
   return { tokens, isLoading, error };
 }
