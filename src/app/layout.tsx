@@ -16,26 +16,26 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Dust | Dust Off Your Wallet and Earn from Spam Tokens",
+  title: "Dust – Remove spam tokens | Secure your web3 wallet",
   description:
-    "Dust is a Web3 tool that converts spam tokens and airdropped scams into real value. Clean up your wallet and get rewarded for crypto dust.",
+    "Dust helps users eliminate spam and scam tokens by offering tools to sell or burn unwanted assets, ensuring a safer and cleaner blockchain experience",
   keywords: [
-    "dust token cleaner",
-    "spam token removal",
-    "earn from dust",
-    "crypto wallet spam",
-    "airdropped token scam",
-    "wallet hygiene",
-    "web3 dust off",
-    "remove token spam",
+    "spam tokens",
+    "burn tokens",
+    "sell unwanted crypto",
+    "wallet security",
+    "Web3 token cleanup",
+    "Dust",
+    "crypto wallet hygiene",
+    "scam token removal",
+    "airdropped spam",
     "dustoff.fun",
-    "Dust DApp",
   ],
   metadataBase: new URL("https://dustoff.fun"),
   openGraph: {
-    title: "Dust | Dust off your wallet and earn from spam tokens",
+    title: "Dust – Clean your wallet, secure your crypto",
     description:
-      "Use Dust to turn spam tokens, dust, and junk airdrops into profit. Clean your wallet the smart way — at dustoff.fun.",
+      "Eliminate spam and scam tokens from your wallet effortlessly with Dust's sell and burn features",
     url: "https://dustoff.fun",
     siteName: "Dust",
     images: [
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Dust App - Clean up your crypto wallet",
+        alt: "Dust – Clean your wallet, secure your crypto",
       },
     ],
     locale: "en_US",
@@ -51,8 +51,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dust | Dust Off Your Wallet and Earn from Spam Tokens",
-    description: "Turn your spam tokens into real crypto. Try Dust now at dustoff.fun.",
+    title: "Dust – Remove spam tokens | Secure your web3 wallet",
+    description: "Sell or burn unwanted tokens to enhance wallet security and clarity.",
     images: ["/og-image.png"],
     creator: "@mike_krupin",
   },
