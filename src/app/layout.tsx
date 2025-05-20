@@ -16,7 +16,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Dust – Remove spam tokens | Secure your web3 wallet",
+  title: "Dust – Remove spam tokens, secure your wallet",
   description:
     "Dust helps users eliminate spam and scam tokens by offering tools to sell or burn unwanted assets, ensuring a safer and cleaner blockchain experience",
   keywords: [
