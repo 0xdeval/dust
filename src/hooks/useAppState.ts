@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react"; // Added useMemo
 import type { AppState, OperationType, Phase } from "@/types/states";
 import { useAccount } from "wagmi";
 import { getCopies, getDefaultTokenToReceive } from "@/utils/utils";
@@ -28,10 +28,23 @@ export const useAppState = () => {
 
   const [state, setState] = useState<AppState | null>(null);
 
-  useEffect(() => {
-    if (!phase) return;
+  const currentCopy = useMemo(() => {
+    if (!phase) {
+      // Return a default structure or handle appropriately if phase can be null
+      // For now, assuming getCopies can handle null or phase won't be null when this is critical.
+      // Or, ensure phase has a default initial state that getCopies can work with.
+      // Based on current hook logic, phase is initialized to a non-null value.
+      return getCopies(phase as Phase); // Cast if phase is guaranteed to be non-null here
+    }
+    return getCopies(phase);
+  }, [phase]);
 
-    const currentCopy = getCopies(phase);
+  useEffect(() => {
+    if (!phase) {
+      setState(null); // Or handle as per application logic for a null phase
+      return;
+    }
+    
     setState({
       phase,
       contentHeadline: currentCopy.contentHeadline,
@@ -42,7 +55,7 @@ export const useAppState = () => {
       approvedTokens,
       isReadyToSell,
     });
-  }, [phase, receivedToken, selectedTokens, approvedTokens, isReadyToSell]);
+  }, [phase, currentCopy, receivedToken, selectedTokens, approvedTokens, isReadyToSell]);
 
   const updateState = (newPhase: Phase) => {
     setPhase(newPhase);

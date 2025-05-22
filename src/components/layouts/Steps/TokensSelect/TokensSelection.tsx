@@ -3,8 +3,9 @@ import { TokensList } from "@/layouts/Tokens/TokensList";
 import { ContentHeadline } from "@/layouts/Content/ContentHeadline";
 import { useTokens } from "@/hooks/useTokens";
 import { useAppStateContext } from "@/context/AppStateContext";
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react"; // useState will be partially removed
 import { useAccount } from "wagmi";
+import { useTokenSelectionManagement } from "@/hooks/useTokenSelectionManagement"; // Import the new hook
 import { approveTokensList } from "@/utils/actions/tokenApprovals";
 import { getAggregatorContractAddress, prepareTokensSellingIssueCopies } from "@/utils/utils";
 import { useTokensCheck } from "@/hooks/useTokensCheck";
@@ -31,10 +32,20 @@ export const TokensSelection = () => {
   } = useAppStateContext();
   const { tokens, isLoading: isFetchingTokens } = useTokens();
   const { tokensToBurn, tokensToSell, isPending: isTokensCheckPending } = useTokensCheck(tokens);
-  const [sessionSelectedTokens, setSessionSelectedTokens] = useState<Array<SelectedToken>>([]);
+  // Logic to be moved to useTokenSelectionManagement is below
 
-  const selectedCount = sessionSelectedTokens.filter((t) => t.isSelected).length;
-  const showLimitBanner = operationType === "sell" && selectedCount >= 6;
+  const {
+    sessionSelectedTokens, // Provided by the hook
+    selectedTokens,        // Provided by the hook
+    handleCardSelect,      // Provided by the hook
+    resetSelectedTokens,   // Provided by the hook
+    // setSessionSelectedTokens is also available from the hook if needed directly
+  } = useTokenSelectionManagement({
+    initialTokens: tokens, // Pass `tokens` as `initialTokens`
+    operationType: operationType,
+  });
+
+  const showLimitBanner = operationType === "sell" && selectedTokens.length >= 6; // Uses selectedTokens from the hook
 
   const {
     quote,
@@ -45,44 +56,12 @@ export const TokensSelection = () => {
     isQuoteLoading,
   } = useOdosQuote();
 
-  useEffect(() => {
-    const initialSelectedTokens = tokens.map((token) => ({
-      ...token,
-      isSelected: false,
-    }));
-    setSessionSelectedTokens(initialSelectedTokens);
-  }, [tokens, selectedNetwork]);
-
-  const handleCardSelect = useCallback(
-    (token: SelectedToken) => {
-      setSessionSelectedTokens((prev) => {
-        const selectedCount = prev.filter((t) => t.isSelected).length;
-        const isCurrentlySelected = prev.find((t) => t.address === token.address)?.isSelected;
-
-        // Allow deselection
-        if (isCurrentlySelected) {
-          return prev.map((t) => (t.address === token.address ? { ...t, isSelected: false } : t));
-        }
-
-        // Prevent selecting more than 6, and highlight the banner
-        if (operationType === "sell" && selectedCount >= 6) {
-          return prev;
-        }
-
-        // Otherwise, select the token
-        return prev.map((t) => (t.address === token.address ? { ...t, isSelected: true } : t));
-      });
-    },
-    [operationType]
-  );
-
-  const selectedTokens = useMemo(
-    () => sessionSelectedTokens.filter((t) => t.isSelected),
-    [sessionSelectedTokens]
-  );
+  // The useEffect for initializing sessionSelectedTokens is now inside useTokenSelectionManagement
+  // The handleCardSelect logic is now inside useTokenSelectionManagement
+  // The selectedTokens useMemo is now inside useTokenSelectionManagement
 
   useEffect(() => {
-    setIsActionButtonDisabled(selectedTokens.length === 0);
+    setIsActionButtonDisabled(selectedTokens.length === 0); // selectedTokens comes from the hook
   }, [selectedTokens]);
 
   const handleActionButtonClick = useCallback(async () => {
@@ -96,20 +75,20 @@ export const TokensSelection = () => {
   );
 
   const approveTokensHandler = useCallback(async () => {
-    setSelectedTokens(tokensToApprove);
+    setSelectedTokens(tokensToApprove); // This is setGlobalSelectedTokens from useAppStateContext
     updateState("APPROVE_TOKENS");
     await approveTokensList(
-      setApprovedTokens,
+      setApprovedTokens, // This is setGlobalApprovedTokens from useAppStateContext
       tokensToApprove,
       address as `0x${string}`,
       getAggregatorContractAddress(selectedNetwork.id)
     );
   }, [
-    setApprovedTokens,
+    setApprovedTokens, // from useAppStateContext
     tokensToApprove,
     address,
     selectedNetwork,
-    setSelectedTokens,
+    setSelectedTokens, // from useAppStateContext
     updateState,
   ]);
 
@@ -119,18 +98,16 @@ export const TokensSelection = () => {
     }
   }, [quote, approveTokensHandler]);
 
-  const resetSelectedTokens = useCallback(() => {
-    setSessionSelectedTokens((prev) => prev.map((token) => ({ ...token, isSelected: false })));
-  }, []);
+  // resetSelectedTokens is now from useTokenSelectionManagement hook
 
   const handleSellClickTab = useCallback(() => {
     setOperationType("sell");
-    resetSelectedTokens();
+    resetSelectedTokens(); // from the hook
   }, [setOperationType, resetSelectedTokens]);
 
   const handleBurnClickTab = useCallback(() => {
     setOperationType("burn");
-    resetSelectedTokens();
+    resetSelectedTokens(); // from the hook
   }, [setOperationType, resetSelectedTokens]);
 
   const currentTabTokens = useMemo(

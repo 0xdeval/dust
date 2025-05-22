@@ -24,6 +24,13 @@ export const useOdosExecute = () => {
       setExecutionRequest(req);
       setExecutionStatus("LOADING_EXECUTE");
       setSimulationError(null);
+      setOdosExecutionData(null); // Also reset previous execution data
+    } else {
+      // If quoteData is null, reset execution request and related states
+      setExecutionRequest(null);
+      setExecutionStatus("IDLE");
+      setSimulationError(null);
+      setOdosExecutionData(null);
     }
   }, [quoteData, address]);
 
