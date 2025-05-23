@@ -71,57 +71,94 @@ describe("fetchTokens", () => {
     ]);
   });
 
-  it("filters out non-ERC20 tokens and zero balances", async () => {
+  it("filters out non-ERC20, zero balances, missing token object/address, or invalid value for BigInt", async () => {
+    const mockResponse = {
+      items: [
+        // Zero balance
+        {
+          token: { address: "0xtoken1", decimals: "18", type: "ERC-20", name: "Z", symbol: "Z", exchange_rate: "1", icon_url: "url" },
+          value: "0",
+        },
+        // Non-ERC20
+        {
+          token: { address: "0xtoken2", decimals: "18", type: "ERC-721", name: "N", symbol: "N", exchange_rate: "1", icon_url: "url" },
+          value: "1000000000000000000",
+        },
+        // Missing token object
+        {
+          value: "1000000000000000000",
+        },
+        // Token object is not an object
+        {
+          token: "not-an-object",
+          value: "1000000000000000000",
+        },
+        // Missing token address
+        {
+          token: { decimals: "18", type: "ERC-20", name: "M", symbol: "M", exchange_rate: "1", icon_url: "url" },
+          value: "1000000000000000000",
+        },
+         // Invalid value for BigInt conversion
+        {
+          token: { address: "0xtokenBig3", decimals: "18", type: "ERC-20", name: "B3", symbol: "B3", exchange_rate: "1", icon_url: "url" },
+          value: "not-a-valid-bigint-value",
+        },
+        // Valid token for control
+        {
+          token: { address: "0xvalidtoken", decimals: "18", type: "ERC-20", name: "V", symbol: "V", exchange_rate: "1", icon_url: "url" },
+          value: "1000000000000000000",
+        },
+      ],
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    });
+
+    const result = await fetchTokens(mockAddress, mockNetwork);
+    expect(result).toHaveLength(1);
+    expect(result[0].address).toBe("0xvalidtoken");
+  });
+
+  it("handles various valid and invalid decimal and exchange_rate values", async () => {
     const mockResponse = {
       items: [
         {
           token: {
             address: "0xtoken1",
-            decimals: "18",
+            decimals: "18", // valid
             type: "ERC-20",
+            name: "Token 1",
+            symbol: "TK1",
+            icon_url: "icon.png",
+            exchange_rate: "1.23", // valid
           },
-          value: "0",
+          value: "1000000000000000000", // 1 token
         },
         {
           token: {
             address: "0xtoken2",
-            decimals: "18",
-            type: "ERC-721",
+            decimals: "not-a-number", // invalid
+            type: "ERC-20",
+            name: "Token 2",
+            symbol: "TK2",
+            icon_url: null, // null icon
+            exchange_rate: "not-a-price-string", // invalid
           },
-          value: "1000000000000000000",
+          value: "2000000000000000000", // 2 tokens
         },
-      ],
-    };
-
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: () => Promise.resolve(mockResponse),
-    });
-
-    const result = await fetchTokens(mockAddress, mockNetwork);
-    expect(result).toEqual([]);
-  });
-
-  it("handles invalid decimal values", async () => {
-    const mockResponse = {
-      items: [
         {
           token: {
-            address: "0xtoken1",
-            decimals: "18",
+            address: "0xtoken3",
+            decimals: null, // null decimals
             type: "ERC-20",
-            name: "Token 1",
-            symbol: "TK1",
-            icon_url: null,
-            exchange_rate: null,
-            circulating_market_cap: null,
-            holders: "0",
-            total_supply: "0",
-            volume_24h: null,
+            name: "Token 3",
+            symbol: "TK3",
+            icon_url: "icon3.png", // valid icon
+            exchange_rate: null, // null rate
           },
-          token_id: null,
-          token_instance: null,
-          value: "1000000000000000000",
+          value: "3000000000000000000", // 3 tokens (will use default 18 decimals)
         },
       ],
     };
@@ -132,17 +169,65 @@ describe("fetchTokens", () => {
     });
 
     const result = await fetchTokens(mockAddress, mockNetwork);
-
+    expect(result).toHaveLength(3);
     expect(result[0]).toMatchObject({
       address: "0xtoken1",
-      decimals: 18, // default decimals
+      decimals: 18,
       name: "Token 1",
       symbol: "TK1",
-      logoURI: null,
-      price: 0, // default price when exchange_rate is null
-      balance: expect.any(String),
-      rawBalance: BigInt("1000000000000000000"),
+      logoURI: "icon.png",
+      price: 1.23,
+      balance: "1.0000",
+      rawBalance: 1000000000000000000n,
     });
+    expect(result[1]).toMatchObject({
+      address: "0xtoken2",
+      decimals: 18, // Defaults to 18
+      name: "Token 2",
+      symbol: "TK2",
+      logoURI: null, // Handles null icon_url
+      price: 0, // Defaults to 0 for invalid string
+      balance: "2.0000", // Uses default 18 decimals
+      rawBalance: 2000000000000000000n,
+    });
+    expect(result[2]).toMatchObject({
+      address: "0xtoken3",
+      decimals: 18, // Defaults to 18 for null
+      name: "Token 3",
+      symbol: "TK3",
+      logoURI: "icon3.png",
+      price: 0, // Defaults to 0 for null
+      balance: "3.0000", // Uses default 18 decimals
+      rawBalance: 3000000000000000000n,
+    });
+  });
+
+  it("handles various BigInt conversions for rawBalance from 'value'", async () => {
+    const mockResponse = {
+      items: [
+        { // Standard valid case
+          token: { address: "0xtokenStd", decimals: "18", type: "ERC-20", name: "S", symbol: "S", exchange_rate: "1", icon_url: "url" },
+          value: "1000000000000000000", // 1 token
+        },
+        { // Large number
+          token: { address: "0xtokenBig1", decimals: "0", type: "ERC-20", name: "B1", symbol: "B1", exchange_rate: "1", icon_url: "url" },
+          value: "123456789012345678901234567890",
+        },
+        { // Leading zeros
+          token: { address: "0xtokenBig2", decimals: "18", type: "ERC-20", name: "B2", symbol: "B2", exchange_rate: "1", icon_url: "url" },
+          value: "000001000000000000000000", // 1 token with leading zeros
+        },
+      ],
+    };
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(mockResponse),
+    });
+    const result = await fetchTokens(mockAddress, mockNetwork);
+    expect(result).toHaveLength(3);
+    expect(result[0].rawBalance).toEqual(BigInt("1000000000000000000"));
+    expect(result[1].rawBalance).toEqual(BigInt("123456789012345678901234567890"));
+    expect(result[2].rawBalance).toEqual(BigInt("1000000000000000000")); // 1 with 18 decimals after stripping leading zeros
   });
 
   it("handles API errors gracefully", async () => {

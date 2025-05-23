@@ -63,45 +63,71 @@ export function useOdosQuote() {
   useEffect(() => {
     if (toCheckQuote) {
       setQuote(null);
+      // Reset unsellable/sellable states when a new check starts
+      setUnsellableTokenAddresses([]);
+      setUnsellableTokens([]);
+      // Initialize sellableTokens with tokensToCheck, assuming they are sellable until an error proves otherwise
+      // Or set to [] if you prefer to only populate on successful quote or specific error handling
+      setSellableTokens(tokensToCheck); 
+      setQuoteStatus("PENDING"); // Indicate that a quote process has started
     }
-  }, [toCheckQuote]);
+  }, [toCheckQuote, tokensToCheck]); // tokensToCheck is added because it's used in setSellableTokens
 
   useEffect(() => {
-    if (!toCheckQuote) return;
+    if (!toCheckQuote || !quoteRequest) return; // Ensure quoteRequest is also available, aligning with useApiQuery's enabled logic
 
-    if (data?.data && !isPending && !error) {
+    if (isPending) { // Explicitly set PENDING when the query is actually running
+        setQuoteStatus("PENDING");
+        return; // Don't process data/error while pending
+    }
+
+    if (data?.data && !error) { // Check !error instead of relying on !isPending implicitly handling error state
       setQuoteStatus("SUCCESS_QUOTE");
       setQuote(data.data as OdosQuoteResponse | null);
+      setSellableTokens(tokensToCheck); // On success, all checked tokens were sellable in this context
+      setUnsellableTokenAddresses([]);   // Clear any previous unsellable addresses
+      setUnsellableTokens([]);           // Clear any previous unsellable tokens
       setToCheckQuote(false);
     } else if (error && (error.data as { detail?: string })?.detail) {
       setQuoteStatus("ERROR");
       setQuote(null);
       setToCheckQuote(false);
 
-      let unsellableTokenAddresses: Array<string> = [];
-      let unsellableTokens: Array<SelectedToken> = [];
-      let sellableTokens: Array<SelectedToken> = tokensToCheck;
+      let newUnsellableTokenAddresses: Array<string> = [];
+      let newUnsellableTokens: Array<SelectedToken> = [];
+      let newSellableTokens: Array<SelectedToken> = tokensToCheck;
 
       const detail = (error.data as { detail: string }).detail;
       const tokenMatches = detail.match(/\[([^\]]+)\]/);
       if (tokenMatches) {
-        unsellableTokenAddresses = tokenMatches[1]
+        newUnsellableTokenAddresses = tokenMatches[1]
           .split(",")
           .map((token: string) => token.trim())
           .filter((token: string) => /^0x[a-fA-F0-9]{40}$/.test(token));
-        unsellableTokens = tokensToCheck.filter((token) =>
-          unsellableTokenAddresses.includes(token.address)
+        newUnsellableTokens = tokensToCheck.filter((token) =>
+          newUnsellableTokenAddresses.includes(token.address)
         );
-        sellableTokens = tokensToCheck.filter(
-          (token) => !unsellableTokenAddresses.includes(token.address)
+        newSellableTokens = tokensToCheck.filter(
+          (token) => !newUnsellableTokenAddresses.includes(token.address)
         );
       }
 
-      setUnsellableTokenAddresses(unsellableTokenAddresses);
-      setUnsellableTokens(unsellableTokens);
-      setSellableTokens(sellableTokens);
+      setUnsellableTokenAddresses(newUnsellableTokenAddresses);
+      setUnsellableTokens(newUnsellableTokens);
+      setSellableTokens(newSellableTokens);
+    } else if (error) { // Handle other types of errors not matching the detail structure
+        setQuoteStatus("ERROR");
+        setQuote(null);
+        setToCheckQuote(false);
+        // For generic errors, assume all tokens might be problematic or it's a network issue
+        // Depending on desired behavior, you might clear sellableTokens or leave them as is
+        setSellableTokens([]); 
+        setUnsellableTokens(tokensToCheck); // Or specific error handling
+        setUnsellableTokenAddresses(tokensToCheck.map(t => t.address));
     }
-  }, [data, error, isPending, toCheckQuote, tokensToCheck]);
+    // If no data and no error, and not pending, it might be an initial state or query not enabled.
+    // Current logic sets PENDING if query is active. If query finishes disabled, nothing here runs.
+  }, [data, error, isPending, toCheckQuote, tokensToCheck, quoteRequest]); // quoteRequest added as a guard
 
   return {
     quote,

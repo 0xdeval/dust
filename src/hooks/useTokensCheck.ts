@@ -136,9 +136,9 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
         isCheckingRef.current = false;
       }
     },
-    /* eslint-disable */
-    [tokens, selectedNetwork.id, receivedToken, address]
-    /* eslint-enable */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // All dependencies that are not stable functions or refs:
+    [address, logger, receivedToken, selectedNetwork.id, tokens]
   );
 
   useEffect(
@@ -159,9 +159,9 @@ export const useTokensCheck = (tokens: Array<Token>): UseTokenChecksResult => {
         setState((prev) => ({ ...prev, isPending: false, tokensToBurn: [], tokensToSell: [] }));
       }
     },
-    /* eslint-disable */
-    [tokens, selectedNetwork.id, receivedToken, checkTokens]
-    /* eslint-enable */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // selectedNetwork.id is a dependency of checkTokens.
+    [checkTokens, logger, receivedToken, tokens]
   );
 
   return {

@@ -55,4 +55,15 @@ describe("formatBalance", () => {
     // 1000000 tokens (with 18 decimals)
     expect(formatBalance(BigInt("1000000000000000000000000"), 18)).toBe(1000000);
   });
+
+  it("handles extremely small non-zero values close to precision limits", () => {
+    // A value like 0.00000000000000001 (1e-17) with 18 decimals
+    expect(formatBalance(BigInt("10"), 18)).toBe(1e-17); // Should be 1 * 10^(-17)
+    // A value like 0.000000000000000001 (1e-18) with 18 decimals
+    expect(formatBalance(BigInt("1"), 18)).toBe(1e-18); // Should be 1 * 10^(-18)
+     // A value like 0.00001 with 5 decimals
+    expect(formatBalance(BigInt("1"), 5)).toBe(0.00001);
+    // A value like 0.000000000000000000000000000001 with 30 decimals
+    expect(formatBalance(BigInt("1"), 30)).toBe(1e-30);
+  });
 });
