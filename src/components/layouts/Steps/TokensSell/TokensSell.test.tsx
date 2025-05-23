@@ -1,9 +1,12 @@
 import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { TokensSell } from './TokensSell'; // Assuming this is the correct path
-import { vi } from 'vitest';
-import type { Token, AppState, SelectedToken } from '@/types'; // Ensure types are imported
-import type { OdosQuoteResponse, OdosExecuteResponse, OdosStatus } from '@/types/api/odos';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'; // Vitest globals
+import { TokensSell } from './TokensSell';
+// vi from vitest
+import type { AppState, SelectedToken } from '@/types'; // Token, OdosStatus removed
+import type { OdosQuoteResponse, OdosExecuteResponse } from '@/types/api/odos'; // OdosStatus removed
+import type { SupportedChain } from '@/types/networks'; // For selectedNetwork type
+import type { PropsWithChildren } from 'react'; // For ContentHeadline mock if needed
 
 // Mock contexts and hooks
 vi.mock('@/context/AppStateContext');
@@ -24,28 +27,45 @@ const mockSetToCheckQuoteOdos = vi.fn();
 const mockSetQuoteDataOdosExecute = vi.fn();
 const mockSendSwapTransaction = vi.fn();
 
-const mockApprovedTokens: SelectedToken[] = [
-  { address: '0xtokenA', name: 'Token A', symbol: 'TKNA', decimals: 18, amount: 10, networkId: 1, networkName: 'Ethereum', type: 'ERC-20', logoURI: 'uriA', price: 1, rawBalance: BigInt('10000000000000000000'), isSelected: true },
-  { address: '0xtokenB', name: 'Token B', symbol: 'TKNB', decimals: 18, amount: 20, networkId: 1, networkName: 'Ethereum', type: 'ERC-20', logoURI: 'uriB', price: 2, rawBalance: BigInt('20000000000000000000'), isSelected: true },
+const mockApprovedTokens: Array<SelectedToken> = [ // SelectedToken[] to Array<SelectedToken>
+  { 
+    address: '0xtokenA', name: 'Token A', symbol: 'TKNA', decimals: 18, amount: 10, 
+    networkId: 1, networkName: 'Ethereum', type: 'ERC-20', logoURI: 'uriA', price: 1, 
+    rawBalance: BigInt('10000000000000000000'), isSelected: true 
+  },
+  { 
+    address: '0xtokenB', name: 'Token B', symbol: 'TKNB', decimals: 18, amount: 20, 
+    networkId: 1, networkName: 'Ethereum', type: 'ERC-20', logoURI: 'uriB', price: 2, 
+    rawBalance: BigInt('20000000000000000000'), isSelected: true 
+  },
 ];
+
+const mockSelectedNetwork: SupportedChain = {
+  id: 1, name: 'Ethereum', chainId: 1, explorerUrl: 'https://etherscan.io',
+  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  rpcUrls: { default: { http: [''] }, public: { http: [''] } },
+};
 
 const defaultAppStateMock: Partial<ReturnType<typeof useAppStateContext>> = {
   state: {
     contentHeadline: 'Processing Your Transaction',
     contentSubtitle: 'Please wait while we process your transaction.',
-    // Other AppState properties can be added if needed by ContentHeadline
+    phase: 'SELL_TOKENS', // Added required AppState properties
+    receivedToken: '0xReceiver',
+    selectedTokens: [],
+    approvedTokens: mockApprovedTokens, // This was already here
+    isReadyToSell: true,
   } as AppState,
   approvedTokens: mockApprovedTokens,
-  selectedNetwork: { id: 1, name: 'Ethereum', chainId: 1, explorerUrl: 'https://etherscan.io' } as any,
+  selectedNetwork: mockSelectedNetwork, // Use typed object
   updateState: mockUpdateState,
-  // ... other app state context values if needed by direct use in TokensSell
 };
 
 const defaultOdosQuoteMock: Partial<ReturnType<typeof useOdosQuote>> = {
   quote: null,
   unsellableTokens: [],
-  sellableTokens: mockApprovedTokens, // By default, all approved tokens are sellable
-  quoteStatus: 'IDLE',
+  sellableTokens: mockApprovedTokens, 
+  quoteStatus: 'IDLE', // No need to cast if OdosStatus is not imported directly
   quoteError: null,
   isQuoteLoading: false,
   setTokensToCheck: mockSetTokensToCheckOdos,
@@ -56,7 +76,7 @@ const defaultOdosExecuteMock: Partial<ReturnType<typeof useOdosExecute>> = {
   executionData: null,
   isExecutionLoading: false,
   executionError: null,
-  executionStatus: 'IDLE',
+  executionStatus: 'IDLE', // No need to cast if OdosStatus is not imported directly
   simulationError: null,
   setQuoteData: mockSetQuoteDataOdosExecute,
 };
@@ -70,52 +90,106 @@ const defaultSwapTransactionMock: Partial<ReturnType<typeof useSwapTransaction>>
   sendSwapTransaction: mockSendSwapTransaction,
 };
 
-// Helper to setup mocks for each test, allowing overrides
-const setupMocks = (overrides: {
+// Define a more specific type for mockOverrides in setupMocks
+interface MockOverrides {
   appState?: Partial<ReturnType<typeof useAppStateContext>>;
   odosQuote?: Partial<ReturnType<typeof useOdosQuote>>;
   odosExecute?: Partial<ReturnType<typeof useOdosExecute>>;
   swapTransaction?: Partial<ReturnType<typeof useSwapTransaction>>;
-} = {}) => {
-  (useAppStateContext as jest.Mock).mockReturnValue({ ...defaultAppStateMock, ...overrides.appState });
-  (useOdosQuote as jest.Mock).mockReturnValue({ ...defaultOdosQuoteMock, ...overrides.odosQuote });
-  (useOdosExecute as jest.Mock).mockReturnValue({ ...defaultOdosExecuteMock, ...overrides.odosExecute });
-  (useSwapTransaction as jest.Mock).mockReturnValue({ ...defaultSwapTransactionMock, ...overrides.swapTransaction });
+}
+
+// Helper to setup mocks for each test, allowing overrides
+const setupMocks = (overrides: MockOverrides = {}) => {
+  (useAppStateContext as jest.Mock).mockReturnValue({ 
+    ...defaultAppStateMock, 
+    ...overrides.appState 
+  });
+  (useOdosQuote as jest.Mock).mockReturnValue({ 
+    ...defaultOdosQuoteMock, 
+    ...overrides.odosQuote 
+  });
+  (useOdosExecute as jest.Mock).mockReturnValue({ 
+    ...defaultOdosExecuteMock, 
+    ...overrides.odosExecute 
+  });
+  (useSwapTransaction as jest.Mock).mockReturnValue({ 
+    ...defaultSwapTransactionMock, 
+    ...overrides.swapTransaction 
+  });
 };
 
+// Define Prop Types for Mocked Components
+interface MockStatusSpinnerProps {
+  isLoading: boolean;
+  status: 'success' | 'error' | string; // string for other potential statuses
+}
+interface MockDefaultPopupProps {
+  isOpen: boolean;
+  title: string;
+  subtitle: string;
+  buttonCta: string;
+  buttonHandler: () => void;
+}
+interface MockContentHeadlineProps {
+  title: string;
+  subtitle: string;
+  buttonLabel?: string;
+  buttonAction?: () => void;
+  isButtonDisabled?: boolean;
+  secondaryButtonLabel?: string;
+  secondaryButtonAction?: () => void;
+  showSpinner?: boolean;
+  loadingText?: string;
+}
 
 // Mock Child Components
 vi.mock('@/components/ui/Spinner', () => ({
-  StatusSpinner: vi.fn(({ isLoading, status }) => (
-    <div data-testid="status-spinner" data-loading={isLoading} data-status={status}>Spinner</div>
-  )),
+  StatusSpinner: vi.fn(
+    ({ isLoading, status }: MockStatusSpinnerProps) => (
+      <div data-testid="status-spinner" data-loading={isLoading} data-status={status}>
+        Spinner
+      </div>
+    )
+  ),
 }));
 
 vi.mock('@/components/layouts/Popup/DefaultPopup', () => ({
-  DefaultPopup: vi.fn(({ isOpen, title, subtitle, buttonCta, buttonHandler }) => {
-    if (!isOpen) return null;
-    return (
-      <div data-testid="default-popup">
-        <h2>{title}</h2>
-        <p>{subtitle}</p>
-        <button onClick={buttonHandler}>{buttonCta}</button>
-      </div>
-    );
-  }),
+  DefaultPopup: vi.fn(
+    ({ isOpen, title, subtitle, buttonCta, buttonHandler }: MockDefaultPopupProps) => {
+      if (!isOpen) return null;
+      return (
+        <div data-testid="default-popup">
+          <h2>{title}</h2>
+          <p>{subtitle}</p>
+          <button onClick={buttonHandler}>{buttonCta}</button>
+        </div>
+      );
+    }
+  ),
 }));
 
-// ContentHeadline is complex, for now, we'll just check basic props or its presence
-// A more detailed mock might be needed if specific internal behaviors of ContentHeadline are tested.
 vi.mock('@/components/layouts/Content/ContentHeadline', () => ({
-    ContentHeadline: vi.fn(({ title, subtitle, buttonLabel, buttonAction, isButtonDisabled, secondaryButtonLabel, secondaryButtonAction, showSpinner, loadingText }) => (
-        <div data-testid="content-headline">
-            <h1>{title}</h1>
-            <p>{subtitle}</p>
-            {buttonLabel && <button onClick={buttonAction} disabled={isButtonDisabled}>{buttonLabel}</button>}
-            {secondaryButtonLabel && <button onClick={secondaryButtonAction}>{secondaryButtonLabel}</button>}
-            {showSpinner && <span data-testid="headline-spinner">{loadingText || "Loading..."}</span>}
-        </div>
-    ))
+  ContentHeadline: vi.fn(
+    ({ title, subtitle, buttonLabel, buttonAction, isButtonDisabled, 
+        secondaryButtonLabel, secondaryButtonAction, showSpinner, loadingText }: MockContentHeadlineProps) => (
+      <div data-testid="content-headline">
+        <h1>{title}</h1>
+        <p>{subtitle}</p>
+        {buttonLabel && 
+          <button onClick={buttonAction} disabled={isButtonDisabled}>
+            {buttonLabel}
+          </button>}
+        {secondaryButtonLabel && 
+          <button onClick={secondaryButtonAction}>
+            {secondaryButtonLabel}
+          </button>}
+        {showSpinner && 
+          <span data-testid="headline-spinner">
+            {loadingText || "Loading..."}
+          </span>}
+      </div>
+    )
+  ),
 }));
 
 
@@ -123,6 +197,10 @@ describe('TokensSell Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     setupMocks(); // Setup with default successful states
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   // Test 1: Initial Loading State (Fetching Quote)
@@ -140,9 +218,11 @@ describe('TokensSell Component', () => {
 
   // Test 2: Successful Swap Flow (Quote -> Execute -> Transaction)
   describe('Successful Swap Flow', () => {
-    const mockQuote: OdosQuoteResponse = { pathId: 'test-path-id' /* other necessary fields */ };
+    const mockQuote: OdosQuoteResponse = { pathId: 'test-path-id' };
     const mockExecData: OdosExecuteResponse = {
-      transaction: { to: '0xRecipient', data: '0xData', value: '0', gas: '100000', chainId: 1 },
+      transaction: { 
+        to: '0xRecipient', data: '0xData', value: '0', gas: '100000', chainId: 1 
+      },
       simulation: { isSuccess: true, gasEstimate: '90000' },
     };
     const mockTxHash = '0xTransactionHash';
@@ -152,10 +232,13 @@ describe('TokensSell Component', () => {
       setupMocks({
         appState: { 
           approvedTokens: mockApprovedTokens,
-          state: { contentHeadline: 'Getting quote...', contentSubtitle: '...' } as AppState,
+          state: { 
+            contentHeadline: 'Getting quote...', contentSubtitle: '...', phase: 'SELL_TOKENS',
+            receivedToken: '0xRec', selectedTokens:[], approvedTokens: mockApprovedTokens, isReadyToSell:true 
+          } as AppState,
         },
         odosQuote: { 
-          isQuoteLoading: true, // Start with quote loading
+          isQuoteLoading: true, 
           setTokensToCheck: mockSetTokensToCheckOdos,
           setToCheckQuote: mockSetToCheckQuoteOdos,
         },
@@ -170,12 +253,15 @@ describe('TokensSell Component', () => {
         setupMocks({
           appState: { // Keep appState or update if phase changes messages
             approvedTokens: mockApprovedTokens,
-            state: { contentHeadline: 'Executing...', contentSubtitle: '...' } as AppState,
+            state: { 
+              contentHeadline: 'Executing...', contentSubtitle: '...', phase: 'SELL_TOKENS',
+              receivedToken: '0xRec', selectedTokens:[], approvedTokens: mockApprovedTokens, isReadyToSell:true 
+            } as AppState,
            },
           odosQuote: { 
             isQuoteLoading: false, 
             quote: mockQuote, 
-            quoteStatus: 'SUCCESS_QUOTE',
+            quoteStatus: 'SUCCESS_QUOTE', 
             setTokensToCheck: mockSetTokensToCheckOdos,
             setToCheckQuote: mockSetToCheckQuoteOdos,
           },
@@ -198,12 +284,15 @@ describe('TokensSell Component', () => {
         setupMocks({
           appState: { 
             approvedTokens: mockApprovedTokens,
-            state: { contentHeadline: 'Processing transaction...', contentSubtitle: '...' } as AppState,
+            state: { 
+              contentHeadline: 'Processing transaction...', contentSubtitle: '...', phase: 'SELL_TOKENS',
+              receivedToken: '0xRec', selectedTokens:[], approvedTokens: mockApprovedTokens, isReadyToSell:true 
+            } as AppState,
           },
           odosQuote: { 
             isQuoteLoading: false, 
             quote: mockQuote, 
-            quoteStatus: 'SUCCESS_QUOTE',
+            quoteStatus: 'SUCCESS_QUOTE', 
           },
           odosExecute: { 
             isExecutionLoading: false, 
@@ -272,13 +361,17 @@ describe('TokensSell Component', () => {
     setupMocks({
       appState: { 
         approvedTokens: mockApprovedTokens, // To trigger initial effect
-        state: { contentHeadline: 'Error', contentSubtitle: quoteErrorMessage, contentButtonLabel: 'Back to selection' } as AppState, // Simplified, actual text comes from getTxnStatusCopies
+        state: { 
+          contentHeadline: 'Error', contentSubtitle: quoteErrorMessage, 
+          contentButtonLabel: 'Back to selection', phase: 'SELL_TOKENS',
+          receivedToken: '0xRec', selectedTokens:[], approvedTokens: mockApprovedTokens, isReadyToSell:true 
+        } as AppState,
         updateState: mockUpdateState,
       },
       odosQuote: { 
         isQuoteLoading: false, 
         quote: null, 
-        quoteStatus: 'ERROR', 
+        quoteStatus: 'ERROR',  // No need to cast if OdosStatus is not imported
         quoteError: { detail: quoteErrorMessage } 
       }
     });
@@ -287,16 +380,15 @@ describe('TokensSell Component', () => {
     await waitFor(() => {
       // Headline and subtitle should reflect the error (via getTxnStatusCopies)
       expect(screen.getByText('Oops! Something went wrong.')).toBeInTheDocument(); // From getTxnStatusCopies for quote error
-      expect(screen.getByText(new RegExp(quoteErrorMessage.substring(0, 50)))).toBeInTheDocument(); // Check for part of the error message
+      expect(screen.getByText(new RegExp(quoteErrorMessage.substring(0, 50)))).toBeInTheDocument(); 
       expect(screen.getByTestId('status-spinner')).toHaveAttribute('data-status', 'error');
       expect(screen.getByTestId('status-spinner')).toHaveAttribute('data-loading', 'false');
     });
 
-    // Check for "Back to selection" button (or similar, based on getTxnStatusCopies)
     const backButton = screen.getByRole('button', { name: 'Back to selection' }); 
     expect(backButton).toBeInTheDocument();
     await userEvent.click(backButton);
-    expect(mockUpdateState).toHaveBeenCalledWith("SELECT_TOKENS"); // Or whatever getTxnStatusCopies dictates
+    expect(mockUpdateState).toHaveBeenCalledWith("SELECT_TOKENS"); 
   });
 
   // Test 4: Error Handling - Execution Simulation Error
@@ -306,12 +398,16 @@ describe('TokensSell Component', () => {
     setupMocks({
       appState: { 
         approvedTokens: mockApprovedTokens,
-        state: { contentHeadline: 'Error', contentSubtitle: simulationErrorMessage, contentButtonLabel: 'Back to selection' } as AppState,
+        state: { 
+          contentHeadline: 'Error', contentSubtitle: simulationErrorMessage, 
+          contentButtonLabel: 'Back to selection', phase: 'SELL_TOKENS',
+          receivedToken: '0xRec', selectedTokens:[], approvedTokens: mockApprovedTokens, isReadyToSell:true 
+        } as AppState,
         updateState: mockUpdateState,
       },
       odosQuote: { 
         quote: mockQuote, 
-        quoteStatus: 'SUCCESS_QUOTE',
+        quoteStatus: 'SUCCESS_QUOTE', 
       },
       odosExecute: {
         isExecutionLoading: false,
@@ -342,12 +438,16 @@ describe('TokensSell Component', () => {
     setupMocks({
       appState: { 
         approvedTokens: mockApprovedTokens,
-        state: { contentHeadline: 'Error', contentSubtitle: executionApiErrorMessage, contentButtonLabel: 'Back to selection' } as AppState,
+        state: { 
+          contentHeadline: 'Error', contentSubtitle: executionApiErrorMessage, 
+          contentButtonLabel: 'Back to selection', phase: 'SELL_TOKENS',
+          receivedToken: '0xRec', selectedTokens:[], approvedTokens: mockApprovedTokens, isReadyToSell:true 
+        } as AppState,
         updateState: mockUpdateState,
       },
       odosQuote: { 
         quote: mockQuote, 
-        quoteStatus: 'SUCCESS_QUOTE',
+        quoteStatus: 'SUCCESS_QUOTE', 
       },
       odosExecute: {
         isExecutionLoading: false,
@@ -376,7 +476,9 @@ describe('TokensSell Component', () => {
   it('should display error state when transaction fails and allow retry', async () => {
     const mockQuote: OdosQuoteResponse = { pathId: 'test-path-id' };
     const mockExecData: OdosExecuteResponse = {
-      transaction: { to: '0xRecipient', data: '0xData', value: '0', gas: '100000', chainId: 1 },
+      transaction: { 
+        to: '0xRecipient', data: '0xData', value: '0', gas: '100000', chainId: 1 
+      },
       simulation: { isSuccess: true, gasEstimate: '90000' },
     };
     const transactionErrorMessage = "User rejected the transaction.";
@@ -384,12 +486,16 @@ describe('TokensSell Component', () => {
     setupMocks({
       appState: { 
         approvedTokens: mockApprovedTokens,
-        state: { contentHeadline: 'Error', contentSubtitle: transactionErrorMessage, contentButtonLabel: 'Try again' } as AppState,
-        updateState: mockUpdateState, // For "Back to selection" if that's the fallback
+        state: { 
+          contentHeadline: 'Error', contentSubtitle: transactionErrorMessage, 
+          contentButtonLabel: 'Try again', phase: 'SELL_TOKENS',
+          receivedToken: '0xRec', selectedTokens:[], approvedTokens: mockApprovedTokens, isReadyToSell:true 
+        } as AppState,
+        updateState: mockUpdateState, 
       },
       odosQuote: { 
         quote: mockQuote, 
-        quoteStatus: 'SUCCESS_QUOTE',
+        quoteStatus: 'SUCCESS_QUOTE', 
       },
       odosExecute: {
         executionData: mockExecData,
@@ -420,22 +526,23 @@ describe('TokensSell Component', () => {
 
   // Test 7: Unsellable Tokens Popup (During Initial Quote Fetch)
   it('should display unsellable tokens popup and allow re-quoting with sellable tokens', async () => {
-    const unsellable = [mockApprovedTokens[0]]; // Token A is unsellable
-    const sellable = [mockApprovedTokens[1]];   // Token B is sellable
+    const unsellable: Array<SelectedToken> = [mockApprovedTokens[0]]; 
+    const sellable: Array<SelectedToken> = [mockApprovedTokens[1]];   
     
     setupMocks({
       appState: { 
-        approvedTokens: mockApprovedTokens, // Both A and B are initially approved
-        state: { contentHeadline: 'Getting quote...' } as AppState,
+        approvedTokens: mockApprovedTokens, 
+        state: { 
+          contentHeadline: 'Getting quote...', phase: 'SELL_TOKENS',
+          receivedToken: '0xRec', selectedTokens:[], approvedTokens: mockApprovedTokens, isReadyToSell:true 
+        } as AppState,
         updateState: mockUpdateState,
       },
       odosQuote: { 
-        // This state will be the result AFTER the initial setTokensToCheck(approvedTokens)
-        // and setToCheckQuote(true) from the component's useEffect.
         quote: null,
         unsellableTokens: unsellable,
         sellableTokens: sellable,
-        quoteStatus: 'ERROR', // Or some status that indicates partial success with unsellable
+        quoteStatus: 'ERROR', 
         isQuoteLoading: false, // Finished initial check
         setTokensToCheck: mockSetTokensToCheckOdos,
         setToCheckQuote: mockSetToCheckQuoteOdos,
@@ -444,9 +551,6 @@ describe('TokensSell Component', () => {
 
     render(<TokensSell />);
 
-    // The component's initial useEffect will call setTokensToCheck(approvedTokens) and setToCheckQuote(true).
-    // Our mock for useOdosQuote above simulates the *result* of this initial call.
-    // Thus, the popupContent memo should find unsellableTokens and display the popup.
     await waitFor(() => {
       expect(screen.getByTestId('default-popup')).toBeInTheDocument();
       expect(screen.getByText('Some tokens are not sellable')).toBeInTheDocument();
@@ -455,14 +559,11 @@ describe('TokensSell Component', () => {
     const sellRestButton = screen.getByRole('button', { name: 'Sell rest' });
     await userEvent.click(sellRestButton);
 
-    // Assert that setTokensToCheck and setToCheckQuote are called again with only sellableTokens
     expect(mockSetTokensToCheckOdos).toHaveBeenCalledWith(sellable);
     expect(mockSetToCheckQuoteOdos).toHaveBeenCalledWith(true); 
-    // It might be called twice: once initially, once on "Sell rest".
-    // Let's check for the specific call with sellable tokens.
-    expect(mockSetTokensToCheckOdos).toHaveBeenCalledTimes(2); // Initial + retry
-    expect(mockSetTokensToCheckOdos.mock.calls[0][0]).toEqual(mockApprovedTokens); // Initial call
-    expect(mockSetTokensToCheckOdos.mock.calls[1][0]).toEqual(sellable); // Call after popup
+    expect(mockSetTokensToCheckOdos).toHaveBeenCalledTimes(2); 
+    expect(mockSetTokensToCheckOdos.mock.calls[0][0]).toEqual(mockApprovedTokens); 
+    expect(mockSetTokensToCheckOdos.mock.calls[1][0]).toEqual(sellable); 
 
     expect(mockSetToCheckQuoteOdos).toHaveBeenCalledTimes(2);
     expect(mockSetToCheckQuoteOdos.mock.calls[0][0]).toBe(true);
@@ -479,13 +580,14 @@ describe('TokensSell Component', () => {
         state: { 
             contentHeadline: 'Ready to Execute', 
             contentSubtitle: 'Proceed with execution.',
-            secondaryButtonLabel: 'Back' // Ensure ContentHeadline mock gets this
+            secondaryButtonLabel: 'Back', phase: 'SELL_TOKENS',
+            receivedToken: '0xRec', selectedTokens:[], approvedTokens: mockApprovedTokens, isReadyToSell:true 
         } as AppState,
         updateState: mockUpdateState,
       },
       odosQuote: { 
         quote: mockQuote, 
-        quoteStatus: 'SUCCESS_QUOTE',
+        quoteStatus: 'SUCCESS_QUOTE', 
       },
       // Other hooks can be in their default non-loading/non-error states
     });

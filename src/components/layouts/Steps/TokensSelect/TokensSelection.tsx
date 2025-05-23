@@ -12,7 +12,7 @@ import { useTokensCheck } from "@/hooks/useTokensCheck";
 import { NoTokensStub } from "@/ui/Stubs/NoTokens";
 import { DefaultPopup } from "@/layouts/Popup/DefaultPopup";
 import { useOdosQuote } from "@/hooks/useOdosQuote";
-import type { SelectedToken, Token } from "@/types/tokens";
+import type { Token } from "@/types/tokens"; // SelectedToken removed
 import { ContentTabs } from "@/layouts/Content/ContentTabs/ContentTabs";
 import { Banner } from "@/components/ui/Banner";
 import { Flex } from "@chakra-ui/react";

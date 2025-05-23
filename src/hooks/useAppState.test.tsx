@@ -1,13 +1,16 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'; // Vitest globals
 import { act, renderHook } from '@testing-library/react';
 import { useAppState } from './useAppState';
-import { getCopies } from '../utils/getCopies'; // Assuming this is the correct path
+import { getCopies } from '../utils/getCopies';
+import type { SelectedToken, OperationType } from '@/types'; // Import relevant types
+import type { SupportedChain } from '@/types/networks';
 
 // Mock getCopies
-jest.mock('../utils/getCopies', () => ({
-  getCopies: jest.fn(),
+vi.mock('../utils/getCopies', () => ({
+  getCopies: vi.fn(), // Changed to vi.fn()
 }));
 
-const mockGetCopies = getCopies as jest.Mock;
+const mockGetCopies = getCopies as vi.Mock; // Changed to vi.Mock
 
 describe('useAppState', () => {
   beforeEach(() => {
@@ -93,7 +96,11 @@ describe('useAppState', () => {
   describe('setApprovedTokens', () => {
     it('should update approvedTokens with the provided array', () => {
       const { result } = renderHook(() => useAppState());
-      const newTokens = ['token1', 'token2'];
+      // Corrected type for newTokens
+      const newTokens: Array<SelectedToken> = [
+        { address: '0xtoken1', name: 'Token 1', symbol: 'T1', isSelected: true, type: 'ERC-20', networkId: 1, networkName:'Eth', decimals:18, amount:1, rawBalance:1n, price:1, logoURI:'uri' },
+        { address: '0xtoken2', name: 'Token 2', symbol: 'T2', isSelected: true, type: 'ERC-20', networkId: 1, networkName:'Eth', decimals:18, amount:1, rawBalance:1n, price:1, logoURI:'uri' },
+      ];
 
       act(() => {
         result.current.setApprovedTokens(newTokens);
@@ -104,9 +111,12 @@ describe('useAppState', () => {
 
     it('should update approvedTokens with an empty array', () => {
       const { result } = renderHook(() => useAppState());
+      const initialTokens: Array<SelectedToken> = [
+        { address: '0xtokenA', name: 'Token A', symbol: 'TA', isSelected: true, type: 'ERC-20', networkId: 1, networkName:'Eth', decimals:18, amount:1, rawBalance:1n, price:1, logoURI:'uri' },
+      ];
       // First set some tokens
       act(() => {
-        result.current.setApprovedTokens(['tokenA', 'tokenB']);
+        result.current.setApprovedTokens(initialTokens);
       });
       // Then set to empty
       act(() => {
@@ -143,7 +153,11 @@ describe('useAppState', () => {
   describe('setSelectedTokens', () => {
     it('should update selectedTokens with the provided array', () => {
       const { result } = renderHook(() => useAppState());
-      const newTokens = ['tokenX', 'tokenY'];
+      // Corrected type for newTokens
+      const newTokens: Array<SelectedToken> = [
+        { address: '0xtokenX', name: 'Token X', symbol: 'TX', isSelected: true, type: 'ERC-20', networkId: 1, networkName:'Eth', decimals:18, amount:1, rawBalance:1n, price:1, logoURI:'uri' },
+        { address: '0xtokenY', name: 'Token Y', symbol: 'TY', isSelected: true, type: 'ERC-20', networkId: 1, networkName:'Eth', decimals:18, amount:1, rawBalance:1n, price:1, logoURI:'uri' },
+      ];
       act(() => {
         result.current.setSelectedTokens(newTokens);
       });
@@ -152,9 +166,12 @@ describe('useAppState', () => {
 
     it('should update selectedTokens with an empty array', () => {
       const { result } = renderHook(() => useAppState());
+      const initialTokens: Array<SelectedToken> = [
+        { address: '0xtokenA', name: 'Token A', symbol: 'TA', isSelected: true, type: 'ERC-20', networkId: 1, networkName:'Eth', decimals:18, amount:1, rawBalance:1n, price:1, logoURI:'uri' },
+      ];
       // First set some tokens
       act(() => {
-        result.current.setSelectedTokens(['tokenA', 'tokenB']);
+        result.current.setSelectedTokens(initialTokens);
       });
       // Then set to empty
       act(() => {
@@ -191,7 +208,12 @@ describe('useAppState', () => {
   describe('setSelectedNetwork', () => {
     it('should update selectedNetwork with the provided network object', () => {
       const { result } = renderHook(() => useAppState());
-      const newNetwork = { chainId: 1, name: 'Ethereum' };
+      // Corrected type for newNetwork
+      const newNetwork: SupportedChain = { 
+        id: 1, chainId: 1, name: 'Ethereum', explorerUrl: 'https://etherscan.io', 
+        nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18},
+        rpcUrls: {default: {http: ['']}, public: {http: ['']}}
+      };
       act(() => {
         result.current.setSelectedNetwork(newNetwork);
       });
@@ -200,9 +222,14 @@ describe('useAppState', () => {
 
     it('should update selectedNetwork with undefined', () => {
       const { result } = renderHook(() => useAppState());
+      const initialNetwork: SupportedChain = { 
+        id: 1, chainId: 1, name: 'Ethereum', explorerUrl: 'https://etherscan.io',
+        nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18},
+        rpcUrls: {default: {http: ['']}, public: {http: ['']}}
+      };
       // First set some network
       act(() => {
-        result.current.setSelectedNetwork({ chainId: 1, name: 'Ethereum' });
+        result.current.setSelectedNetwork(initialNetwork);
       });
       // Then set to undefined
       act(() => {
@@ -216,7 +243,7 @@ describe('useAppState', () => {
     it('should update operationType with the provided type "sell"', () => {
       const { result } = renderHook(() => useAppState());
       act(() => {
-        result.current.setOperationType('sell');
+        result.current.setOperationType('sell' as OperationType);
       });
       expect(result.current.operationType).toBe('sell');
     });
@@ -225,11 +252,11 @@ describe('useAppState', () => {
       const { result } = renderHook(() => useAppState());
       // First set to "sell"
       act(() => {
-        result.current.setOperationType('sell');
+        result.current.setOperationType('sell' as OperationType);
       });
       // Then set to "swap"
       act(() => {
-        result.current.setOperationType('swap');
+        result.current.setOperationType('swap' as OperationType);
       });
       expect(result.current.operationType).toBe('swap');
     });

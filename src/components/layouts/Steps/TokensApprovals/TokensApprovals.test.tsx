@@ -1,19 +1,29 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react'; // waitFor removed
 import userEvent from '@testing-library/user-event';
-import { TokensApprovals } from './TokensApprovals'; // Assuming this is the correct path
+import { describe, it, expect, beforeEach, vi } from 'vitest'; // Added Vitest globals
+import { TokensApprovals } from './TokensApprovals';
 import { useAppStateContext } from '@/context/AppStateContext';
-import { vi } from 'vitest';
-import type { Token, SelectedToken, AppState } from '@/types'; // Ensure types are imported
+// vi is already imported via vitest globals
+import type { Token, SelectedToken, AppState, OperationType } from '@/types'; // OperationType added
+import type { SupportedChain } from '@/types/networks'; // For selectedNetwork type
 
 // Mock context
 vi.mock('@/context/AppStateContext');
 const mockUseAppStateContext = useAppStateContext as jest.Mock;
 
+// Define a more specific type for tokens passed to the mocked TokensStatusesCardsList
+interface TokenApprovalStatusDisplay extends Partial<SelectedToken> {
+  address: string;
+  name?: string;
+  isApproved?: boolean;
+  isApproving?: boolean;
+}
+
 // Mock child components to inspect props or simplify rendering
 vi.mock('@/components/layouts/Tokens/TokensStatusesCardsList', () => ({
-  TokensStatusesCardsList: vi.fn(({ tokens }) => (
+  TokensStatusesCardsList: vi.fn(({ tokens }: { tokens: Array<TokenApprovalStatusDisplay> }) => (
     <div data-testid="tokens-statuses-list">
-      {tokens.map((token: any) => (
+      {tokens.map((token) => (
         <div key={token.address} data-testid={`token-status-${token.address}`}>
           {token.name} - Approved: {String(token.isApproved)} - Approving: {String(token.isApproving)}
         </div>
@@ -21,23 +31,46 @@ vi.mock('@/components/layouts/Tokens/TokensStatusesCardsList', () => ({
     </div>
   )),
 }));
-const MockedTokensStatusesCardsList = vi.mocked(
-    (await import('@/components/layouts/Tokens/TokensStatusesCardsList')).TokensStatusesCardsList
-  );
+
+// Must use await import for vi.mocked with an async factory
+const MockedTokensStatusesCardsList = await vi.importActual<typeof import('@/components/layouts/Tokens/TokensStatusesCardsList')>('@/components/layouts/Tokens/TokensStatusesCardsList')
+    .then(mod => vi.mocked(mod.TokensStatusesCardsList));
 
 
 // Default mock implementations
 const mockUpdateState = vi.fn();
 const mockSetIsReadyToSell = vi.fn();
 
-const baseTokens: Token[] = [
-  { address: '0xtokenA', name: 'Token A', symbol: 'TKNA', decimals: 18, amount: 10, networkId: 1, networkName: 'Ethereum', type: 'ERC-20', logoURI: 'uriA', price: 1, rawBalance: BigInt('10000000000000000000') },
-  { address: '0xtokenB', name: 'Token B', symbol: 'TKNB', decimals: 18, amount: 20, networkId: 1, networkName: 'Ethereum', type: 'ERC-20', logoURI: 'uriB', price: 2, rawBalance: BigInt('20000000000000000000') },
-  { address: '0xtokenC', name: 'Token C', symbol: 'TKNC', decimals: 18, amount: 30, networkId: 1, networkName: 'Ethereum', type: 'ERC-20', logoURI: 'uriC', price: 3, rawBalance: BigInt('30000000000000000000') },
+const baseTokens: Array<Token> = [ // Changed Token[] to Array<Token>
+  { 
+    address: '0xtokenA', name: 'Token A', symbol: 'TKNA', decimals: 18, amount: 10, 
+    networkId: 1, networkName: 'Ethereum', type: 'ERC-20', logoURI: 'uriA', price: 1, 
+    rawBalance: BigInt('10000000000000000000') 
+  },
+  { 
+    address: '0xtokenB', name: 'Token B', symbol: 'TKNB', decimals: 18, amount: 20, 
+    networkId: 1, networkName: 'Ethereum', type: 'ERC-20', logoURI: 'uriB', price: 2, 
+    rawBalance: BigInt('20000000000000000000') 
+  },
+  { 
+    address: '0xtokenC', name: 'Token C', symbol: 'TKNC', decimals: 18, amount: 30, 
+    networkId: 1, networkName: 'Ethereum', type: 'ERC-20', logoURI: 'uriC', price: 3, 
+    rawBalance: BigInt('30000000000000000000') 
+  },
 ];
 
 // Helper to create SelectedToken from Token, assuming isSelected is true for this step
 const toSelectedTokenForApproval = (token: Token): SelectedToken => ({ ...token, isSelected: true });
+
+const mockSelectedNetwork: SupportedChain = {
+  id: 1,
+  name: 'Ethereum',
+  chainId: 1,
+  explorerUrl: 'https://etherscan.io',
+  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  rpcUrls: { default: { http: [''] }, public: { http: [''] } },
+  // Add other required SupportedChain properties if any, or make them optional
+};
 
 const defaultAppStateMock: Partial<ReturnType<typeof useAppStateContext>> = {
   state: {
@@ -45,19 +78,24 @@ const defaultAppStateMock: Partial<ReturnType<typeof useAppStateContext>> = {
     contentSubtitle: 'Please approve the selected tokens to proceed.',
     contentButtonLabel: 'Proceed',
     // Other AppState properties can be added if needed by ContentHeadline
-  } as AppState,
+    // Ensure all required AppState fields are present or correctly typed as optional
+    phase: 'APPROVE_TOKENS',
+    receivedToken: '0xReceiver',
+    selectedTokens: baseTokens.map(toSelectedTokenForApproval),
+    approvedTokens: [],
+    isReadyToSell: false,
+  } as AppState, // Casting to AppState, ensure all required fields are covered
   selectedTokens: baseTokens.map(toSelectedTokenForApproval),
   approvedTokens: [], // Initially empty or partially filled for tests
   updateState: mockUpdateState,
   setIsReadyToSell: mockSetIsReadyToSell,
-  // Provide other context values if TokensApprovals or its children directly use them
   phase: 'APPROVE_TOKENS',
   setApprovedTokens: vi.fn(),
   setSelectedTokens: vi.fn(),
   setReceivedToken: vi.fn(),
-  selectedNetwork: { id: 1, name: 'Ethereum', chainId: 1 } as any,
+  selectedNetwork: mockSelectedNetwork, // Used typed object
   setSelectedNetwork: vi.fn(),
-  operationType: 'sell' as any,
+  operationType: 'sell' as OperationType, // Used imported OperationType
   setOperationType: vi.fn(),
   isReadyToSell: false, // default
 };
@@ -96,18 +134,20 @@ describe('TokensApprovals Component', () => {
     expect(MockedTokensStatusesCardsList).toHaveBeenCalledTimes(1);
     const receivedTokensProp = MockedTokensStatusesCardsList.mock.calls[0][0].tokens;
     expect(receivedTokensProp).toHaveLength(3);
-    // Based on mapTokensWithApprovalStatus logic:
     // Token A (approved)
-    expect(receivedTokensProp.find((t:any) => t.address === '0xtokenA')).toMatchObject({ name: 'Token A', isApproved: true, isApproving: false });
+    const tokenA = receivedTokensProp.find((t: TokenApprovalStatusDisplay) => t.address === '0xtokenA');
+    expect(tokenA).toMatchObject({ name: 'Token A', isApproved: true, isApproving: false });
     // Token B (not approved, so should be approving)
-    expect(receivedTokensProp.find((t:any) => t.address === '0xtokenB')).toMatchObject({ name: 'Token B', isApproved: false, isApproving: true });
+    const tokenB = receivedTokensProp.find((t: TokenApprovalStatusDisplay) => t.address === '0xtokenB');
+    expect(tokenB).toMatchObject({ name: 'Token B', isApproved: false, isApproving: true });
     // Token C (not approved, so should be approving)
-    expect(receivedTokensProp.find((t:any) => t.address === '0xtokenC')).toMatchObject({ name: 'Token C', isApproved: false, isApproving: true });
+    const tokenC = receivedTokensProp.find((t: TokenApprovalStatusDisplay) => t.address === '0xtokenC');
+    expect(tokenC).toMatchObject({ name: 'Token C', isApproved: false, isApproving: true });
   });
 
   // Test 2: Initial Rendering - All Tokens Approved
   it('should render with proceed button enabled when all tokens are approved', () => {
-    const selected = [baseTokens[0], baseTokens[1]].map(toSelectedTokenForApproval);
+    const selected: Array<SelectedToken> = [baseTokens[0], baseTokens[1]].map(toSelectedTokenForApproval);
     // All selected tokens are also in approvedTokens
     mockUseAppStateContext.mockReturnValue({
       ...defaultAppStateMock,
@@ -124,17 +164,19 @@ describe('TokensApprovals Component', () => {
     expect(MockedTokensStatusesCardsList).toHaveBeenCalledTimes(1);
     const receivedTokensProp = MockedTokensStatusesCardsList.mock.calls[0][0].tokens;
     expect(receivedTokensProp).toHaveLength(2);
-    expect(receivedTokensProp.find((t:any) => t.address === '0xtokenA')).toMatchObject({ isApproved: true, isApproving: false });
-    expect(receivedTokensProp.find((t:any) => t.address === '0xtokenB')).toMatchObject({ isApproved: true, isApproving: false });
+    const tokenA = receivedTokensProp.find((t: TokenApprovalStatusDisplay) => t.address === '0xtokenA');
+    expect(tokenA).toMatchObject({ isApproved: true, isApproving: false });
+    const tokenB = receivedTokensProp.find((t: TokenApprovalStatusDisplay) => t.address === '0xtokenB');
+    expect(tokenB).toMatchObject({ isApproved: true, isApproving: false });
   });
 
   // Test 3: "Proceed" Button Click (When Enabled)
-  it('should call setIsReadyToSell and updateState when "Proceed" is clicked and all tokens are approved', async () => {
+  it('should call setIsReadyToSell and updateState on "Proceed" click if all tokens approved', async () => {
     const selected = [baseTokens[0], baseTokens[1]].map(toSelectedTokenForApproval);
     mockUseAppStateContext.mockReturnValue({
       ...defaultAppStateMock,
-      selectedTokens: selected,
-      approvedTokens: selected, // All selected are approved
+      selectedTokens: selected as Array<SelectedToken>,
+      approvedTokens: selected as Array<SelectedToken>, // All selected are approved
       setIsReadyToSell: mockSetIsReadyToSell,
       updateState: mockUpdateState,
     });
@@ -153,8 +195,8 @@ describe('TokensApprovals Component', () => {
   // Test 4: "Back" Button Click
   it('should call updateState with "SELECT_TOKENS" when "Back" is clicked', async () => {
     // Setup similar to Test 1 (not all tokens approved, so main button is disabled)
-    const selected = [baseTokens[0], baseTokens[1]].map(toSelectedTokenForApproval);
-    const approved = [baseTokens[0]].map(toSelectedTokenForApproval);
+    const selected: Array<SelectedToken> = [baseTokens[0], baseTokens[1]].map(toSelectedTokenForApproval);
+    const approved: Array<SelectedToken> = [baseTokens[0]].map(toSelectedTokenForApproval);
     mockUseAppStateContext.mockReturnValue({
       ...defaultAppStateMock,
       selectedTokens: selected,
@@ -192,12 +234,14 @@ describe('TokensApprovals Component', () => {
 
   // Test 6: Display of Different Approval Statuses in List
   it('should pass correct approval statuses to TokensStatusesCardsList', () => {
-    const selectedForTest = [
+    const selectedForTest: Array<SelectedToken> = [
       toSelectedTokenForApproval(baseTokens[0]), // Token A
       toSelectedTokenForApproval(baseTokens[1]), // Token B
       toSelectedTokenForApproval(baseTokens[2]), // Token C
     ];
-    const approvedForTest = [toSelectedTokenForApproval(baseTokens[0])]; // Only Token A is approved
+    const approvedForTest: Array<SelectedToken> = [
+        toSelectedTokenForApproval(baseTokens[0]) // Only Token A is approved
+    ];
 
     mockUseAppStateContext.mockReturnValue({
       ...defaultAppStateMock,
@@ -212,19 +256,16 @@ describe('TokensApprovals Component', () => {
     
     expect(receivedTokensProp).toHaveLength(3);
 
-    const tokenAData = receivedTokensProp.find((t:any) => t.address === '0xtokenA');
+    const tokenAData = receivedTokensProp.find((t: TokenApprovalStatusDisplay) => t.address === '0xtokenA');
     expect(tokenAData).toBeDefined();
-    expect(tokenAData.isApproved).toBe(true);
-    expect(tokenAData.isApproving).toBe(false); // Should not be approving if already approved
+    expect(tokenAData).toMatchObject({ isApproved: true, isApproving: false });
 
-    const tokenBData = receivedTokensProp.find((t:any) => t.address === '0xtokenB');
+    const tokenBData = receivedTokensProp.find((t: TokenApprovalStatusDisplay) => t.address === '0xtokenB');
     expect(tokenBData).toBeDefined();
-    expect(tokenBData.isApproved).toBe(false);
-    expect(tokenBData.isApproving).toBe(true); // Should be in "approving" state
+    expect(tokenBData).toMatchObject({ isApproved: false, isApproving: true });
 
-    const tokenCData = receivedTokensProp.find((t:any) => t.address === '0xtokenC');
+    const tokenCData = receivedTokensProp.find((t: TokenApprovalStatusDisplay) => t.address === '0xtokenC');
     expect(tokenCData).toBeDefined();
-    expect(tokenCData.isApproved).toBe(false);
-    expect(tokenCData.isApproving).toBe(true); // Should be in "approving" state
+    expect(tokenCData).toMatchObject({ isApproved: false, isApproving: true });
   });
 });

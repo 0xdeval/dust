@@ -1,55 +1,67 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { WalletConnection } from './WalletConnection'; // Assuming this is the correct path
+import { describe, it, expect, beforeEach, vi } from 'vitest'; // Vitest globals
+import { WalletConnection } from './WalletConnection';
 import * as WagmiContext from '@/context/WagmiContext';
-import { useAccount } from 'wagmi';
-import { useAppStateContext } from '@/context/AppStateContext';
-import { vi } from 'vitest'; // Or import { jest } from '@jest/globals'; if using Jest
+import { useAccount, type UseAccountReturnType } from 'wagmi'; // Import UseAccountReturnType
+import { useAppStateContext, type AppStateContextType } from '@/context/AppStateContext'; // Import AppStateContextType
+// vi from vitest
+import type { AppState, Phase, OperationType, SelectedToken } from '@/types/states'; // Ensure all needed types
+import type { SupportedChain } from '@/types/networks';
 
 // Mock WagmiContext modal
-const mockModalOpen = vi.fn();
-vi.spyOn(WagmiContext, 'modal', 'get').mockReturnValue({ open: mockModalOpen } as any);
+const mockModalOpen = vi.fn<[], void>(); // Typed mock
+vi.spyOn(WagmiContext, 'modal', 'get').mockReturnValue({ open: mockModalOpen }); // Removed 'as any'
 
 // Mock useAccount from wagmi
 vi.mock('wagmi', async (importOriginal) => {
   const actual = await importOriginal<typeof import('wagmi')>();
   return {
-    ...actual,
-    useAccount: vi.fn(),
+    ...actual, // Spread actual module to ensure other exports are preserved
+    useAccount: vi.fn(), // Mock only useAccount
   };
 });
-const mockUseAccount = useAccount as jest.Mock;
+const mockUseAccount = useAccount as jest.Mock<[], Partial<UseAccountReturnType>>;
 
 // Mock useAppStateContext
 vi.mock('@/context/AppStateContext', () => ({
   useAppStateContext: vi.fn(),
 }));
-const mockUseAppStateContext = useAppStateContext as jest.Mock;
-const mockUpdateState = vi.fn();
+const mockUseAppStateContext = useAppStateContext as jest.Mock<[], AppStateContextType>;
+const mockUpdateState = vi.fn<(newPhase: Phase) => void>();
 
 // Default initial state for AppStateContext mock
-const defaultAppState = {
+const mockSelectedNetworkDefault: SupportedChain = {
+  id: 1, name: 'Ethereum', chainId: 1, explorerUrl: 'https://etherscan.io',
+  nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+  rpcUrls: { default: { http: [''] }, public: { http: [''] } },
+};
+
+const defaultAppState: AppStateContextType = {
   phase: 'CONNECT_WALLET',
   state: {
+    phase: 'CONNECT_WALLET', // Ensure phase is part of AppState type if used directly
     contentHeadline: 'CONNECT YOUR WALLET',
     contentSubtitle: 'Connect your wallet to start swapping tokens.',
     contentButtonLabel: 'Connect Wallet',
-    // Add other properties from AppState that WalletConnection might implicitly use via ContentHeadline
     receivedToken: '',
-    selectedTokens: [],
-    approvedTokens: [],
+    selectedTokens: [] as Array<SelectedToken>, // Typed empty array
+    approvedTokens: [] as Array<SelectedToken>, // Typed empty array
     isReadyToSell: false,
-  },
+  } as AppState, // Cast to AppState, ensure all required fields are covered
   updateState: mockUpdateState,
-  // Provide other context values if WalletConnection or its children directly use them
-  isConnected: false, 
+  isConnected: false,
+  approvedTokens: [] as Array<SelectedToken>,
   setApprovedTokens: vi.fn(),
+  selectedTokens: [] as Array<SelectedToken>,
   setSelectedTokens: vi.fn(),
+  isReadyToSell: false,
   setIsReadyToSell: vi.fn(),
+  receivedToken: '',
   setReceivedToken: vi.fn(),
-  selectedNetwork: {} as any, // Provide a mock or partial object
+  selectedNetwork: mockSelectedNetworkDefault,
   setSelectedNetwork: vi.fn(),
-  operationType: 'swap' as any,
+  operationType: 'swap' as OperationType,
   setOperationType: vi.fn(),
 };
 
@@ -62,7 +74,9 @@ describe('WalletConnection Component', () => {
     mockUpdateState.mockClear();
 
     // Default implementations
-    mockUseAccount.mockReturnValue({ isConnected: false, address: undefined, chain: undefined });
+    mockUseAccount.mockReturnValue({ 
+      isConnected: false, address: undefined, chain: undefined 
+    } as Partial<UseAccountReturnType>); // Cast to satisfy mock type
     mockUseAppStateContext.mockReturnValue(defaultAppState);
   });
 
@@ -76,12 +90,6 @@ describe('WalletConnection Component', () => {
     const connectButton = screen.getByRole('button', { name: 'Connect Wallet' });
     expect(connectButton).toBeInTheDocument();
     expect(connectButton).toBeEnabled();
-
-    // Check for FaWallet icon (this might need a more specific selector or test ID if there are multiple SVGs)
-    // For now, assuming the button contains "Connect Wallet" text which is sufficient for button identification.
-    // Checking for an icon specifically can be brittle.
-    // If an icon is visually important, it might have a title or aria-label.
-    // Let's assume ContentHeadline renders the icon visually but it's not critical for this test to find the specific SVG.
   });
 
   // Test 2: "Connect Wallet" Button Click
@@ -95,9 +103,11 @@ describe('WalletConnection Component', () => {
   });
 
   // Test 3: Automatic State Update When Wallet is Already Connected
-  it('should call updateState with "SELECT_TOKENS" if wallet is already connected', async () => {
-    mockUseAccount.mockReturnValue({ isConnected: true, address: '0x123', chain: { id: 1 } });
-    // Phase is still CONNECT_WALLET initially
+  it('should call updateState with "SELECT_TOKENS" if already connected', async () => {
+    mockUseAccount.mockReturnValue({ 
+      isConnected: true, address: '0x123', chain: { id: 1 } 
+    } as Partial<UseAccountReturnType>);
+    
     mockUseAppStateContext.mockReturnValue({
       ...defaultAppState,
       phase: 'CONNECT_WALLET', 
@@ -106,8 +116,6 @@ describe('WalletConnection Component', () => {
 
     render(<WalletConnection />);
 
-    // The component has an effect that calls updateState.
-    // We need to wait for this effect to run and the state update to be called.
     await waitFor(() => {
       expect(mockUpdateState).toHaveBeenCalledWith("SELECT_TOKENS");
     });
@@ -117,20 +125,15 @@ describe('WalletConnection Component', () => {
   it('should not render headline or button if app state is null', () => {
     mockUseAppStateContext.mockReturnValue({
       ...defaultAppState,
-      state: null, // Simulate no app state / loading state for ContentContainer
+      state: null, 
     });
 
     render(<WalletConnection />);
-
-    // ContentContainer's isLoading prop will be true.
-    // WalletConnection passes `!state` to `ContentContainer`'s `isLoading` prop.
-    // If state is null, isLoading is true. ContentHeadline is inside ContentContainer.
-    // Assuming ContentContainer does not render its children when isLoading is true,
-    // or ContentHeadline itself checks for state.
     
-    // Check that headline and button are NOT present
     expect(screen.queryByText('CONNECT YOUR WALLET')).not.toBeInTheDocument();
-    expect(screen.queryByText('Connect your wallet to start swapping tokens.')).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('Connect your wallet to start swapping tokens.')
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Connect Wallet' })).not.toBeInTheDocument();
   });
 });
