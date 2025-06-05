@@ -61,9 +61,11 @@ export function useTokens() {
 
       fetchUserTokens();
     },
-    /* eslint-disable */
-    [address, selectedNetwork]
-    /* eslint-enable */
+    // eslint-disable-next-line react-hooks/exhaustive-deps 
+    // The dependencies are address and selectedNetwork. 
+    // fetchTokens is stable, cacheRef is a ref, logger is stable.
+    // setIsLoading, setError, setTokens are state setters.
+    [address, selectedNetwork] 
   );
 
   return { tokens, isLoading, error };

@@ -3,8 +3,9 @@ import { ContentContainer } from "@/layouts/Content/ContentContainer";
 import { useAppStateContext } from "@/context/AppStateContext";
 import { StatusSpinner } from "@/ui/Spinner";
 import { useCallback, useEffect, useMemo } from "react";
-import { config } from "@/configs/wagmi";
-import { useSendTransaction } from "wagmi";
+// import { config } from "@/configs/wagmi"; // No longer directly needed here
+// import { useSendTransaction } from "wagmi"; // Will be used by the hook
+import { useSwapTransaction } from "@/hooks/useSwapTransaction"; // Import the new hook
 import {
   getTxnStatusCopies,
   prepareTokensSellingIssueCopies,
@@ -37,37 +38,34 @@ export const TokensSell = () => {
     setQuoteData,
   } = useOdosExecute();
 
-  const {
-    data: hash,
-    isPending: isTransactionPending,
-    isSuccess: isTransactionExecuted,
-    isError: isTransactionFailed,
-    error: transactionError,
-    sendTransaction,
-  } = useSendTransaction({ config });
-
-  const isOperationPending = useMemo(
-    () => isQuoteLoading || isExecutionLoading || isTransactionPending,
-    [isQuoteLoading, isExecutionLoading, isTransactionPending]
-  );
-
   const transactionData = useMemo(() => {
-    if (!executionData) return null;
+    if (!executionData) return undefined; // useSwapTransaction expects TransactionData | undefined
 
     return {
       to: executionData.transaction.to as `0x${string}`,
       data: executionData.transaction.data as `0x${string}`,
       value: BigInt(executionData.transaction.value || 0),
-      gasLimit: BigInt(executionData.transaction.gas || 0),
+      // Ensure 'gas' is used as per useSwapTransaction, not 'gasLimit'
+      gas: executionData.transaction.gas ? BigInt(executionData.transaction.gas) : undefined, 
       chainId: executionData.transaction.chainId,
     };
   }, [executionData]);
+  
+  const {
+    sendSwapTransaction: initiateFullTransaction, // Renamed for clarity in this component
+    hash,
+    isTransactionPending,
+    isTransactionSuccess: isTransactionExecuted, // Keep existing name for less refactoring below
+    isTransactionError: isTransactionFailed,   // Keep existing name
+    transactionError,
+  } = useSwapTransaction({ transactionData });
 
-  const sendSwapTransaction = useCallback(() => {
-    if (transactionData) {
-      sendTransaction(transactionData);
-    }
-  }, [transactionData, sendTransaction]);
+  const isOperationPending = useMemo(
+    () => isQuoteLoading || isExecutionLoading || isTransactionPending,
+    [isQuoteLoading, isExecutionLoading, isTransactionPending] // isTransactionPending now from useSwapTransaction
+  );
+
+  // The original sendSwapTransaction callback is removed as its logic is in useSwapTransaction
 
   useEffect(() => {
     if (approvedTokens?.length) {
@@ -86,17 +84,17 @@ export const TokensSell = () => {
     if (
       executionStatus === "SUCCESS_EXECUTE" &&
       executionData &&
-      !isTransactionFailed &&
-      !isTransactionExecuted
+      !isTransactionFailed && // from useSwapTransaction
+      !isTransactionExecuted   // from useSwapTransaction
     ) {
-      sendSwapTransaction();
+      initiateFullTransaction(); // Call the function from the hook
     }
   }, [
     executionStatus,
     executionData,
-    isTransactionFailed,
-    isTransactionExecuted,
-    sendSwapTransaction,
+    isTransactionFailed,    // from useSwapTransaction
+    isTransactionExecuted,  // from useSwapTransaction
+    initiateFullTransaction,
   ]);
 
   const startFromScratch = useCallback(() => {
@@ -115,9 +113,9 @@ export const TokensSell = () => {
   }, [setTokensToCheck, setToCheckQuote, sellableTokens]);
 
   const txnStatusCopies = useMemo(() => {
-    if (isTransactionFailed && transactionError) {
+    if (isTransactionFailed && transactionError) { // isTransactionFailed & transactionError from useSwapTransaction
       return getTxnStatusCopies(true, {
-        error: txnErrorToHumanReadable(transactionError.message),
+        error: txnErrorToHumanReadable(transactionError.message), // transactionError from useSwapTransaction
       });
     }
 
@@ -146,12 +144,12 @@ export const TokensSell = () => {
 
     return getTxnStatusCopies(null, { hash, selectedNetwork });
   }, [
-    isTransactionFailed,
-    isTransactionExecuted,
+    isTransactionFailed,    // from useSwapTransaction
+    isTransactionExecuted,  // from useSwapTransaction
     executionError,
     simulationError,
-    hash,
-    transactionError,
+    hash,                   // from useSwapTransaction
+    transactionError,       // from useSwapTransaction
     quoteError,
     quoteStatus,
     executionStatus,
@@ -169,8 +167,8 @@ export const TokensSell = () => {
         : txnStatusCopies?.contentSubtitle || "",
       hasActionButton: isTransactionFailed || !isOperationPending,
       buttonLabel: !isOperationPending ? txnStatusCopies?.contentButtonLabel || "" : undefined,
-      buttonAction: isTransactionFailed
-        ? sendSwapTransaction
+      buttonAction: isTransactionFailed // from useSwapTransaction
+        ? initiateFullTransaction // Use the function from the hook to retry
         : !isOperationPending
           ? startFromScratch
           : undefined,
@@ -184,8 +182,8 @@ export const TokensSell = () => {
       state?.contentHeadline,
       state?.contentSubtitle,
       txnStatusCopies,
-      isTransactionFailed,
-      sendSwapTransaction,
+      isTransactionFailed,    // from useSwapTransaction
+      initiateFullTransaction, // retry action
       startFromScratch,
       handleSecondaryButtonClick,
     ]
